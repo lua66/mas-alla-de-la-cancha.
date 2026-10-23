@@ -1,0 +1,6 @@
+{
+  "name": "Pizarra & Criterio — Blog de Baloncesto",
+  "description": "Blog personal y cuaderno táctico de baloncesto para entrenadores: análisis, criterios de juego, biblioteca de artículos y panel de autor.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
