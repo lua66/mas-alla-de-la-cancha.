@@ -24,6 +24,24 @@ export const storageService = {
             art.coverImage = '/assets/coach_horta_avatar.jpg';
             updated = true;
           }
+          // Ensure initial 4 articles only have their 4 clean tags
+          if (art.id === 'art-1' && (art.tags.length !== 1 || art.tags[0] !== 'Balance Defensivo')) {
+            art.tags = ['Balance Defensivo'];
+            updated = true;
+          }
+          if (art.id === 'art-2' && (art.tags.length !== 1 || art.tags[0] !== 'Pick & Roll')) {
+            art.tags = ['Pick & Roll'];
+            updated = true;
+          }
+          if (art.id === 'art-3' && (art.tags.length !== 1 || art.tags[0] !== 'Gestión de Vestuario')) {
+            art.tags = ['Gestión de Vestuario'];
+            art.coverImage = '/assets/coach_horta_avatar.jpg';
+            updated = true;
+          }
+          if (art.id === 'art-4' && (art.tags.length !== 1 || art.tags[0] !== 'Fundamentos')) {
+            art.tags = ['Fundamentos'];
+            updated = true;
+          }
         });
         if (updated) {
           localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(parsed));
@@ -265,9 +283,7 @@ export const storageService = {
     return {
       success: true,
       syncedToSheet,
-      message: syncedToSheet 
-        ? '¡Gracias por suscribirte! Tu correo se ha guardado en el blog y sincronizado con tu hoja de cálculo en Google Sheets.'
-        : '¡Gracias por suscribirte! Te avisaremos de cada nuevo artículo de pizarra.'
+      message: '¡Gracias por suscribirte! Te avisaremos por correo con cada nuevo artículo y análisis táctico.'
     };
   },
 

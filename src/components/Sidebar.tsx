@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Article, BlogSettings } from '../types/blog';
-import { Mail, Calendar, Folder, Tag, ChevronDown, ChevronRight, CheckCircle2, Loader2, FileSpreadsheet, AlertCircle } from 'lucide-react';
+import { Mail, Calendar, Folder, Tag, ChevronDown, ChevronRight, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import { SocialIconsRow } from './SocialLinks';
 
 interface SidebarProps {
@@ -177,11 +177,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           Recibe en tu correo cada nuevo artículo de táctica y análisis técnico en cuanto se publique.
         </p>
 
-        <div className="flex items-center gap-1.5 mb-3 text-[11px] text-amber-800 dark:text-amber-400 font-mono">
-          <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-          <span>Sincronizado con Google Sheets</span>
-        </div>
-
         {subFeedback ? (
           <div className={`p-3.5 rounded-lg border text-xs flex flex-col gap-2 ${
             subFeedback.success
@@ -196,13 +191,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
               <span className="leading-snug font-medium">{subFeedback.message}</span>
             </div>
-
-            {subFeedback.success && subFeedback.syncedToSheet && (
-              <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-emerald-300 font-semibold pl-6">
-                <FileSpreadsheet className="w-3.5 h-3.5" />
-                <span>Registrado en tu hoja de cálculo</span>
-              </div>
-            )}
 
             <button
               type="button"
@@ -259,7 +247,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Guardando en Google Sheets...</span>
+                  <span>Procesando suscripción...</span>
                 </>
               ) : (
                 <span>Suscribirme al Boletín</span>

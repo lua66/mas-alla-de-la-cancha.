@@ -41,7 +41,7 @@ Un veterano no necesita saltar más que el rival si canta a viva voz: *"¡Tengo 
 ### Conclusión para el banquillo
 No permitas que tus jugadores celebren antes de defender. La próxima vez que veas un vídeo de tu partido, cuenta cuántos puntos fáciles regaló tu equipo tras haber metido vosotros una canasta previa. Te sorprenderá comprobar que ahí suele estar la diferencia entre ganar o perder.`,
     category: "Táctica Defensiva",
-    tags: ["BalanceDefensivo", "Transición", "Concentración", "Fundamentos"],
+    tags: ["Balance Defensivo"],
     author: "Coach Leyanis Horta",
     authorRole: "Licenciada en Deporte & Entrenadora",
     publishedAt: "2026-10-18",
@@ -77,7 +77,7 @@ Los bases experimentados saben que tras superar el bloqueo no hay que correr des
 ### La regla de los cuatro metros
 Para mí, como regla de oro en mis equipos: **nunca dos jugadores a menos de cuatro metros de distancia en el lado del balón**, salvo en el momento exacto del contacto del bloqueo. La geometría castiga a quien no respeta los espacios.`,
     category: "Ataque por Conceptos",
-    tags: ["PickAndRoll", "Spacing", "LecturaDeJuego", "TomaDeDecisiones"],
+    tags: ["Pick & Roll"],
     author: "Coach Leyanis Horta",
     authorRole: "Licenciada en Deporte & Entrenadora",
     publishedAt: "2026-10-12",
@@ -111,12 +111,12 @@ En mis años de experiencia he aprendido que los jugadores perdonan que te equiv
 
 Muchos entrenadores antiguos caían en el error del autoritarismo de choque. Yo misma, en mis primeros años de juventud, creía que elevar la voz en los descansos demostraba pasión. Con los años comprendí que **el grito continuo aturde al jugador y anula su capacidad de pensar por sí mismo**. En momentos de máxima tensión, el tono sereno y las tres instrucciones claras son mil veces más eficaces que un discurso furibundo.`,
     category: "Gestión de Vestuario",
-    tags: ["Liderazgo", "Vestuario", "Psicología", "Comunicación"],
+    tags: ["Gestión de Vestuario"],
     author: "Coach Leyanis Horta",
     authorRole: "Licenciada en Deporte & Entrenadora",
     publishedAt: "2026-10-05",
     readTimeMinutes: 7,
-    coverImage: "/src/assets/images/coach_horta_sese_1792837681328.jpg",
+    coverImage: "/assets/coach_horta_avatar.jpg",
     status: "published",
     viewsCount: 620,
     likesCount: 61,
@@ -139,7 +139,7 @@ El balón viaja por el aire diez veces más rápido de lo que cualquier jugador 
 2. **Recompensar el pase del que nace la asistencia (el 'hockey pass'):** La estadística no suele registrar al jugador que dio el pase inicial que descolocó a la defensa, pero en el vídeo de vestuario debe ser elogiado con el mismo énfasis.
 3. **La regla del tiro bueno frente al tiro excelente:** Un tiro libre de marca desde 5 metros es un buen tiro; si das un pase adicional a la esquina para un compañero completamente solo, es un tiro excelente.`,
     category: "Desarrollo de Fundamentos",
-    tags: ["Pases", "Cantera", "Fundamentos", "Colectivo"],
+    tags: ["Fundamentos"],
     author: "Coach Leyanis Horta",
     authorRole: "Licenciada en Deporte & Entrenadora",
     publishedAt: "2026-09-24",

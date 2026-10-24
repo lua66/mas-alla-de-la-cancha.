@@ -194,8 +194,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setExcerpt('');
     setContent('');
     setCategory('Táctica Defensiva');
-    setTagsStr('Baloncesto, Pizarra');
-    setCoverImage('/src/assets/images/hero_basketball_tactics_1792680998647.jpg');
+    setTagsStr('');
+    setCoverImage('/assets/coach_horta_avatar.jpg');
     setStatus('published');
     setCurrentTab('editor');
   };
@@ -233,8 +233,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       excerpt,
       content,
       category: category || 'General',
-      tags: tags.length > 0 ? tags : ['Baloncesto'],
-      coverImage: coverImage || '/src/assets/images/hero_basketball_tactics_1792680998647.jpg',
+      tags: tags.length > 0 ? tags : [category || 'General'],
+      coverImage: coverImage || '/assets/coach_horta_avatar.jpg',
       status: saveAsStatus
     });
 
@@ -639,7 +639,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </label>
                   <input
                     type="text"
-                    placeholder="PickAndRoll, Spacing, Defensa, Cantera"
+                    placeholder="Escribe tus etiquetas (ej: Transición, Rebote)"
                     value={tagsStr}
                     onChange={e => setTagsStr(e.target.value)}
                     className="w-full px-3 py-2 text-xs rounded-lg bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 focus:outline-hidden focus:ring-1 focus:ring-amber-700"
