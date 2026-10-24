@@ -17,7 +17,7 @@ const isProd = process.env.NODE_ENV === 'production';
 app.use(express.json());
 
 // Initialize Google Gen AI client on the server side
-const apiKey = process.env.GEMINI_API_KEY;
+const apiKey = process.env.GEMINI_API_KEY || process.env.GEMENI_API_KEY || process.env.VITE_GEMINI_API_KEY;
 let ai: GoogleGenAI | null = null;
 
 if (apiKey) {
