@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Article, Comment } from '../types/blog';
 import { ArrowLeft, Clock, MessageSquare, ThumbsUp, Bookmark, Share2, ZoomIn, ZoomOut, Send, CheckCircle2 } from 'lucide-react';
 import { TacticalCourtDiagram } from './TacticalCourtDiagram';
@@ -42,6 +42,62 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({
   const [submittedSuccess, setSubmittedSuccess] = useState(false);
   const [hasLiked, setHasLiked] = useState(false);
   const [copyLinkNotice, setCopyLinkNotice] = useState(false);
+
+  // Dynamic SEO & Social Media tags when viewing this article
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = `${article.title} — Pizarra & Criterio | Coach Leyanis Horta`;
+
+    // Dynamic OpenGraph / Twitter meta updates
+    const updateMeta = (prop: string, content: string, isProperty = true) => {
+      const selector = isProperty ? `meta[property="${prop}"]` : `meta[name="${prop}"]`;
+      let element = document.querySelector(selector) as HTMLMetaElement | null;
+      if (!element) {
+        element = document.createElement('meta');
+        if (isProperty) element.setAttribute('property', prop);
+        else element.setAttribute('name', prop);
+        document.head.appendChild(element);
+      }
+      element.setAttribute('content', content);
+    };
+
+    updateMeta('og:title', `${article.title} — Pizarra & Criterio`);
+    updateMeta('og:description', article.excerpt || article.title);
+    updateMeta('twitter:title', `${article.title} — Pizarra & Criterio`);
+    updateMeta('twitter:description', article.excerpt || article.title);
+
+    // Dynamic Article JSON-LD for Google Search
+    const scriptId = 'article-structured-data';
+    let scriptTag = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (!scriptTag) {
+      scriptTag = document.createElement('script');
+      scriptTag.id = scriptId;
+      scriptTag.type = 'application/ld+json';
+      document.head.appendChild(scriptTag);
+    }
+    scriptTag.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: article.title,
+      description: article.excerpt,
+      author: {
+        '@type': 'Person',
+        name: 'Leyanis Horta',
+        jobTitle: 'Entrenadora de Baloncesto y Licenciada en Deporte',
+        url: window.location.origin
+      },
+      datePublished: article.publishedAt,
+      articleSection: article.category,
+      keywords: article.tags?.join(', ') || 'Baloncesto, Táctica',
+      inLanguage: 'es-ES'
+    });
+
+    return () => {
+      document.title = prevTitle;
+      const scriptToRemove = document.getElementById(scriptId);
+      if (scriptToRemove) scriptToRemove.remove();
+    };
+  }, [article]);
 
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();

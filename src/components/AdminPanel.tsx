@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Article, Comment, Subscriber, BlogSettings } from '../types/blog';
 import { storageService } from '../services/storageService';
+import { AiArticleModal } from './AiArticleModal';
+import { TACTICAL_IMAGE_GALLERY } from '../data/tacticalImages';
 import {
   FileText,
   PlusCircle,
@@ -25,7 +27,9 @@ import {
   FileSpreadsheet,
   Copy,
   ExternalLink,
-  HelpCircle
+  HelpCircle,
+  Send,
+  Loader2
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -83,8 +87,84 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   // Settings State
   const [tempSettings, setTempSettings] = useState<BlogSettings>(settings);
-
   const [copiedScript, setCopiedScript] = useState(false);
+  const [isTestingWebhook, setIsTestingWebhook] = useState(false);
+
+  const handleTestWebhook = async () => {
+    const url = tempSettings.googleSheetWebhookUrl?.trim();
+    if (!url || !url.startsWith('http')) {
+      showNotification('Pega primero la URL de tu Google Apps Script (que empiece por https://script.google.com/...)', 'error');
+      return;
+    }
+    setIsTestingWebhook(true);
+    try {
+      await fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: 'prueba.suscriptor@baloncesto.es',
+          frequency: 'semanal',
+          subscribedAt: new Date().toISOString().split('T')[0],
+          source: 'Prueba desde Panel Admin'
+        })
+      });
+      showNotification('¡Petición de prueba enviada a Google Sheets! Revisa tu hoja de cálculo para verificar la fila.');
+    } catch (err) {
+      console.error(err);
+      showNotification('Error al conectar con la URL. Revisa que esté bien escrita.', 'error');
+    } finally {
+      setIsTestingWebhook(false);
+    }
+  };
+
+  // AI Assistant Modal State
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+
+  const handleLoadAiArticleIntoEditor = (articleData: {
+    title: string;
+    excerpt: string;
+    content: string;
+    category: string;
+    tags: string[];
+    coverImage: string;
+    status: 'published' | 'draft';
+  }) => {
+    setEditingArticleId(null);
+    setTitle(articleData.title);
+    setExcerpt(articleData.excerpt);
+    setContent(articleData.content);
+    setCategory(articleData.category);
+    setTagsStr(articleData.tags.join(', '));
+    setCoverImage(articleData.coverImage);
+    setStatus(articleData.status);
+    setCurrentTab('editor');
+    showNotification('¡Artículo generado con IA cargado en el editor! Puedes retocarlo y guardarlo.');
+  };
+
+  const handlePublishAiArticleDirectly = (articleData: {
+    title: string;
+    excerpt: string;
+    content: string;
+    category: string;
+    tags: string[];
+    coverImage: string;
+    status: 'published';
+  }) => {
+    const saved = onSaveArticle({
+      title: articleData.title,
+      excerpt: articleData.excerpt,
+      content: articleData.content,
+      category: articleData.category,
+      tags: articleData.tags,
+      coverImage: articleData.coverImage,
+      status: 'published',
+      author: settings.authorName,
+      authorRole: settings.authorRole
+    });
+    setCurrentTab('posts');
+    showNotification(`¡Artículo "${saved.title}" publicado con éxito en el cuaderno!`);
+  };
 
   const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
     setNotification({ message, type });
@@ -219,11 +299,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         {/* Left Navigation Menu (Blogger Sidebar) */}
         <aside className="w-60 shrink-0 hidden md:flex flex-col gap-1.5">
           <button
-            onClick={handleNewArticle}
-            className="w-full mb-3 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-amber-800 hover:bg-amber-900 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer"
+            onClick={() => setIsAiModalOpen(true)}
+            className="w-full mb-2 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-gradient-to-r from-amber-700 via-orange-600 to-amber-800 hover:from-amber-800 hover:to-orange-700 text-white font-semibold text-xs shadow-md shadow-amber-900/10 transition-all cursor-pointer group"
           >
-            <PlusCircle className="w-4 h-4" />
-            <span>Nueva Entrada</span>
+            <Sparkles className="w-4 h-4 text-amber-200 group-hover:rotate-12 transition-transform" />
+            <span>Crear Artículo con IA</span>
+          </button>
+
+          <button
+            onClick={handleNewArticle}
+            className="w-full mb-3 flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 border border-stone-200 dark:border-stone-700 font-medium text-xs shadow-xs transition-colors cursor-pointer"
+          >
+            <PlusCircle className="w-3.5 h-3.5 text-amber-700" />
+            <span>Nueva Entrada Manual</span>
           </button>
 
           <button
@@ -358,10 +446,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </div>
 
                   <button
-                    onClick={handleNewArticle}
-                    className="md:hidden p-2 rounded-lg bg-amber-800 text-white"
+                    onClick={() => setIsAiModalOpen(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-700 to-orange-700 hover:from-amber-800 hover:to-orange-800 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
                   >
-                    <PlusCircle className="w-4 h-4" />
+                    <Sparkles className="w-3.5 h-3.5 text-amber-200" />
+                    <span>Crear con IA</span>
+                  </button>
+
+                  <button
+                    onClick={handleNewArticle}
+                    className="md:hidden p-2 rounded-lg bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-300 dark:border-stone-700"
+                    title="Nueva Entrada Manual"
+                  >
+                    <PlusCircle className="w-4 h-4 text-amber-700" />
                   </button>
                 </div>
               </div>
@@ -472,6 +569,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
+                    onClick={() => setIsAiModalOpen(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 dark:hover:bg-amber-900/50 text-amber-900 dark:text-amber-200 text-xs font-semibold border border-amber-300 dark:border-amber-800 transition-colors cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                    <span>Redactar con IA</span>
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => handleSaveArticle('draft')}
                     className="px-3.5 py-1.5 rounded-lg border border-stone-300 dark:border-stone-700 text-xs font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
                   >
@@ -540,38 +645,47 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               {/* Cover Image selector */}
               <div>
                 <label className="block text-xs font-medium text-stone-700 dark:text-stone-300 mb-1">
-                  Imagen de cabecera
+                  Imagen de cabecera (Galería oficial del blog)
                 </label>
-                <div className="flex flex-col sm:flex-row gap-3 items-center">
+                <div className="flex flex-col gap-2.5">
                   <input
                     type="text"
                     placeholder="Ruta o URL de la imagen"
                     value={coverImage}
                     onChange={e => setCoverImage(e.target.value)}
-                    className="flex-1 w-full px-3 py-2 text-xs rounded-lg bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 focus:outline-hidden focus:ring-1 focus:ring-amber-700"
+                    className="w-full px-3 py-2 text-xs rounded-lg bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 focus:outline-hidden focus:ring-1 focus:ring-amber-700 font-mono"
                   />
-                  <div className="flex items-center gap-1 text-xs">
-                    <button
-                      type="button"
-                      onClick={() => setCoverImage('/src/assets/images/hero_basketball_tactics_1792680998647.jpg')}
-                      className="px-2 py-1 rounded bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-stone-700 dark:text-stone-300 text-[11px]"
-                    >
-                      Pizarra Táctica
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setCoverImage('/src/assets/images/article_pick_and_roll_1792680999088.jpg')}
-                      className="px-2 py-1 rounded bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-stone-700 dark:text-stone-300 text-[11px]"
-                    >
-                      Balón Cuero
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setCoverImage('/src/assets/images/article_fundamentals_coaching_1792680999886.jpg')}
-                      className="px-2 py-1 rounded bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-stone-700 dark:text-stone-300 text-[11px]"
-                    >
-                      Cuaderno
-                    </button>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {TACTICAL_IMAGE_GALLERY.map(img => {
+                      const isSelected = coverImage === img.path;
+                      return (
+                        <button
+                          key={img.id}
+                          type="button"
+                          onClick={() => setCoverImage(img.path)}
+                          className={`flex items-center gap-2 p-1.5 rounded-lg border text-left transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-500 shadow-xs ring-1 ring-amber-500/30'
+                              : 'bg-stone-50 dark:bg-stone-800/60 border-stone-200 dark:border-stone-700 hover:border-stone-400'
+                          }`}
+                        >
+                          <img
+                            src={img.path}
+                            alt={img.name}
+                            className="w-9 h-7 object-cover rounded-sm shrink-0"
+                            referrerPolicy="no-referrer"
+                          />
+                          <div className="min-w-0">
+                            <div className="text-[11px] font-semibold truncate text-stone-800 dark:text-stone-200">
+                              {img.name}
+                            </div>
+                            <div className="text-[9px] text-stone-500 truncate">
+                              {img.category}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -911,26 +1025,51 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </span>
                     <button
                       onClick={() => {
-                        const code = `function doPost(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  if (sheet.getLastRow() === 0) {\n    sheet.appendRow(["Fecha y Hora", "Correo Electrónico", "Frecuencia", "Origen"]);\n  }\n  var data = JSON.parse(e.postData.contents);\n  sheet.appendRow([new Date(), data.email, data.frequency, data.source || "Blog"]);\n  return ContentService.createTextOutput("OK");\n}`;
+                        const code = `function doPost(e) {\\n  try {\\n    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\\n    if (sheet.getLastRow() === 0) {\\n      sheet.appendRow(["Fecha y Hora", "Correo Electrónico", "Frecuencia", "Origen"]);\\n      var h = sheet.getRange(1, 1, 1, 4);\\n      h.setFontWeight("bold");\\n      h.setBackground("#1b4332");\\n      h.setFontColor("#ffffff");\\n      sheet.setColumnWidth(1, 180);\\n      sheet.setColumnWidth(2, 260);\\n      sheet.setColumnWidth(3, 130);\\n      sheet.setColumnWidth(4, 200);\\n    }\\n    var data = {};\\n    if (e && e.postData && e.postData.contents) {\\n      try { data = JSON.parse(e.postData.contents); } catch (err) { data = { email: e.postData.contents }; }\\n    } else if (e && e.parameter) {\\n      data = e.parameter;\\n    }\\n    var email = data.email || "correo@ejemplo.com";\\n    var frequency = data.frequency || "semanal";\\n    var source = data.source || "Blog Pizarra & Criterio";\\n    var now = Utilities.formatDate(new Date(), "GMT+1", "yyyy-MM-dd HH:mm:ss");\\n    sheet.appendRow([now, email, frequency, source]);\\n    return ContentService.createTextOutput("OK");\\n  } catch (error) {\\n    return ContentService.createTextOutput("Error: " + error.toString());\\n  }\\n}\\n\\nfunction doGet(e) {\\n  return ContentService.createTextOutput("¡Webhook activo y listo para recibir suscriptores del blog!");\\n}`;
                         navigator.clipboard.writeText(code);
                         setCopiedScript(true);
                         setTimeout(() => setCopiedScript(false), 2500);
                       }}
-                      className="flex items-center gap-1 text-[11px] px-2 py-1 rounded bg-stone-800 hover:bg-stone-700 text-amber-300 cursor-pointer"
+                      className="flex items-center gap-1 text-[11px] px-2.5 py-1 rounded bg-stone-800 hover:bg-stone-700 text-amber-300 cursor-pointer font-sans"
                     >
-                      {copiedScript ? <CheckCircle className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                      <span>{copiedScript ? '¡Código Copiado!' : 'Copiar Código'}</span>
+                      {copiedScript ? <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedScript ? '¡Código Copiado al Portapapeles!' : 'Copiar Código'}</span>
                     </button>
                   </div>
                   <pre className="font-mono text-[11px] leading-relaxed overflow-x-auto text-stone-300">
 {`function doPost(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(["Fecha y Hora", "Correo Electrónico", "Frecuencia", "Origen"]);
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["Fecha y Hora", "Correo Electrónico", "Frecuencia", "Origen"]);
+      var h = sheet.getRange(1, 1, 1, 4);
+      h.setFontWeight("bold");
+      h.setBackground("#1b4332");
+      h.setFontColor("#ffffff");
+      sheet.setColumnWidth(1, 180);
+      sheet.setColumnWidth(2, 260);
+      sheet.setColumnWidth(3, 130);
+      sheet.setColumnWidth(4, 200);
+    }
+    var data = {};
+    if (e && e.postData && e.postData.contents) {
+      try { data = JSON.parse(e.postData.contents); } catch (err) { data = { email: e.postData.contents }; }
+    } else if (e && e.parameter) {
+      data = e.parameter;
+    }
+    var email = data.email || "correo@ejemplo.com";
+    var frequency = data.frequency || "semanal";
+    var source = data.source || "Blog Pizarra & Criterio";
+    var now = Utilities.formatDate(new Date(), "GMT+1", "yyyy-MM-dd HH:mm:ss");
+    sheet.appendRow([now, email, frequency, source]);
+    return ContentService.createTextOutput("OK");
+  } catch (error) {
+    return ContentService.createTextOutput("Error: " + error.toString());
   }
-  var data = JSON.parse(e.postData.contents);
-  sheet.appendRow([new Date(), data.email, data.frequency, data.source || "Blog"]);
-  return ContentService.createTextOutput("OK");
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput("¡Webhook activo y listo para recibir suscriptores del blog!");
 }`}
                   </pre>
                 </div>
@@ -1025,20 +1164,46 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   />
                 </div>
 
-                <div className="p-4 rounded-xl bg-emerald-50/60 dark:bg-stone-900/80 border border-emerald-200 dark:border-emerald-900/60">
-                  <label className="block text-xs font-semibold text-emerald-900 dark:text-emerald-300 mb-1 flex items-center gap-1.5">
-                    <FileSpreadsheet className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
-                    <span>URL Webhook de Google Sheets (Opcional)</span>
-                  </label>
-                  <input
-                    type="url"
-                    placeholder="https://script.google.com/macros/s/AKfycb.../exec"
-                    value={tempSettings.googleSheetWebhookUrl || ''}
-                    onChange={e => setTempSettings({ ...tempSettings, googleSheetWebhookUrl: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-lg bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 font-mono"
-                  />
-                  <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1.5 leading-relaxed">
-                    Si creas una Aplicación Web con Google Apps Script (ver instrucciones en la pestaña <strong>Suscriptores</strong>), pega aquí la URL y cada nueva suscripción se enviará en tiempo real a tu hoja de cálculo.
+                <div className="p-4 rounded-xl bg-emerald-50/60 dark:bg-stone-900/80 border border-emerald-200 dark:border-emerald-900/60 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-emerald-900 dark:text-emerald-300 flex items-center gap-1.5">
+                      <FileSpreadsheet className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                      <span>URL Webhook de Google Sheets (Opcional)</span>
+                    </label>
+                    <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
+                      Sincronización en vivo
+                    </span>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="url"
+                      placeholder="https://script.google.com/macros/s/AKfycb.../exec"
+                      value={tempSettings.googleSheetWebhookUrl || ''}
+                      onChange={e => setTempSettings({ ...tempSettings, googleSheetWebhookUrl: e.target.value })}
+                      className="flex-1 px-3 py-2 text-xs rounded-lg bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleTestWebhook}
+                      disabled={isTestingWebhook}
+                      className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-medium transition-colors disabled:opacity-50 cursor-pointer shrink-0"
+                      title="Enviar una fila de prueba a tu Google Sheet para comprobar que funciona"
+                    >
+                      {isTestingWebhook ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Probando...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Probar Conexión</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                    Pega aquí la URL de tu Aplicación Web de Google Apps Script (tienes el código y la guía paso a paso en la pestaña <strong>Suscriptores</strong>). Al pulsar «Probar Conexión» se enviará un registro de prueba a tu hoja de cálculo.
                   </p>
                 </div>
 
@@ -1092,6 +1257,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
         </main>
       </div>
+
+      {/* AI Article Creator Modal */}
+      <AiArticleModal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        onLoadIntoEditor={handleLoadAiArticleIntoEditor}
+        onPublishDirectly={handlePublishAiArticleDirectly}
+      />
     </div>
   );
 };

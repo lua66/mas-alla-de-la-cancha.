@@ -6,9 +6,10 @@ export const INITIAL_SETTINGS: BlogSettings = {
   authorName: "Coach Leyanis Horta",
   authorRole: "Licenciada en Deporte · Entrenadora de Baloncesto",
   authorBio: "Licenciada en Cultura Física y Deporte con 20 temporadas sentada en los banquillos desde Cuba hasta Barcelona, España. Defensora incondicional de la intensidad defensiva, el pase extra solidario y el juego por conceptos frente a las pizarras rígidas.",
-  authorAvatar: "/src/assets/images/article_defense_transition_1792681001204.jpg",
+  authorAvatar: "/src/assets/images/coach_blonde_tactics_1792834489113.jpg",
   yearsOfExperience: 20,
-  adminPin: "1234"
+  adminPin: "1234",
+  googleSheetWebhookUrl: "https://script.google.com/macros/s/AKfycbyAp_IwzOCSC2ANFgRDIegbQlsqa_t-VUGP6URVGzbZZ5wK6BjPwJpwRl8IRZrfTMF9/exec"
 };
 
 export const INITIAL_ARTICLES: Article[] = [
@@ -115,7 +116,7 @@ Muchos entrenadores antiguos caían en el error del autoritarismo de choque. Yo 
     authorRole: "Licenciada en Deporte & Entrenadora",
     publishedAt: "2026-10-05",
     readTimeMinutes: 7,
-    coverImage: "/src/assets/images/article_defense_transition_1792681001204.jpg",
+    coverImage: "/src/assets/images/coach_blonde_tactics_1792834489113.jpg",
     status: "published",
     viewsCount: 620,
     likesCount: 61,

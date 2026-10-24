@@ -17,7 +17,18 @@ export const storageService = {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.ARTICLES);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed: Article[] = JSON.parse(stored);
+        let updated = false;
+        parsed.forEach(art => {
+          if (art.coverImage && (art.coverImage.includes('article_defense_transition') || art.coverImage.includes('coach_leyanis_tactics'))) {
+            art.coverImage = '/src/assets/images/coach_blonde_tactics_1792834489113.jpg';
+            updated = true;
+          }
+        });
+        if (updated) {
+          localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(parsed));
+        }
+        return parsed;
       }
     } catch (e) {
       console.error('Error reading articles from localStorage', e);
@@ -247,7 +258,20 @@ export const storageService = {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.SETTINGS);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        let changed = false;
+        if (!parsed.googleSheetWebhookUrl) {
+          parsed.googleSheetWebhookUrl = INITIAL_SETTINGS.googleSheetWebhookUrl;
+          changed = true;
+        }
+        if (!parsed.authorAvatar || parsed.authorAvatar.includes('article_defense_transition') || parsed.authorAvatar.includes('coach_leyanis_tactics')) {
+          parsed.authorAvatar = INITIAL_SETTINGS.authorAvatar;
+          changed = true;
+        }
+        if (changed) {
+          localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(parsed));
+        }
+        return parsed;
       }
     } catch (e) {
       console.error('Error reading settings', e);

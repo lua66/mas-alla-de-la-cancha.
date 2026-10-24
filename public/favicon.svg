@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <!-- Background Gradient: Coach warm leather & tactical court tone -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EA580C" />
+      <stop offset="50%" stop-color="#C2410C" />
+      <stop offset="100%" stop-color="#7C2D12" />
+    </linearGradient>
+    <linearGradient id="boardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <!-- Base Rounded Icon Container -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bgGrad)" filter="url(#shadow)" />
+  
+  <!-- Subtle basketball seam lines on the orange badge -->
+  <path d="M 2 32 Q 32 32 62 32" stroke="#7C2D12" stroke-width="2.5" fill="none" opacity="0.4" />
+  <path d="M 32 2 Q 32 32 32 62" stroke="#7C2D12" stroke-width="2.5" fill="none" opacity="0.4" />
+  <path d="M 8 10 Q 32 32 8 54" stroke="#7C2D12" stroke-width="2" fill="none" opacity="0.35" />
+  <path d="M 56 10 Q 32 32 56 54" stroke="#7C2D12" stroke-width="2" fill="none" opacity="0.35" />
+
+  <!-- Tactical Coach Clipboard on top -->
+  <rect x="12" y="11" width="40" height="44" rx="5" fill="url(#boardGrad)" stroke="#38BDF8" stroke-width="1.2" />
+
+  <!-- Clipboard Metallic Clip at top -->
+  <rect x="23" y="7" width="18" height="7" rx="2.5" fill="#E2E8F0" stroke="#475569" stroke-width="1" />
+  <circle cx="32" cy="10.5" r="1.8" fill="#475569" />
+
+  <!-- Tactical Court Elements (White/Cyan Chalk Lines) -->
+  <!-- Half court line & top arc -->
+  <path d="M 17 44 Q 32 34 47 44" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="2 1.5" fill="none" opacity="0.8" />
+  
+  <!-- Key / Restricted area rectangle -->
+  <rect x="24" y="16" width="16" height="15" fill="none" stroke="#64748B" stroke-width="1.2" opacity="0.75" />
+  <path d="M 26 31 Q 32 37 38 31" stroke="#64748B" stroke-width="1.2" fill="none" opacity="0.75" />
+
+  <!-- Tactical Play Markings: Coach Yanis Tactics -->
+  <!-- Player O (Offense) -->
+  <circle cx="21" cy="38" r="3" fill="none" stroke="#FBBF24" stroke-width="2" />
+  
+  <!-- Player X (Defense) -->
+  <path d="M 30 24 L 35 29 M 35 24 L 30 29" stroke="#F87171" stroke-width="2" stroke-linecap="round" />
+
+  <!-- Tactical Pass/Drive Arrow -->
+  <path d="M 23 35 Q 26 27 34 23" stroke="#38BDF8" stroke-width="2" fill="none" stroke-linecap="round" />
+  <polygon points="37,21 32,22 35,26" fill="#38BDF8" />
+
+  <!-- Whistle Accent in bottom right corner -->
+  <circle cx="43" cy="46" r="3.5" fill="#F59E0B" stroke="#B45309" stroke-width="1" />
+  <path d="M 45 44 L 49 42 L 50 45 L 46 47 Z" fill="#F59E0B" stroke="#B45309" stroke-width="0.8" />
+</svg>
