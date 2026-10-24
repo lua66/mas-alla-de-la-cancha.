@@ -1,5 +1,7 @@
 import { Article, Comment, Subscriber, BlogSettings } from '../types/blog';
+import { TacticalPlay } from '../types/tactics';
 import { INITIAL_ARTICLES, INITIAL_COMMENTS, INITIAL_SUBSCRIBERS, INITIAL_SETTINGS } from '../data/initialData';
+import { INITIAL_PRESET_PLAYS } from '../data/tacticsPresets';
 
 const STORAGE_KEYS = {
   ARTICLES: 'basket_blog_articles_v2',
@@ -8,7 +10,8 @@ const STORAGE_KEYS = {
   SETTINGS: 'basket_blog_settings_v2',
   BOOKMARKS: 'basket_blog_bookmarks_v2',
   THEME: 'basket_blog_theme_v2',
-  TEXT_SIZE: 'basket_blog_text_size_v2'
+  TEXT_SIZE: 'basket_blog_text_size_v2',
+  PLAYS: 'basket_coach_plays_v1'
 };
 
 export const storageService = {
@@ -367,7 +370,87 @@ export const storageService = {
     localStorage.setItem(STORAGE_KEYS.COMMENTS, JSON.stringify(INITIAL_COMMENTS));
     localStorage.setItem(STORAGE_KEYS.SUBSCRIBERS, JSON.stringify(INITIAL_SUBSCRIBERS));
     localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(INITIAL_SETTINGS));
+    localStorage.setItem(STORAGE_KEYS.PLAYS, JSON.stringify(INITIAL_PRESET_PLAYS));
     localStorage.removeItem(STORAGE_KEYS.BOOKMARKS);
+  },
+
+  // Tactical Plays (Pizarra Interactiva)
+  getTacticalPlays(): TacticalPlay[] {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.PLAYS);
+      if (stored) {
+        const parsed: TacticalPlay[] = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error('Error reading tactical plays', e);
+    }
+    // Initialize with presets if empty
+    localStorage.setItem(STORAGE_KEYS.PLAYS, JSON.stringify(INITIAL_PRESET_PLAYS));
+    return INITIAL_PRESET_PLAYS;
+  },
+
+  saveTacticalPlay(play: Partial<TacticalPlay> & { title: string }): TacticalPlay {
+    const list = this.getTacticalPlays();
+    const isNew = !play.id || play.id.startsWith('temp-');
+
+    let savedPlay: TacticalPlay;
+    if (isNew) {
+      savedPlay = {
+        id: 'play-' + Date.now(),
+        title: play.title.trim(),
+        category: play.category?.trim() || 'Ataque por Conceptos',
+        courtType: play.courtType || 'half',
+        concept: play.concept?.trim() || 'Concepto de juego',
+        notes: play.notes?.trim() || '',
+        players: play.players || [],
+        lines: play.lines || [],
+        author: play.author || 'Coach Leyanis Horta',
+        createdAt: new Date().toISOString().split('T')[0],
+        isPreset: false
+      };
+      list.unshift(savedPlay);
+    } else {
+      const index = list.findIndex(p => p.id === play.id);
+      if (index === -1) {
+        savedPlay = {
+          id: play.id!,
+          title: play.title.trim(),
+          category: play.category?.trim() || 'Ataque por Conceptos',
+          courtType: play.courtType || 'half',
+          concept: play.concept?.trim() || 'Concepto de juego',
+          notes: play.notes?.trim() || '',
+          players: play.players || [],
+          lines: play.lines || [],
+          author: play.author || 'Coach Leyanis Horta',
+          createdAt: play.createdAt || new Date().toISOString().split('T')[0],
+          isPreset: false
+        };
+        list.unshift(savedPlay);
+      } else {
+        savedPlay = {
+          ...list[index],
+          ...play,
+          title: play.title.trim(),
+          isPreset: false
+        };
+        list[index] = savedPlay;
+      }
+    }
+    localStorage.setItem(STORAGE_KEYS.PLAYS, JSON.stringify(list));
+    return savedPlay;
+  },
+
+  deleteTacticalPlay(id: string): void {
+    const list = this.getTacticalPlays().filter(p => p.id !== id);
+    localStorage.setItem(STORAGE_KEYS.PLAYS, JSON.stringify(list));
+  },
+
+  resetTacticalPlays(): TacticalPlay[] {
+    localStorage.setItem(STORAGE_KEYS.PLAYS, JSON.stringify(INITIAL_PRESET_PLAYS));
+    return INITIAL_PRESET_PLAYS;
   },
 
   // Export full backup
