@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Article, BlogSettings } from '../types/blog';
-import { Mail, Calendar, Folder, Tag, ChevronDown, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Mail, Calendar, Folder, Tag, ChevronDown, ChevronRight, CheckCircle2, Loader2, FileSpreadsheet, AlertCircle } from 'lucide-react';
 import { SocialIconsRow } from './SocialLinks';
 
 interface SidebarProps {
@@ -10,7 +10,7 @@ interface SidebarProps {
   selectedTag: string | null;
   onSelectCategory: (category: string | null) => void;
   onSelectTag: (tag: string | null) => void;
-  onSubscribe: (email: string, frequency: 'semanal' | 'mensual') => { success: boolean; message: string };
+  onSubscribe: (email: string, frequency: 'semanal' | 'mensual') => Promise<{ success: boolean; message: string; syncedToSheet?: boolean }> | { success: boolean; message: string; syncedToSheet?: boolean };
   onSelectArchiveMonth?: (monthYear: string) => void;
 }
 
@@ -27,7 +27,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   // Newsletter state
   const [subEmail, setSubEmail] = useState('');
   const [subFreq, setSubFreq] = useState<'semanal' | 'mensual'>('semanal');
-  const [subFeedback, setSubFeedback] = useState<{ success: boolean; message: string } | null>(null);
+  const [subFeedback, setSubFeedback] = useState<{ success: boolean; message: string; syncedToSheet?: boolean } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Archive accordion state
   const [isArchiveOpen, setIsArchiveOpen] = useState(true);
@@ -65,13 +66,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
       return acc;
     }, {});
 
-  const handleSubscribeSubmit = (e: React.FormEvent) => {
+  const handleSubscribeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!subEmail) return;
-    const result = onSubscribe(subEmail, subFreq);
-    setSubFeedback(result);
-    if (result.success) {
-      setSubEmail('');
+    if (!subEmail || isSubmitting) return;
+    setIsSubmitting(true);
+    setSubFeedback(null);
+    try {
+      const result = await onSubscribe(subEmail, subFreq);
+      setSubFeedback(result);
+      if (result.success) {
+        setSubEmail('');
+      }
+    } catch {
+      setSubFeedback({
+        success: false,
+        message: 'Ocurrió un error al procesar tu suscripción. Por favor inténtalo de nuevo.'
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -165,20 +177,51 @@ export const Sidebar: React.FC<SidebarProps> = ({
           Recibe en tu correo cada nuevo artículo de táctica y análisis técnico en cuanto se publique.
         </p>
 
+        <div className="flex items-center gap-1.5 mb-3 text-[11px] text-amber-800 dark:text-amber-400 font-mono">
+          <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+          <span>Sincronizado con Google Sheets</span>
+        </div>
+
         {subFeedback ? (
-          <div className="p-3 bg-white dark:bg-stone-800 rounded-lg border border-amber-300 dark:border-amber-700/60 text-xs text-stone-800 dark:text-stone-100 flex items-start gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-            <span>{subFeedback.message}</span>
+          <div className={`p-3.5 rounded-lg border text-xs flex flex-col gap-2 ${
+            subFeedback.success
+              ? 'bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-stone-800 dark:text-stone-100'
+              : 'bg-rose-50/90 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-200'
+          }`}>
+            <div className="flex items-start gap-2">
+              {subFeedback.success ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+              ) : (
+                <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+              )}
+              <span className="leading-snug font-medium">{subFeedback.message}</span>
+            </div>
+
+            {subFeedback.success && subFeedback.syncedToSheet && (
+              <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-emerald-300 font-semibold pl-6">
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+                <span>Registrado en tu hoja de cálculo</span>
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setSubFeedback(null)}
+              className="text-[11px] text-amber-800 dark:text-amber-400 hover:underline self-end mt-1 cursor-pointer font-medium"
+            >
+              {subFeedback.success ? 'Suscribir otro correo' : 'Volver a intentar'}
+            </button>
           </div>
         ) : (
           <form onSubmit={handleSubscribeSubmit} className="space-y-3">
             <input
               type="email"
               required
+              disabled={isSubmitting}
               placeholder="tu-correo@ejemplo.com"
               value={subEmail}
               onChange={e => setSubEmail(e.target.value)}
-              className="w-full px-3 py-2 text-xs rounded-lg bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-1 focus:ring-amber-700"
+              className="w-full px-3 py-2 text-xs rounded-lg bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-hidden focus:ring-1 focus:ring-amber-700 disabled:opacity-50"
             />
 
             <div className="flex items-center justify-between text-[11px] text-stone-700 dark:text-stone-300 px-0.5">
@@ -187,6 +230,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   type="radio"
                   name="freq"
                   value="semanal"
+                  disabled={isSubmitting}
                   checked={subFreq === 'semanal'}
                   onChange={() => setSubFreq('semanal')}
                   className="text-amber-700 focus:ring-amber-700"
@@ -198,6 +242,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   type="radio"
                   name="freq"
                   value="mensual"
+                  disabled={isSubmitting}
                   checked={subFreq === 'mensual'}
                   onChange={() => setSubFreq('mensual')}
                   className="text-amber-700 focus:ring-amber-700"
@@ -208,9 +253,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             <button
               type="submit"
-              className="w-full py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-xs font-medium transition-colors shadow-xs cursor-pointer"
+              disabled={isSubmitting}
+              className="w-full py-2 bg-amber-800 hover:bg-amber-900 disabled:bg-amber-800/60 text-white rounded-lg text-xs font-medium transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-2"
             >
-              Suscribirme al Boletín
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Guardando en Google Sheets...</span>
+                </>
+              ) : (
+                <span>Suscribirme al Boletín</span>
+              )}
             </button>
           </form>
         )}

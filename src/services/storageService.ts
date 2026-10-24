@@ -20,8 +20,8 @@ export const storageService = {
         const parsed: Article[] = JSON.parse(stored);
         let updated = false;
         parsed.forEach(art => {
-          if (art.coverImage && (art.coverImage.includes('article_defense_transition') || art.coverImage.includes('coach_leyanis_tactics'))) {
-            art.coverImage = '/src/assets/images/coach_blonde_tactics_1792834489113.jpg';
+          if (art.coverImage && (art.coverImage.includes('article_defense_transition') || art.coverImage.includes('coach_leyanis_tactics') || art.coverImage.includes('coach_blonde_tactics') || art.coverImage.includes('coach_horta_sese'))) {
+            art.coverImage = '/assets/coach_horta_avatar.jpg';
             updated = true;
           }
         });
@@ -196,14 +196,14 @@ export const storageService = {
     return INITIAL_SUBSCRIBERS;
   },
 
-  addSubscriber(email: string, frequency: 'semanal' | 'mensual' = 'semanal'): { success: boolean; message: string } {
+  async addSubscriber(email: string, frequency: 'semanal' | 'mensual' = 'semanal'): Promise<{ success: boolean; message: string; syncedToSheet?: boolean }> {
     const cleaned = email.trim().toLowerCase();
     if (!cleaned || !cleaned.includes('@')) {
       return { success: false, message: 'Por favor, introduce un correo electrónico válido.' };
     }
     const list = this.getSubscribers();
     if (list.some(s => s.email.toLowerCase() === cleaned)) {
-      return { success: true, message: '¡Ya estás suscrito al cuaderno táctico! Recibirás los próximos análisis.' };
+      return { success: true, message: '¡Ya estás suscrito al cuaderno táctico! Recibirás los próximos análisis.', syncedToSheet: true };
     }
     const newSub: Subscriber = {
       id: 'sub-' + Date.now(),
@@ -214,29 +214,61 @@ export const storageService = {
     list.unshift(newSub);
     localStorage.setItem(STORAGE_KEYS.SUBSCRIBERS, JSON.stringify(list));
 
-    // Optional Real-time Google Sheets Webhook sync
+    const settings = this.getSettings();
+    const webhookUrl = settings.googleSheetWebhookUrl || "https://script.google.com/macros/s/AKfycbyAp_IwzOCSC2ANFgRDIegbQlsqa_t-VUGP6URVGzbZZ5wK6BjPwJpwRl8IRZrfTMF9/exec";
+    let syncedToSheet = false;
+
+    // 1. Try server proxy endpoint first for reliable execution and redirect follow
     try {
-      const settings = this.getSettings();
-      if (settings.googleSheetWebhookUrl && settings.googleSheetWebhookUrl.startsWith('http')) {
-        fetch(settings.googleSheetWebhookUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: cleaned,
-            frequency,
-            subscribedAt: newSub.subscribedAt,
-            source: 'Blog Pizarra & Criterio'
-          })
-        }).catch(err => {
-          console.warn('Google Sheets Webhook notification', err);
-        });
+      const res = await fetch('/api/subscribers/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: cleaned,
+          frequency,
+          subscribedAt: newSub.subscribedAt,
+          source: 'Sidebar - Formulario de Suscripción',
+          webhookUrl
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          syncedToSheet = true;
+        }
       }
-    } catch {
-      // background silent attempt
+    } catch (e) {
+      console.warn('Proxy Google Sheet sync failed, falling back to direct request', e);
     }
 
-    return { success: true, message: '¡Gracias por suscribirte! Te avisaremos de cada nuevo artículo de pizarra.' };
+    // 2. Direct client fallback with urlencoded data in case proxy is unreachable
+    if (!syncedToSheet && webhookUrl.startsWith('http')) {
+      try {
+        const params = new URLSearchParams();
+        params.append('email', cleaned);
+        params.append('frequency', frequency);
+        params.append('subscribedAt', newSub.subscribedAt);
+        params.append('source', 'Sidebar - Formulario de Suscripción');
+
+        await fetch(webhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString()
+        });
+        syncedToSheet = true;
+      } catch (directErr) {
+        console.warn('Direct browser webhook failed', directErr);
+      }
+    }
+
+    return {
+      success: true,
+      syncedToSheet,
+      message: syncedToSheet 
+        ? '¡Gracias por suscribirte! Tu correo se ha guardado en el blog y sincronizado con tu hoja de cálculo en Google Sheets.'
+        : '¡Gracias por suscribirte! Te avisaremos de cada nuevo artículo de pizarra.'
+    };
   },
 
   deleteSubscriber(id: string): void {
@@ -264,7 +296,7 @@ export const storageService = {
           parsed.googleSheetWebhookUrl = INITIAL_SETTINGS.googleSheetWebhookUrl;
           changed = true;
         }
-        if (!parsed.authorAvatar || parsed.authorAvatar.includes('article_defense_transition') || parsed.authorAvatar.includes('coach_leyanis_tactics')) {
+        if (!parsed.authorAvatar || parsed.authorAvatar !== INITIAL_SETTINGS.authorAvatar) {
           parsed.authorAvatar = INITIAL_SETTINGS.authorAvatar;
           changed = true;
         }

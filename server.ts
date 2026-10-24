@@ -31,6 +31,53 @@ if (apiKey) {
   });
 }
 
+// POST endpoint: /api/subscribers/sync - Forwards new subscriber to Google Sheet
+app.post('/api/subscribers/sync', async (req, res) => {
+  const { email, frequency, subscribedAt, source, webhookUrl } = req.body;
+
+  if (!email || typeof email !== 'string' || !email.includes('@')) {
+    return res.status(400).json({ success: false, error: 'Por favor ingresa un correo electrónico válido.' });
+  }
+
+  const defaultWebhook = 'https://script.google.com/macros/s/AKfycbyAp_IwzOCSC2ANFgRDIegbQlsqa_t-VUGP6URVGzbZZ5wK6BjPwJpwRl8IRZrfTMF9/exec';
+  const targetUrl = webhookUrl && typeof webhookUrl === 'string' && webhookUrl.startsWith('http') 
+    ? webhookUrl 
+    : defaultWebhook;
+
+  try {
+    const params = new URLSearchParams();
+    params.append('email', email.trim().toLowerCase());
+    params.append('frequency', frequency || 'semanal');
+    params.append('subscribedAt', subscribedAt || new Date().toISOString().split('T')[0]);
+    params.append('source', source || 'Sidebar - Blog Pizarra & Criterio');
+
+    const googleResponse = await fetch(targetUrl, {
+      method: 'POST',
+      body: params,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+      },
+      redirect: 'follow'
+    });
+
+    const responseText = await googleResponse.text();
+    console.log(`[Google Sheets Webhook] Status: ${googleResponse.status}, Body: ${responseText.slice(0, 100)}`);
+
+    return res.json({
+      success: true,
+      googleStatus: googleResponse.status,
+      message: 'Suscripción sincronizada con tu Google Sheet correctamente.',
+      details: responseText
+    });
+  } catch (error: any) {
+    console.error('Error forwarding subscriber to Google Sheets:', error);
+    return res.status(502).json({
+      success: false,
+      error: error?.message || 'Error al conectar con la hoja de cálculo de Google Sheets'
+    });
+  }
+});
+
 // POST endpoint: /api/ai/generate-article
 app.post('/api/ai/generate-article', async (req, res) => {
   const { topic, category, focus, notes } = req.body;

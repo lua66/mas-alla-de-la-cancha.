@@ -182,8 +182,8 @@ export default function App() {
   };
 
   // Subscribers
-  const handleSubscribe = (email: string, frequency: 'semanal' | 'mensual') => {
-    const res = storageService.addSubscriber(email, frequency);
+  const handleSubscribe = async (email: string, frequency: 'semanal' | 'mensual') => {
+    const res = await storageService.addSubscriber(email, frequency);
     if (res.success) {
       setSubscribers(storageService.getSubscribers());
     }

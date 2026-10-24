@@ -98,18 +98,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     }
     setIsTestingWebhook(true);
     try {
-      await fetch(url, {
+      const res = await fetch('/api/subscribers/sync', {
         method: 'POST',
-        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: 'prueba.suscriptor@baloncesto.es',
           frequency: 'semanal',
           subscribedAt: new Date().toISOString().split('T')[0],
-          source: 'Prueba desde Panel Admin'
+          source: 'Prueba desde Panel de Administración',
+          webhookUrl: url
         })
       });
-      showNotification('¡Petición de prueba enviada a Google Sheets! Revisa tu hoja de cálculo para verificar la fila.');
+      const data = await res.json();
+      if (data.success) {
+        showNotification('¡Prueba exitosa! Se ha insertado una fila de prueba en tu Google Sheet.');
+      } else {
+        showNotification(`Aviso: ${data.error || 'Respuesta inesperada de Google'}`, 'error');
+      }
     } catch (err) {
       console.error(err);
       showNotification('Error al conectar con la URL. Revisa que esté bien escrita.', 'error');
