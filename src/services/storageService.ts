@@ -20,6 +20,10 @@ export const storageService = {
         const parsed: Article[] = JSON.parse(stored);
         let updated = false;
         parsed.forEach(art => {
+          if (art.coverImage && art.coverImage.includes('/src/assets/images/')) {
+            art.coverImage = art.coverImage.replace('/src/assets/images/', '/assets/');
+            updated = true;
+          }
           if (art.coverImage && (art.coverImage.includes('article_defense_transition') || art.coverImage.includes('coach_leyanis_tactics') || art.coverImage.includes('coach_blonde_tactics') || art.coverImage.includes('coach_horta_sese'))) {
             art.coverImage = '/assets/coach_horta_avatar.jpg';
             updated = true;
@@ -89,7 +93,7 @@ export const storageService = {
         authorRole: article.authorRole || 'Licenciada en Deporte & Entrenadora',
         publishedAt: article.publishedAt || new Date().toISOString().split('T')[0],
         readTimeMinutes,
-        coverImage: article.coverImage || '/src/assets/images/hero_basketball_tactics_1792680998647.jpg',
+        coverImage: article.coverImage || '/assets/hero_basketball_tactics_1792680998647.jpg',
         status: article.status || 'published',
         viewsCount: 1,
         likesCount: 0,
