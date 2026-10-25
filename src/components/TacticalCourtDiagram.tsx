@@ -614,13 +614,13 @@ export const TacticalCourtDiagram: React.FC = () => {
             </div>
           </div>
 
-          {/* Tactical Drawing Tools Bar */}
-          <div className="w-full mb-3 flex flex-wrap items-center justify-between gap-2 p-2 bg-stone-100 dark:bg-stone-900/90 rounded-xl border border-stone-200/80 dark:border-stone-800">
-            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+          {/* Tactical Drawing Tools Bar (Horizontal swipeable on Android/mobile) */}
+          <div className="w-full mb-3 p-1.5 sm:p-2 bg-stone-100 dark:bg-stone-900/90 rounded-xl border border-stone-200/80 dark:border-stone-800 overflow-hidden">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar sm:flex-wrap pb-0.5">
               
               <button
                 onClick={() => setActiveTool('select')}
-                className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all cursor-pointer ${
+                className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all text-xs shrink-0 cursor-pointer ${
                   activeTool === 'select'
                     ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 shadow-xs'
                     : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/70 dark:hover:bg-stone-800'
@@ -628,25 +628,25 @@ export const TacticalCourtDiagram: React.FC = () => {
                 title="Arrastrar y posicionar jugadores o balón"
               >
                 <Move className="w-3.5 h-3.5" />
-                <span>Mover Jugadores</span>
+                <span>Mover</span>
               </button>
 
               <button
                 onClick={() => setActiveTool('pass')}
-                className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all cursor-pointer ${
+                className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all text-xs shrink-0 cursor-pointer ${
                   activeTool === 'pass'
                     ? 'bg-amber-600 text-white shadow-xs'
                     : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/70 dark:hover:bg-stone-800'
                 }`}
                 title="Trazar pase con línea discontinua amarilla"
               >
-                <span className="w-3.5 border-b-2 border-dashed border-current inline-block"></span>
+                <span className="w-3 border-b-2 border-dashed border-current inline-block"></span>
                 <span>Pase</span>
               </button>
 
               <button
                 onClick={() => setActiveTool('cut')}
-                className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all cursor-pointer ${
+                className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all text-xs shrink-0 cursor-pointer ${
                   activeTool === 'cut'
                     ? 'bg-sky-600 text-white shadow-xs'
                     : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/70 dark:hover:bg-stone-800'
@@ -654,12 +654,12 @@ export const TacticalCourtDiagram: React.FC = () => {
                 title="Trazar desplazamiento o corte con flecha azul"
               >
                 <ArrowRight className="w-3.5 h-3.5" />
-                <span>Corte / Carrera</span>
+                <span>Corte</span>
               </button>
 
               <button
                 onClick={() => setActiveTool('screen')}
-                className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all cursor-pointer ${
+                className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all text-xs shrink-0 cursor-pointer ${
                   activeTool === 'screen'
                     ? 'bg-rose-600 text-white shadow-xs'
                     : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/70 dark:hover:bg-stone-800'
@@ -672,7 +672,7 @@ export const TacticalCourtDiagram: React.FC = () => {
 
               <button
                 onClick={() => setActiveTool('dribble')}
-                className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all cursor-pointer ${
+                className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all text-xs shrink-0 cursor-pointer ${
                   activeTool === 'dribble'
                     ? 'bg-orange-600 text-white shadow-xs'
                     : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/70 dark:hover:bg-stone-800'
@@ -685,7 +685,7 @@ export const TacticalCourtDiagram: React.FC = () => {
 
               <button
                 onClick={() => setActiveTool('pen')}
-                className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all cursor-pointer ${
+                className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all text-xs shrink-0 cursor-pointer ${
                   activeTool === 'pen'
                     ? 'bg-emerald-700 text-white shadow-xs'
                     : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/70 dark:hover:bg-stone-800'
@@ -693,12 +693,12 @@ export const TacticalCourtDiagram: React.FC = () => {
                 title="Dibujar a mano alzada con rotulador táctico"
               >
                 <Pencil className="w-3.5 h-3.5" />
-                <span>Rotulador Libre</span>
+                <span>Lápiz</span>
               </button>
 
               <button
                 onClick={() => setActiveTool('eraser')}
-                className={`px-2 py-1.5 rounded-lg flex items-center gap-1 font-medium transition-all cursor-pointer ${
+                className={`px-2 py-1.5 rounded-lg flex items-center gap-1 font-medium transition-all text-xs shrink-0 cursor-pointer ${
                   activeTool === 'eraser'
                     ? 'bg-stone-700 text-white shadow-xs'
                     : 'text-stone-600 dark:text-stone-400 hover:bg-stone-200/70 dark:hover:bg-stone-800'
@@ -706,13 +706,14 @@ export const TacticalCourtDiagram: React.FC = () => {
                 title="Hacer clic sobre un trazo para borrarlo"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>Borrador</span>
+                <span>Borrar</span>
               </button>
             </div>
 
             {/* Pen Color Palette (when pen active) */}
             {activeTool === 'pen' && (
-              <div className="flex items-center gap-1.5 pl-2 border-l border-stone-300 dark:border-stone-700">
+              <div className="flex items-center gap-1.5 pt-2 mt-1 border-t border-stone-200 dark:border-stone-800">
+                <span className="text-[11px] text-stone-500 font-medium">Color:</span>
                 {['#0284C7', '#E11D48', '#F59E0B', '#10B981', '#FFFFFF', '#1E293B'].map(col => (
                   <button
                     key={col}

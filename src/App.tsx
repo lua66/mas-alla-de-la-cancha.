@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Article, Comment, Subscriber, BlogSettings } from './types/blog';
 import { storageService } from './services/storageService';
+import { updatePageSeo } from './services/seoService';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { ArticleCard } from './components/ArticleCard';
@@ -13,6 +14,8 @@ import { ArchiveView } from './components/ArchiveView';
 import { AboutView } from './components/AboutView';
 import { AuthModal } from './components/AuthModal';
 import { X, Search } from 'lucide-react';
+
+type ViewType = 'home' | 'categories' | 'tactics' | 'about' | 'archive' | 'admin' | 'article';
 
 export default function App() {
   // Theme state
@@ -43,7 +46,7 @@ export default function App() {
   const [bookmarks, setBookmarks] = useState<string[]>([]);
 
   // Navigation & View state
-  const [currentView, setCurrentView] = useState<'home' | 'categories' | 'tactics' | 'about' | 'archive' | 'admin' | 'article'>('home');
+  const [currentView, setCurrentView] = useState<ViewType>('home');
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
   // Filters
@@ -51,7 +54,145 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
-  // Load initial data from storage
+  // Helper: map a view and optional article to an indexable URL path
+  const getUrlPath = (view: ViewType, article: Article | null): string => {
+    switch (view) {
+      case 'tactics':
+        return '/pizarra';
+      case 'about':
+        return '/sobre-mi';
+      case 'categories':
+        return '/categorias';
+      case 'archive':
+        return '/archivo';
+      case 'admin':
+        return '/admin';
+      case 'article':
+        return article ? `/articulo/${article.slug || article.id}` : '/';
+      case 'home':
+      default:
+        return '/';
+    }
+  };
+
+  // Helper: parse browser window.location.pathname into view + article
+  const parseRouteFromLocation = useCallback((articleList: Article[]): { view: ViewType; article: Article | null } => {
+    if (typeof window === 'undefined') return { view: 'home', article: null };
+    const pathname = window.location.pathname.toLowerCase().replace(/\/$/, '') || '/';
+
+    if (pathname === '/pizarra' || pathname === '/tactica') {
+      return { view: 'tactics', article: null };
+    }
+    if (pathname === '/sobre-mi' || pathname === '/sobre-la-entrenadora' || pathname === '/la-entrenadora') {
+      return { view: 'about', article: null };
+    }
+    if (pathname === '/categorias' || pathname === '/categoria') {
+      return { view: 'categories', article: null };
+    }
+    if (pathname === '/archivo' || pathname === '/buscar') {
+      return { view: 'archive', article: null };
+    }
+    if (pathname === '/admin' || pathname === '/escritorio') {
+      return { view: 'admin', article: null };
+    }
+    if (pathname.startsWith('/articulo/')) {
+      const slug = pathname.replace('/articulo/', '');
+      const found = articleList.find(a => a.slug.toLowerCase() === slug || a.id.toLowerCase() === slug);
+      if (found) {
+        return { view: 'article', article: found };
+      }
+    }
+    return { view: 'home', article: null };
+  }, []);
+
+  // Helper: Synchronize document title, meta description, and canonical URL
+  const syncSeoForView = useCallback((view: ViewType, article: Article | null, currentSettings: BlogSettings) => {
+    switch (view) {
+      case 'tactics':
+        updatePageSeo({
+          title: 'Pizarra Táctica de Baloncesto — Diseñador & Pizarra Interactiva | Coach Leyanis Horta',
+          description: 'Pizarra táctica interactiva de baloncesto: diseña y dibuja sistemas, cortes, bloqueos directos, pases y defensas. Exporta jugadas en alta resolución.',
+          canonicalPath: '/pizarra',
+          keywords: 'pizarra táctica baloncesto, diseñar jugadas, playbook baloncesto, táctica interactiva, Coach Leyanis Horta'
+        });
+        break;
+      case 'about':
+        updatePageSeo({
+          title: 'Sobre la Entrenadora — Coach Leyanis Horta | 20 Temporadas en Banquillos',
+          description: 'Licenciada en Educación Física y Deporte con más de 20 temporadas dirigiendo banquillos desde Cuba hasta Barcelona. Conoce la trayectoria de la Coach Leyanis Horta.',
+          canonicalPath: '/sobre-mi',
+          keywords: 'Leyanis Horta, Coach Yanis, entrenadora de baloncesto, Cuba, Barcelona baloncesto, biografía deportiva'
+        });
+        break;
+      case 'categories':
+        updatePageSeo({
+          title: 'Categorías Tácticas & Formativas — Pizarra & Criterio',
+          description: 'Explora todos los artículos clasificados por táctica defensiva, ataque por conceptos, desarrollo de fundamentos, gestión de vestuario y preparación física.',
+          canonicalPath: '/categorias',
+          keywords: 'categorías baloncesto, táctica defensiva, ataque por conceptos, dirección de vestuario'
+        });
+        break;
+      case 'archive':
+        updatePageSeo({
+          title: 'Archivo Histórico del Cuaderno — Pizarra & Criterio | Coach Leyanis Horta',
+          description: 'Buscador y archivo cronológico de todos los artículos, esquemas tácticos y reflexiones de baloncesto publicados en el blog.',
+          canonicalPath: '/archivo',
+          keywords: 'archivo baloncesto, buscador táctico, biblioteca de baloncesto'
+        });
+        break;
+      case 'admin':
+        updatePageSeo({
+          title: 'Escritorio Blogger — Coach Leyanis Horta',
+          description: 'Panel privado de redacción y gestión de artículos del blog.',
+          canonicalPath: '/admin'
+        });
+        break;
+      case 'article':
+        if (article) {
+          updatePageSeo({
+            title: `${article.title} — Pizarra & Criterio | Coach Leyanis Horta`,
+            description: article.excerpt || article.title,
+            canonicalPath: `/articulo/${article.slug || article.id}`,
+            ogImage: article.coverImage,
+            ogType: 'article',
+            publishedTime: article.publishedAt,
+            authorName: article.author,
+            keywords: `${article.tags.join(', ')}, ${article.category}, baloncesto, táctica`
+          });
+        }
+        break;
+      case 'home':
+      default:
+        updatePageSeo({
+          title: `${currentSettings.blogTitle} — Blog de Baloncesto | Coach Leyanis Horta`,
+          description: currentSettings.blogSubtitle || 'Blog personal y cuaderno táctico de la entrenadora Leyanis Horta, licenciada en deporte con 20 temporadas en banquillos desde Cuba hasta Barcelona.',
+          canonicalPath: '/',
+          keywords: 'baloncesto, táctica baloncesto, entrenadora de baloncesto, Leyanis Horta, CoachMind Basketball, pick and roll, defensa de cambios'
+        });
+        break;
+    }
+  }, []);
+
+  // Main navigation action with HTML5 history pushState
+  const navigateTo = useCallback((view: ViewType, article: Article | null = null, pushHistory = true) => {
+    setCurrentView(view);
+    setSelectedArticle(article);
+
+    if (article && view === 'article') {
+      storageService.incrementViews(article.id);
+      setArticles(storageService.getArticles());
+    }
+
+    const newPath = getUrlPath(view, article);
+    if (pushHistory && typeof window !== 'undefined' && window.location.pathname !== newPath) {
+      window.history.pushState({ view, articleId: article?.id }, '', newPath);
+    }
+
+    syncSeoForView(view, article, settings);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [settings, syncSeoForView]);
+
+  // Load initial data from storage and resolve initial URL
   useEffect(() => {
     const loadedArticles = storageService.getArticles();
     const loadedComments = storageService.getComments();
@@ -64,7 +205,26 @@ export default function App() {
     setSubscribers(loadedSubscribers);
     setSettings(loadedSettings);
     setBookmarks(loadedBookmarks);
-  }, []);
+
+    // Initial multi-page URL route handling (for direct link entries or Googlebot crawl)
+    const initialRoute = parseRouteFromLocation(loadedArticles);
+    setCurrentView(initialRoute.view);
+    setSelectedArticle(initialRoute.article);
+    syncSeoForView(initialRoute.view, initialRoute.article, loadedSettings);
+  }, [parseRouteFromLocation, syncSeoForView]);
+
+  // Listen to browser Back / Forward events (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      const route = parseRouteFromLocation(articles);
+      setCurrentView(route.view);
+      setSelectedArticle(route.article);
+      syncSeoForView(route.view, route.article, settings);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [articles, parseRouteFromLocation, settings, syncSeoForView]);
 
   // Sync dark mode class
   useEffect(() => {
@@ -92,7 +252,7 @@ export default function App() {
 
   const handleAuthSuccess = () => {
     setIsAuthorAuthenticated(true);
-    setCurrentView('admin');
+    navigateTo('admin', null, true);
   };
 
   const handleLogout = () => {
@@ -102,7 +262,7 @@ export default function App() {
       // ignore
     }
     setIsAuthorAuthenticated(false);
-    setCurrentView('home');
+    navigateTo('home', null, true);
   };
 
   // Shortcut for Coach Leyanis: Alt + L to quickly open the private author login
@@ -119,16 +279,11 @@ export default function App() {
 
   // Article selection & view count
   const handleSelectArticle = (article: Article) => {
-    storageService.incrementViews(article.id);
-    setArticles(storageService.getArticles());
-    setSelectedArticle(article);
-    setCurrentView('article');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigateTo('article', article, true);
   };
 
   const handleBackToArticles = () => {
-    setSelectedArticle(null);
-    setCurrentView('home');
+    navigateTo('home', null, true);
   };
 
   // Comments
@@ -287,11 +442,10 @@ export default function App() {
           onResetAllData={handleResetAllData}
           onExportBackup={handleExportBackup}
           onImportBackup={handleImportBackup}
-          onExitAdmin={() => setCurrentView('home')}
+          onExitAdmin={() => navigateTo('home', null, true)}
           onLogout={handleLogout}
           onPreviewArticle={(art) => {
-            setSelectedArticle(art);
-            setCurrentView('article');
+            navigateTo('article', art, true);
           }}
         />
       </div>
@@ -299,15 +453,13 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen flex flex-col font-sans transition-colors ${isDarkMode ? 'dark bg-[#121110] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'}`}>
+    <div className={`min-h-screen flex flex-col font-sans transition-colors w-full max-w-full overflow-x-hidden pb-16 md:pb-0 ${isDarkMode ? 'dark bg-[#121110] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'}`}>
       
       {/* 3-Zone Clean Header */}
       <Header
         currentView={currentView}
         onNavigate={(view) => {
-          setSelectedArticle(null);
-          setCurrentView(view);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          navigateTo(view, null, true);
         }}
         onOpenAdmin={handleOpenAdminRequest}
         isAdmin={isAuthorAuthenticated}
@@ -317,7 +469,7 @@ export default function App() {
         onSearchChange={(q) => {
           setSearchQuery(q);
           if (currentView !== 'home' && currentView !== 'archive') {
-            setCurrentView('home');
+            navigateTo('home', null, true);
           }
         }}
         blogTitle={settings.blogTitle}
@@ -335,12 +487,12 @@ export default function App() {
             onCategoryClick={(cat) => {
               setSelectedCategory(cat);
               setSelectedTag(null);
-              setCurrentView('home');
+              navigateTo('home', null, true);
             }}
             onTagClick={(tag) => {
               setSelectedTag(tag);
               setSelectedCategory(null);
-              setCurrentView('home');
+              navigateTo('home', null, true);
             }}
             onAddComment={handleAddComment}
             isBookmarked={bookmarks.includes(selectedArticle.id)}
@@ -358,7 +510,7 @@ export default function App() {
             onTagClick={(tag) => {
               setSelectedTag(tag);
               setSelectedCategory(null);
-              setCurrentView('home');
+              navigateTo('home', null, true);
             }}
             selectedCategory={selectedCategory}
             onSelectCategory={setSelectedCategory}
@@ -375,11 +527,11 @@ export default function App() {
             onSelectArticle={handleSelectArticle}
             onCategoryClick={(cat) => {
               setSelectedCategory(cat);
-              setCurrentView('home');
+              navigateTo('home', null, true);
             }}
             onTagClick={(tag) => {
               setSelectedTag(tag);
-              setCurrentView('home');
+              navigateTo('home', null, true);
             }}
           />
         )}
@@ -388,7 +540,7 @@ export default function App() {
         {currentView === 'about' && (
           <AboutView
             settings={settings}
-            onNavigateHome={() => setCurrentView('home')}
+            onNavigateHome={() => navigateTo('home', null, true)}
           />
         )}
 
@@ -573,8 +725,8 @@ export default function App() {
                     setSelectedCategory(null);
                   }}
                   onSubscribe={handleSubscribe}
-                  onSelectArchiveMonth={(monthYear) => {
-                    setCurrentView('archive');
+                  onSelectArchiveMonth={() => {
+                    navigateTo('archive', null, true);
                   }}
                 />
               </div>
@@ -589,9 +741,7 @@ export default function App() {
       <Footer
         onOpenAdmin={handleOpenAdminRequest}
         onNavigate={(view) => {
-          setSelectedArticle(null);
-          setCurrentView(view);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          navigateTo(view, null, true);
         }}
         authorName={settings.authorName}
       />

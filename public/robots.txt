@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+
+# Sitemaps
+Sitemap: https://pizarraycriterio.com/sitemap.xml
