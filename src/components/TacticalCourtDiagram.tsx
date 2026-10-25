@@ -19,7 +19,8 @@ import {
   FolderPlus,
   BookOpen,
   Volume2,
-  ChevronDown
+  ChevronDown,
+  Target
 } from 'lucide-react';
 import { TacticalPlay, PlayerToken, TacticalLine, CourtType, CourtTheme, TacticalTool } from '../types/tactics';
 import { storageService } from '../services/storageService';
@@ -28,7 +29,7 @@ import { DEFAULT_HALF_COURT_PLAYERS, DEFAULT_FULL_COURT_PLAYERS } from '../data/
 export const TacticalCourtDiagram: React.FC = () => {
   // Plays State
   const [plays, setPlays] = useState<TacticalPlay[]>([]);
-  const [currentPlayId, setCurrentPlayId] = useState<string>('preset-pick-and-roll');
+  const [currentPlayId, setCurrentPlayId] = useState<string>('play-clean-board');
   
   // Board Configuration State
   const [courtType, setCourtType] = useState<CourtType>('half');
@@ -37,9 +38,9 @@ export const TacticalCourtDiagram: React.FC = () => {
   const [penColor, setPenColor] = useState<string>('#0284C7'); // default blue
   
   // Active Play Elements
-  const [playTitle, setPlayTitle] = useState<string>('Bloqueo Directo Lateral');
+  const [playTitle, setPlayTitle] = useState<string>('Pizarra en Blanco (Nueva Jugada)');
   const [playCategory, setPlayCategory] = useState<string>('Ataque por Conceptos');
-  const [playConcept, setPlayConcept] = useState<string>('Lectura táctica');
+  const [playConcept, setPlayConcept] = useState<string>('Diseño táctico libre');
   const [playNotes, setPlayNotes] = useState<string>('');
   const [players, setPlayers] = useState<PlayerToken[]>(DEFAULT_HALF_COURT_PLAYERS);
   const [lines, setLines] = useState<TacticalLine[]>([]);
@@ -51,6 +52,7 @@ export const TacticalCourtDiagram: React.FC = () => {
   const [selectedTokenId, setSelectedTokenId] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationStep, setAnimationStep] = useState(0);
+  const [isErasing, setIsErasing] = useState(false);
 
   // Modals & UI Feedback
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
@@ -58,6 +60,35 @@ export const TacticalCourtDiagram: React.FC = () => {
   const [feedbackMessage, setFeedbackMessage] = useState<{ text: string; type: 'success' | 'info' } | null>(null);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
+
+  // Helper: calculate distance from point (px, py) to line segment (x1, y1) -> (x2, y2)
+  const distToSegment = (px: number, py: number, x1: number, y1: number, x2: number, y2: number): number => {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const l2 = dx * dx + dy * dy;
+    if (l2 === 0) return Math.hypot(px - x1, py - y1);
+    let t = ((px - x1) * dx + (py - y1) * dy) / l2;
+    t = Math.max(0, Math.min(1, t));
+    return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+  };
+
+  // Helper: check if a tactical line was hit near (px, py)
+  const isLineHit = (line: TacticalLine, px: number, py: number, tolerance = 30): boolean => {
+    if (!line || !line.points || line.points.length === 0) return false;
+    for (let i = 0; i < line.points.length - 1; i++) {
+      const p1 = line.points[i];
+      const p2 = line.points[i + 1];
+      if (distToSegment(px, py, p1.x, p1.y, p2.x, p2.y) <= tolerance) {
+        return true;
+      }
+    }
+    return line.points.some(p => Math.hypot(p.x - px, p.y - py) <= tolerance);
+  };
+
+  const deleteLineById = (lineId: string) => {
+    setLines(prev => prev.filter(l => l.id !== lineId));
+    showNotification('Trazo borrado', 'info');
+  };
 
   // Load plays on initial mount
   useEffect(() => {
@@ -118,21 +149,31 @@ export const TacticalCourtDiagram: React.FC = () => {
       return;
     }
 
-    // If using ERASER tool
+    // If using ERASER tool: erase line or token touched
     if (activeTool === 'eraser') {
-      // Find line clicked nearby
-      const clickedLineIndex = lines.findIndex(line => {
-        return line.points.some(p => Math.hypot(p.x - x, p.y - y) < 22);
-      });
-      if (clickedLineIndex !== -1) {
-        setLines(prev => prev.filter((_, idx) => idx !== clickedLineIndex));
-        showNotification('Trazo eliminado', 'info');
+      setIsErasing(true);
+      (e.target as Element).setPointerCapture?.(e.pointerId);
+
+      // 1. Check if any line was clicked anywhere along its path
+      const hitLine = lines.find(line => isLineHit(line, x, y, 30));
+      if (hitLine) {
+        setLines(prev => prev.filter(l => l.id !== hitLine.id));
+        showNotification('Trazo borrado', 'info');
+        return;
+      }
+
+      // 2. Also allow clicking on a player, ball or cone to remove it
+      const clickedToken = [...players].reverse().find(t => Math.hypot(t.x - x, t.y - y) <= 24);
+      if (clickedToken) {
+        setPlayers(prev => prev.filter(t => t.id !== clickedToken.id));
+        showNotification(`Elemento ${clickedToken.label} eliminado`, 'info');
+        return;
       }
       return;
     }
 
-    // If using LINE TOOLS: pass, cut, screen, dribble
-    if (['pass', 'cut', 'screen', 'dribble'].includes(activeTool)) {
+    // If using LINE TOOLS: pass, cut, screen, dribble, shot
+    if (['pass', 'cut', 'screen', 'dribble', 'shot'].includes(activeTool)) {
       setDrawingLine({ x1: x, y1: y, x2: x, y2: y });
       (e.target as Element).setPointerCapture?.(e.pointerId);
       return;
@@ -161,6 +202,16 @@ export const TacticalCourtDiagram: React.FC = () => {
       return;
     }
 
+    // Drag-erasing lines dynamically (whiteboard sponge behavior)
+    if (activeTool === 'eraser' && isErasing) {
+      const hitLines = lines.filter(line => isLineHit(line, x, y, 32));
+      if (hitLines.length > 0) {
+        const hitIds = new Set(hitLines.map(l => l.id));
+        setLines(prev => prev.filter(l => !hitIds.has(l.id)));
+      }
+      return;
+    }
+
     // Freehand drawing
     if (activeTool === 'pen' && freehandPoints.length > 0) {
       setFreehandPoints(prev => [...prev, { x, y }]);
@@ -169,12 +220,16 @@ export const TacticalCourtDiagram: React.FC = () => {
   };
 
   const handlePointerUp = (e: React.PointerEvent<SVGSVGElement>) => {
+    if (isErasing) {
+      setIsErasing(false);
+    }
+
     // Release dragged token
     if (draggedTokenId) {
       setDraggedTokenId(null);
     }
 
-    // Finalize geometric line (pass, cut, screen, dribble)
+    // Finalize geometric line (pass, cut, screen, dribble, shot)
     if (drawingLine) {
       const dist = Math.hypot(drawingLine.x2 - drawingLine.x1, drawingLine.y2 - drawingLine.y1);
       if (dist > 15) {
@@ -182,6 +237,7 @@ export const TacticalCourtDiagram: React.FC = () => {
         if (activeTool === 'pass') color = '#F59E0B';
         if (activeTool === 'screen') color = '#E11D48';
         if (activeTool === 'dribble') color = '#EA580C';
+        if (activeTool === 'shot') color = '#10B981';
 
         const newLine: TacticalLine = {
           id: 'line-' + Date.now() + Math.random().toString(36).substring(2, 5),
@@ -215,6 +271,31 @@ export const TacticalCourtDiagram: React.FC = () => {
   const handleClearDrawings = () => {
     setLines([]);
     showNotification('Se han borrado todos los trazos de la pizarra', 'info');
+  };
+
+  // Dedicated button to clean the whole board
+  const handleClearWhiteboard = () => {
+    setLines([]);
+    const freshPlayers = courtType === 'half' 
+      ? JSON.parse(JSON.stringify(DEFAULT_HALF_COURT_PLAYERS)) 
+      : JSON.parse(JSON.stringify(DEFAULT_FULL_COURT_PLAYERS));
+    setPlayers(freshPlayers);
+    setSelectedTokenId(null);
+    // Also update and persist to storage so lines are permanently wiped
+    if (currentPlayId) {
+      storageService.saveTacticalPlay({
+        id: currentPlayId,
+        title: playTitle,
+        category: playCategory,
+        courtType,
+        concept: playConcept,
+        notes: playNotes,
+        players: freshPlayers,
+        lines: []
+      });
+      setPlays(storageService.getTacticalPlays());
+    }
+    showNotification('¡Pizarra completamente limpia y guardada!');
   };
 
   const handleUndoLine = () => {
@@ -301,7 +382,7 @@ export const TacticalCourtDiagram: React.FC = () => {
   // Save current play changes
   const handleSaveCurrentPlay = () => {
     const playToSave: Partial<TacticalPlay> & { title: string } = {
-      id: currentPlayId.startsWith('preset-') ? 'custom-' + Date.now() : currentPlayId,
+      id: currentPlayId,
       title: playTitle.trim() || 'Jugada de Baloncesto',
       category: playCategory,
       courtType,
@@ -320,7 +401,7 @@ export const TacticalCourtDiagram: React.FC = () => {
     showNotification('¡Jugada guardada con éxito en tu libreta táctica!');
   };
 
-  // Delete custom play
+  // Delete play
   const handleDeletePlay = (id: string) => {
     if (window.confirm('¿Seguro que deseas eliminar esta jugada de tu pizarra?')) {
       storageService.deleteTacticalPlay(id);
@@ -328,6 +409,12 @@ export const TacticalCourtDiagram: React.FC = () => {
       setPlays(updated);
       if (updated.length > 0) {
         loadPlayIntoBoard(updated[0]);
+      } else {
+        const reset = storageService.resetTacticalPlays();
+        setPlays(reset);
+        if (reset.length > 0) {
+          loadPlayIntoBoard(reset[0]);
+        }
       }
       showNotification('Jugada eliminada');
     }
@@ -428,18 +515,9 @@ export const TacticalCourtDiagram: React.FC = () => {
               }}
               className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-stone-100 dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 text-stone-900 dark:text-white cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-amber-700 max-w-[210px] xs:max-w-[260px] sm:max-w-none truncate"
             >
-              <optgroup label="Sistemas Oficiales de Coach Leyanis">
-                {plays.filter(p => p.isPreset).map(p => (
-                  <option key={p.id} value={p.id}>⭐ {p.title}</option>
-                ))}
-              </optgroup>
-              {plays.filter(p => !p.isPreset).length > 0 && (
-                <optgroup label="Mis Jugadas Creadas">
-                  {plays.filter(p => !p.isPreset).map(p => (
-                    <option key={p.id} value={p.id}>📋 {p.title}</option>
-                  ))}
-                </optgroup>
-              )}
+              {plays.map(p => (
+                <option key={p.id} value={p.id}>📋 {p.title}</option>
+              ))}
             </select>
             <ChevronDown className="w-4 h-4 text-stone-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
@@ -448,15 +526,13 @@ export const TacticalCourtDiagram: React.FC = () => {
             {playCategory}
           </span>
 
-          {!currentPlayId.startsWith('preset-') && (
-            <button
-              onClick={() => handleDeletePlay(currentPlayId)}
-              className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer shrink-0"
-              title="Eliminar esta jugada creada"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          )}
+          <button
+            onClick={() => handleDeletePlay(currentPlayId)}
+            className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer shrink-0"
+            title="Eliminar esta jugada de la pizarra"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Global Action Buttons (2-col grid on Xiaomi 360-430px, flex row on desktop) */}
@@ -585,8 +661,8 @@ export const TacticalCourtDiagram: React.FC = () => {
               </button>
             </div>
 
-            {/* Undo & Clear Lines */}
-            <div className="flex items-center gap-1">
+            {/* Undo & Clear Board */}
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={handleUndoLine}
                 disabled={lines.length === 0}
@@ -596,20 +672,12 @@ export const TacticalCourtDiagram: React.FC = () => {
                 Deshacer trazo
               </button>
               <button
-                onClick={handleClearDrawings}
-                disabled={lines.length === 0}
-                className="px-2 py-1 text-[11px] rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 disabled:opacity-40 transition-colors cursor-pointer"
-                title="Limpiar todos los dibujos de la pizarra"
+                onClick={handleClearWhiteboard}
+                className="px-2.5 py-1 text-[11px] rounded-lg text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-900/60 transition-colors cursor-pointer flex items-center gap-1 font-medium"
+                title="Limpiar completamente la pizarra"
               >
-                Limpiar líneas
-              </button>
-              <button
-                onClick={handleResetCourtPositions}
-                className="px-2 py-1 text-[11px] rounded-lg text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer flex items-center gap-1"
-                title="Reiniciar formación de jugadores"
-              >
-                <RotateCcw className="w-3 h-3" />
-                <span>Reiniciar</span>
+                <RotateCcw className="w-3 h-3 text-rose-600 dark:text-rose-400" />
+                <span>Limpiar Pizarra</span>
               </button>
             </div>
           </div>
@@ -684,6 +752,19 @@ export const TacticalCourtDiagram: React.FC = () => {
               </button>
 
               <button
+                onClick={() => setActiveTool('shot')}
+                className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all text-xs shrink-0 cursor-pointer ${
+                  activeTool === 'shot'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/70 dark:hover:bg-stone-800'
+                }`}
+                title="Trazar tiro a canasta con flecha y diana hacia el aro"
+              >
+                <Target className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 group-hover:text-emerald-300" />
+                <span>Tiro</span>
+              </button>
+
+              <button
                 onClick={() => setActiveTool('pen')}
                 className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all text-xs shrink-0 cursor-pointer ${
                   activeTool === 'pen'
@@ -698,17 +779,39 @@ export const TacticalCourtDiagram: React.FC = () => {
 
               <button
                 onClick={() => setActiveTool('eraser')}
-                className={`px-2 py-1.5 rounded-lg flex items-center gap-1 font-medium transition-all text-xs shrink-0 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition-all text-xs shrink-0 cursor-pointer ${
                   activeTool === 'eraser'
-                    ? 'bg-stone-700 text-white shadow-xs'
-                    : 'text-stone-600 dark:text-stone-400 hover:bg-stone-200/70 dark:hover:bg-stone-800'
+                    ? 'bg-rose-700 text-white shadow-xs ring-2 ring-rose-400'
+                    : 'text-stone-700 dark:text-stone-300 hover:bg-stone-200/70 dark:hover:bg-stone-800'
                 }`}
-                title="Hacer clic sobre un trazo para borrarlo"
+                title="Toca o arrastra sobre cualquier línea o ficha para borrarla"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Borrar</span>
               </button>
+
+              <button
+                onClick={handleClearWhiteboard}
+                className="px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-semibold transition-all text-xs shrink-0 cursor-pointer bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900 border border-rose-200/80 dark:border-rose-900/60 shadow-2xs"
+                title="Limpiar completamente la pizarra (trazos y reiniciar fichas)"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                <span>Limpiar Pizarra</span>
+              </button>
             </div>
+
+            {/* Active Eraser Banner */}
+            {activeTool === 'eraser' && (
+              <div className="flex items-center justify-between text-xs text-rose-800 dark:text-rose-200 bg-rose-50 dark:bg-rose-950/50 px-3 py-2 rounded-xl mt-2 border border-rose-200 dark:border-rose-900/60 animate-fade-in">
+                <span className="leading-snug">🧹 <strong>Borrador activo:</strong> Toca cualquier trazo, flecha o ficha para eliminarlo, o arrastra el dedo/ratón para borrar.</span>
+                <button
+                  onClick={() => setActiveTool('select')}
+                  className="px-2.5 py-1 bg-rose-200 hover:bg-rose-300 dark:bg-rose-800 dark:hover:bg-rose-700 rounded-lg font-medium text-xs text-rose-900 dark:text-white transition-colors cursor-pointer shrink-0 ml-2"
+                >
+                  Listo
+                </button>
+              </div>
+            )}
 
             {/* Pen Color Palette (when pen active) */}
             {activeTool === 'pen' && (
@@ -847,11 +950,25 @@ export const TacticalCourtDiagram: React.FC = () => {
 
               {/* SAVED TACTICAL LINES */}
               {lines.map((line) => {
+                const isEraserMode = activeTool === 'eraser';
+                const handleEraserClick = (e: React.PointerEvent | React.MouseEvent) => {
+                  if (isEraserMode) {
+                    e.stopPropagation();
+                    deleteLineById(line.id);
+                  }
+                };
+
                 if (line.type === 'pass') {
                   const p1 = line.points[0];
                   const p2 = line.points[1];
                   return (
-                    <g key={line.id} className="transition-opacity">
+                    <g 
+                      key={line.id} 
+                      className={isEraserMode ? 'cursor-pointer hover:opacity-50 transition-opacity' : 'transition-opacity'}
+                      onPointerDown={handleEraserClick}
+                    >
+                      {/* Fat transparent hit zone for fingertip touch erasing */}
+                      <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="transparent" strokeWidth="32" />
                       <line
                         x1={p1.x}
                         y1={p1.y}
@@ -870,7 +987,13 @@ export const TacticalCourtDiagram: React.FC = () => {
                   const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
                   const arrowHeadLength = 12;
                   return (
-                    <g key={line.id} className="transition-opacity">
+                    <g 
+                      key={line.id} 
+                      className={isEraserMode ? 'cursor-pointer hover:opacity-50 transition-opacity' : 'transition-opacity'}
+                      onPointerDown={handleEraserClick}
+                    >
+                      {/* Fat transparent hit zone */}
+                      <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="transparent" strokeWidth="32" />
                       <line
                         x1={p1.x}
                         y1={p1.y}
@@ -897,7 +1020,13 @@ export const TacticalCourtDiagram: React.FC = () => {
                   const dx = Math.sin(angle) * barLength;
                   const dy = -Math.cos(angle) * barLength;
                   return (
-                    <g key={line.id}>
+                    <g 
+                      key={line.id}
+                      className={isEraserMode ? 'cursor-pointer hover:opacity-50 transition-opacity' : ''}
+                      onPointerDown={handleEraserClick}
+                    >
+                      {/* Fat transparent hit zone */}
+                      <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="transparent" strokeWidth="32" />
                       <line
                         x1={p1.x}
                         y1={p1.y}
@@ -920,31 +1049,96 @@ export const TacticalCourtDiagram: React.FC = () => {
                   const p1 = line.points[0];
                   const p2 = line.points[1];
                   return (
-                    <line
+                    <g 
                       key={line.id}
-                      x1={p1.x}
-                      y1={p1.y}
-                      x2={p2.x}
-                      y2={p2.y}
-                      stroke={line.color || '#EA580C'}
-                      strokeWidth="3.5"
-                      strokeDasharray="4,4"
-                    />
+                      className={isEraserMode ? 'cursor-pointer hover:opacity-50 transition-opacity' : ''}
+                      onPointerDown={handleEraserClick}
+                    >
+                      {/* Fat transparent hit zone */}
+                      <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="transparent" strokeWidth="32" />
+                      <line
+                        x1={p1.x}
+                        y1={p1.y}
+                        x2={p2.x}
+                        y2={p2.y}
+                        stroke={line.color || '#EA580C'}
+                        strokeWidth="3.5"
+                        strokeDasharray="4,4"
+                      />
+                    </g>
+                  );
+                } else if (line.type === 'shot') {
+                  const p1 = line.points[0];
+                  const p2 = line.points[1];
+                  const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+                  const arrowHeadLength = 13;
+                  return (
+                    <g 
+                      key={line.id}
+                      className={isEraserMode ? 'cursor-pointer hover:opacity-50 transition-opacity' : 'transition-opacity'}
+                      onPointerDown={handleEraserClick}
+                    >
+                      {/* Fat transparent hit zone for touch erasing */}
+                      <line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="transparent" strokeWidth="32" />
+                      
+                      {/* Shot trajectory line with dash-dot pattern */}
+                      <line
+                        x1={p1.x}
+                        y1={p1.y}
+                        x2={p2.x}
+                        y2={p2.y}
+                        stroke={line.color || '#10B981'}
+                        strokeWidth="3.5"
+                        strokeDasharray="8,4"
+                      />
+
+                      {/* Arrowhead towards basket */}
+                      <polygon
+                        points={`
+                          ${p2.x},${p2.y}
+                          ${p2.x - arrowHeadLength * Math.cos(angle - Math.PI / 6)},${p2.y - arrowHeadLength * Math.sin(angle - Math.PI / 6)}
+                          ${p2.x - arrowHeadLength * Math.cos(angle + Math.PI / 6)},${p2.y - arrowHeadLength * Math.sin(angle + Math.PI / 6)}
+                        `}
+                        fill={line.color || '#10B981'}
+                      />
+
+                      {/* Target ring at destination representing basket target */}
+                      <circle
+                        cx={p2.x}
+                        cy={p2.y}
+                        r="7"
+                        stroke={line.color || '#10B981'}
+                        strokeWidth="2.5"
+                        fill="rgba(16, 185, 129, 0.25)"
+                      />
+                    </g>
                   );
                 } else if (line.type === 'freehand') {
                   const pathData = line.points.reduce((acc, pt, idx) => {
                     return idx === 0 ? `M ${pt.x} ${pt.y}` : `${acc} L ${pt.x} ${pt.y}`;
                   }, '');
                   return (
-                    <path
+                    <g 
                       key={line.id}
-                      d={pathData}
-                      fill="none"
-                      stroke={line.color || penColor}
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
+                      className={isEraserMode ? 'cursor-pointer hover:opacity-50 transition-opacity' : ''}
+                      onPointerDown={handleEraserClick}
+                    >
+                      {/* Fat transparent hit zone */}
+                      <path
+                        d={pathData}
+                        fill="none"
+                        stroke="transparent"
+                        strokeWidth="32"
+                      />
+                      <path
+                        d={pathData}
+                        fill="none"
+                        stroke={line.color || penColor}
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </g>
                   );
                 }
                 return null;
@@ -957,9 +1151,20 @@ export const TacticalCourtDiagram: React.FC = () => {
                   y1={drawingLine.y1}
                   x2={drawingLine.x2}
                   y2={drawingLine.y2}
-                  stroke={activeTool === 'pass' ? '#F59E0B' : activeTool === 'screen' ? '#E11D48' : '#0284C7'}
-                  strokeWidth="3"
-                  strokeDasharray={activeTool === 'pass' ? '6,4' : undefined}
+                  stroke={
+                    activeTool === 'pass' ? '#F59E0B' : 
+                    activeTool === 'screen' ? '#E11D48' : 
+                    activeTool === 'dribble' ? '#EA580C' : 
+                    activeTool === 'shot' ? '#10B981' : 
+                    '#0284C7'
+                  }
+                  strokeWidth="3.5"
+                  strokeDasharray={
+                    activeTool === 'pass' ? '6,4' : 
+                    activeTool === 'shot' ? '8,4' : 
+                    activeTool === 'dribble' ? '4,4' : 
+                    undefined
+                  }
                 />
               )}
 

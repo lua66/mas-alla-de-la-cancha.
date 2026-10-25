@@ -1,6 +1,6 @@
 export type CourtType = 'half' | 'full';
 export type CourtTheme = 'hardwood' | 'whiteboard' | 'slate';
-export type TacticalTool = 'select' | 'pass' | 'cut' | 'screen' | 'dribble' | 'pen' | 'eraser';
+export type TacticalTool = 'select' | 'pass' | 'cut' | 'screen' | 'dribble' | 'shot' | 'pen' | 'eraser';
 
 export interface PlayerToken {
   id: string;
@@ -13,7 +13,7 @@ export interface PlayerToken {
 
 export interface TacticalLine {
   id: string;
-  type: 'pass' | 'cut' | 'screen' | 'dribble' | 'freehand';
+  type: 'pass' | 'cut' | 'screen' | 'dribble' | 'shot' | 'freehand';
   color: string;
   points: { x: number; y: number }[];
   description?: string;

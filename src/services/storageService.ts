@@ -379,15 +379,20 @@ export const storageService = {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.PLAYS);
       if (stored) {
-        const parsed: TacticalPlay[] = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+        let parsed: TacticalPlay[] = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          // Purge any legacy 'preset-pick-and-roll' or default play with pre-drawn lines
+          parsed = parsed.filter(p => p.id !== 'preset-pick-and-roll' && !p.title?.toLowerCase().includes('pick & roll') && !p.title?.toLowerCase().includes('bloqueo directo lateral'));
+          if (parsed.length > 0) {
+            localStorage.setItem(STORAGE_KEYS.PLAYS, JSON.stringify(parsed));
+            return parsed;
+          }
         }
       }
     } catch (e) {
       console.error('Error reading tactical plays', e);
     }
-    // Initialize with presets if empty
+    // Initialize with clean blank play
     localStorage.setItem(STORAGE_KEYS.PLAYS, JSON.stringify(INITIAL_PRESET_PLAYS));
     return INITIAL_PRESET_PLAYS;
   },
@@ -445,7 +450,11 @@ export const storageService = {
 
   deleteTacticalPlay(id: string): void {
     const list = this.getTacticalPlays().filter(p => p.id !== id);
-    localStorage.setItem(STORAGE_KEYS.PLAYS, JSON.stringify(list));
+    if (list.length === 0) {
+      localStorage.setItem(STORAGE_KEYS.PLAYS, JSON.stringify(INITIAL_PRESET_PLAYS));
+    } else {
+      localStorage.setItem(STORAGE_KEYS.PLAYS, JSON.stringify(list));
+    }
   },
 
   resetTacticalPlays(): TacticalPlay[] {
