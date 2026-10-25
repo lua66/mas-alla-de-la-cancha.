@@ -418,15 +418,15 @@ export const TacticalCourtDiagram: React.FC = () => {
       <div className="bg-white dark:bg-[#1C1A18] p-4 sm:p-5 rounded-2xl border border-stone-200/90 dark:border-stone-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         
         {/* Play Selector Dropdown */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
+        <div className="flex flex-wrap items-center gap-2.5 max-w-full">
+          <div className="relative max-w-full">
             <select
               value={currentPlayId}
               onChange={e => {
                 const found = plays.find(p => p.id === e.target.value);
                 if (found) loadPlayIntoBoard(found);
               }}
-              className="appearance-none pl-3.5 pr-9 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-stone-100 dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 text-stone-900 dark:text-white cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-amber-700"
+              className="appearance-none pl-3.5 pr-8 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-stone-100 dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700 text-stone-900 dark:text-white cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-amber-700 max-w-[210px] xs:max-w-[260px] sm:max-w-none truncate"
             >
               <optgroup label="Sistemas Oficiales de Coach Leyanis">
                 {plays.filter(p => p.isPreset).map(p => (
@@ -441,17 +441,17 @@ export const TacticalCourtDiagram: React.FC = () => {
                 </optgroup>
               )}
             </select>
-            <ChevronDown className="w-4 h-4 text-stone-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <ChevronDown className="w-4 h-4 text-stone-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
 
-          <span className="text-xs px-2.5 py-1 rounded-md bg-amber-100/70 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 font-medium">
+          <span className="text-xs px-2.5 py-1 rounded-md bg-amber-100/70 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 font-medium shrink-0">
             {playCategory}
           </span>
 
           {!currentPlayId.startsWith('preset-') && (
             <button
               onClick={() => handleDeletePlay(currentPlayId)}
-              className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+              className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer shrink-0"
               title="Eliminar esta jugada creada"
             >
               <Trash2 className="w-4 h-4" />
@@ -459,45 +459,45 @@ export const TacticalCourtDiagram: React.FC = () => {
           )}
         </div>
 
-        {/* Global Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Global Action Buttons (2-col grid on Xiaomi 360-430px, flex row on desktop) */}
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full md:w-auto">
           
           <button
             onClick={() => setIsNewPlayModalOpen(true)}
-            className="px-3 py-2 rounded-xl text-xs font-semibold bg-amber-800 hover:bg-amber-900 text-white flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+            className="px-3 py-2 rounded-xl text-xs font-semibold bg-amber-800 hover:bg-amber-900 text-white flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
-            <span>Crear Mi Jugada</span>
+            <Plus className="w-4 h-4 shrink-0" />
+            <span className="truncate">Crear Jugada</span>
           </button>
 
           <button
             onClick={() => setIsSaveModalOpen(true)}
-            className="px-3 py-2 rounded-xl text-xs font-medium bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3 py-2 rounded-xl text-xs font-medium bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
           >
-            <Save className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-            <span>Guardar Jugada</span>
+            <Save className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
+            <span className="truncate">Guardar</span>
           </button>
 
           <button
             onClick={handleDownloadPng}
-            className="px-3 py-2 rounded-xl text-xs font-medium bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3 py-2 rounded-xl text-xs font-medium bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             title="Descargar pizarra en imagen PNG de alta resolución"
           >
-            <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <span className="hidden sm:inline">Descargar PNG</span>
+            <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="truncate">Descargar PNG</span>
           </button>
 
           <button
             onClick={handleToggleAnimation}
-            className={`px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
+            className={`px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
               isAnimating 
                 ? 'bg-orange-600 text-white animate-pulse' 
                 : 'bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200'
             }`}
             title="Simular secuencia táctica"
           >
-            <Play className="w-4 h-4" />
-            <span className="hidden sm:inline">{isAnimating ? 'Animando...' : 'Simular'}</span>
+            <Play className="w-4 h-4 shrink-0" />
+            <span className="truncate">{isAnimating ? 'Animando...' : 'Simular'}</span>
           </button>
         </div>
       </div>

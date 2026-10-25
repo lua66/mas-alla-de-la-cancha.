@@ -40,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Brand Wordmark (Responsive, won't overflow on small Android screens) */}
           <button
             onClick={() => handleNavClick('home')}
-            className="text-left group flex items-center gap-2.5 sm:gap-3 min-w-0 shrink focus:outline-hidden cursor-pointer"
+            className="text-left group flex items-center gap-2 sm:gap-3 min-w-0 shrink focus:outline-hidden cursor-pointer"
           >
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-amber-600 to-orange-700 text-white flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform">
               <svg viewBox="0 0 24 24" className="w-4 h-4 sm:w-5 sm:h-5 fill-none stroke-current stroke-2">
@@ -51,7 +51,7 @@ export const Header: React.FC<HeaderProps> = ({
               </svg>
             </div>
             <div className="min-w-0">
-              <span className="text-base sm:text-xl font-serif font-bold tracking-tight text-stone-900 dark:text-white group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors truncate block">
+              <span className="text-base sm:text-xl font-serif font-bold tracking-tight text-stone-900 dark:text-white group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors truncate block max-w-[150px] xs:max-w-[210px] sm:max-w-none">
                 {blogTitle}
               </span>
               <span className="hidden sm:block text-[11px] font-sans text-stone-600 dark:text-stone-300 tracking-wide truncate">
@@ -253,59 +253,59 @@ export const Header: React.FC<HeaderProps> = ({
         )}
       </header>
 
-      {/* STICKY BOTTOM MOBILE NAVIGATION BAR (Designed for single-thumb Android & iPhone use) */}
+      {/* STICKY BOTTOM MOBILE NAVIGATION BAR (Optimized for Xiaomi 360-430px & MIUI/HyperOS gesture pill) */}
       <nav 
         aria-label="Navegación móvil"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF8F5]/95 dark:bg-[#141210]/95 backdrop-blur-md border-t border-stone-200/90 dark:border-stone-800 pb-[max(env(safe-area-inset-bottom),8px)] pt-2 px-2 shadow-lg"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF8F5]/98 dark:bg-[#141210]/98 backdrop-blur-md border-t border-stone-200/90 dark:border-stone-800 pb-[max(env(safe-area-inset-bottom,0px),8px)] pt-1.5 px-2 shadow-lg"
       >
         <div className="grid grid-cols-4 items-center justify-around gap-1 max-w-md mx-auto">
           
           <button
             onClick={() => handleNavClick('home')}
-            className={`flex flex-col items-center justify-center py-1 rounded-xl transition-colors cursor-pointer ${
+            className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all active:scale-95 cursor-pointer touch-manipulation ${
               currentView === 'home' || currentView === 'article'
-                ? 'text-amber-800 dark:text-amber-400 font-bold'
+                ? 'text-amber-800 dark:text-amber-400 font-bold bg-amber-500/10'
                 : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
             }`}
           >
-            <BookOpen className="w-5 h-5 mb-0.5" />
-            <span className="text-[10px]">Artículos</span>
+            <BookOpen className="w-5 h-5 mb-0.5 shrink-0" />
+            <span className="text-[10px] leading-tight">Artículos</span>
           </button>
 
           <button
             onClick={() => handleNavClick('tactics')}
-            className={`flex flex-col items-center justify-center py-1 rounded-xl transition-colors cursor-pointer ${
+            className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all active:scale-95 cursor-pointer touch-manipulation ${
               currentView === 'tactics'
-                ? 'text-amber-800 dark:text-amber-400 font-bold'
+                ? 'text-amber-800 dark:text-amber-400 font-bold bg-amber-500/10'
                 : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
             }`}
           >
-            <LayoutGrid className="w-5 h-5 mb-0.5" />
-            <span className="text-[10px]">Pizarra</span>
+            <LayoutGrid className="w-5 h-5 mb-0.5 shrink-0" />
+            <span className="text-[10px] leading-tight">Pizarra</span>
           </button>
 
           <button
             onClick={() => handleNavClick('about')}
-            className={`flex flex-col items-center justify-center py-1 rounded-xl transition-colors cursor-pointer ${
+            className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all active:scale-95 cursor-pointer touch-manipulation ${
               currentView === 'about'
-                ? 'text-amber-800 dark:text-amber-400 font-bold'
+                ? 'text-amber-800 dark:text-amber-400 font-bold bg-amber-500/10'
                 : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
             }`}
           >
-            <Award className="w-5 h-5 mb-0.5" />
-            <span className="text-[10px]">Sobre Mí</span>
+            <Award className="w-5 h-5 mb-0.5 shrink-0" />
+            <span className="text-[10px] leading-tight">Sobre Mí</span>
           </button>
 
           <button
             onClick={() => handleNavClick('categories')}
-            className={`flex flex-col items-center justify-center py-1 rounded-xl transition-colors cursor-pointer ${
+            className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all active:scale-95 cursor-pointer touch-manipulation ${
               currentView === 'categories'
-                ? 'text-amber-800 dark:text-amber-400 font-bold'
+                ? 'text-amber-800 dark:text-amber-400 font-bold bg-amber-500/10'
                 : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
             }`}
           >
-            <Folder className="w-5 h-5 mb-0.5" />
-            <span className="text-[10px]">Categorías</span>
+            <Folder className="w-5 h-5 mb-0.5 shrink-0" />
+            <span className="text-[10px] leading-tight">Categorías</span>
           </button>
 
         </div>

@@ -238,9 +238,9 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({
         </h1>
 
         {/* Author Byline */}
-        <div className="flex items-center justify-between gap-4 py-4 border-y border-stone-200/80 dark:border-stone-800">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-amber-800 text-white flex items-center justify-center font-serif text-base font-bold shadow-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 py-3.5 border-y border-stone-200/80 dark:border-stone-800">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-amber-800 text-white flex items-center justify-center font-serif text-sm sm:text-base font-bold shadow-xs shrink-0">
               {article.author
                 .replace(/^Coach\s+/i, '')
                 .split(' ')
@@ -248,18 +248,18 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({
                 .slice(0, 2)
                 .join('') || 'LH'}
             </div>
-            <div>
-              <p className="text-sm font-semibold text-stone-900 dark:text-stone-100">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 truncate">
                 {article.author}
               </p>
-              <p className="text-xs text-stone-500 dark:text-stone-400">
+              <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
                 {article.authorRole}
               </p>
             </div>
           </div>
 
           {/* Social/Reading action controls */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={handleLikeClick}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${

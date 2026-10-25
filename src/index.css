@@ -17,6 +17,7 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
   html.dark {
@@ -27,6 +28,7 @@
     transition: background-color 0.25s ease, color 0.25s ease;
     overflow-x: hidden;
     width: 100%;
+    max-width: 100vw;
   }
 }
 
