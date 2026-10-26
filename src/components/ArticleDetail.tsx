@@ -293,12 +293,19 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({
       {/* Featured Cover Image */}
       {article.coverImage && (
         <div className="mb-8 rounded-xl overflow-hidden border border-stone-200 dark:border-stone-800 shadow-sm">
-          <img
-            src={article.coverImage}
-            alt={article.title}
-            referrerPolicy="no-referrer"
-            className="w-full max-h-[460px] object-cover"
-          />
+          <picture>
+            <source srcSet={article.coverImage.replace(/\.jpg$/, '.webp')} type="image/webp" />
+            <img
+              src={article.coverImage}
+              alt={article.title}
+              width="1200"
+              height="675"
+              fetchPriority="high"
+              decoding="async"
+              referrerPolicy="no-referrer"
+              className="w-full max-h-[460px] object-cover"
+            />
+          </picture>
           <div className="p-2.5 bg-stone-50 dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 text-xs text-stone-500 dark:text-stone-400 font-serif italic text-center">
             Pizarra técnica y detalles de juego analizados en pista por {article.author}
           </div>

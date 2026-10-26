@@ -16,12 +16,19 @@ export const AboutView: React.FC<AboutViewProps> = ({ settings, onNavigateHome }
       <div className="bg-white dark:bg-[#1C1A18] rounded-2xl border border-stone-200/80 dark:border-stone-800 p-6 sm:p-10 shadow-xs mb-10">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 pb-8 border-b border-stone-200 dark:border-stone-800">
           <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl overflow-hidden border-2 border-amber-700/40 shrink-0 shadow-sm">
-            <img
-              src={settings.authorAvatar}
-              alt={settings.authorName}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover"
-            />
+            <picture>
+              <source srcSet={settings.authorAvatar.replace(/\.jpg$/, '.webp')} type="image/webp" />
+              <img
+                src={settings.authorAvatar}
+                alt={settings.authorName}
+                width="144"
+                height="144"
+                loading="lazy"
+                decoding="async"
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover"
+              />
+            </picture>
           </div>
 
           <div className="text-center sm:text-left">

@@ -32,13 +32,20 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
         className="relative aspect-16/9 w-full bg-stone-100 dark:bg-stone-800 cursor-pointer overflow-hidden"
       >
         {!imageError && article.coverImage ? (
-          <img
-            src={article.coverImage}
-            alt={article.title}
-            onError={() => setImageError(true)}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
-          />
+          <picture>
+            <source srcSet={article.coverImage.replace(/\.jpg$/, '.webp')} type="image/webp" />
+            <img
+              src={article.coverImage}
+              alt={article.title}
+              width="640"
+              height="360"
+              loading="lazy"
+              decoding="async"
+              onError={() => setImageError(true)}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+            />
+          </picture>
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-amber-800/10 to-stone-800/20 text-stone-400">
             <svg viewBox="0 0 24 24" className="w-12 h-12 stroke-current stroke-1 fill-none mb-2 text-amber-700/60">

@@ -94,12 +94,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="bg-white dark:bg-[#1C1A18] p-6 rounded-xl border border-stone-200/80 dark:border-stone-800 shadow-xs">
         <div className="flex items-center gap-4 mb-4">
           <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-amber-700/40 shrink-0">
-            <img
-              src={settings.authorAvatar}
-              alt={settings.authorName}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover"
-            />
+            <picture>
+              <source srcSet={settings.authorAvatar.replace(/\.jpg$/, '.webp')} type="image/webp" />
+              <img
+                src={settings.authorAvatar}
+                alt={settings.authorName}
+                width="56"
+                height="56"
+                loading="lazy"
+                decoding="async"
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover"
+              />
+            </picture>
           </div>
           <div>
             <h3 className="font-serif font-bold text-base text-stone-900 dark:text-white">

@@ -609,12 +609,19 @@ export default function App() {
                     className="group bg-white dark:bg-[#1C1A18] rounded-2xl border border-stone-200/80 dark:border-stone-800 shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden cursor-pointer"
                   >
                     <div className="relative aspect-16/9 w-full bg-stone-100 dark:bg-stone-800 overflow-hidden">
-                      <img
-                        src={featuredArticle.coverImage}
-                        alt={featuredArticle.title}
-                        referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover:scale-101 transition-transform duration-300"
-                      />
+                      <picture>
+                        <source srcSet={featuredArticle.coverImage.replace(/\.jpg$/, '.webp')} type="image/webp" />
+                        <img
+                          src={featuredArticle.coverImage}
+                          alt={featuredArticle.title}
+                          width="1200"
+                          height="675"
+                          fetchPriority="high"
+                          decoding="async"
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover group-hover:scale-101 transition-transform duration-300"
+                        />
+                      </picture>
                     </div>
 
                     <div className="p-6 sm:p-8">
