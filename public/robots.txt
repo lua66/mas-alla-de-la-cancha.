@@ -1,6 +1,16 @@
+# Robots.txt for Pizarra & Criterio — Coach Leyanis Horta
 User-agent: *
 Allow: /
 Disallow: /admin
 
-# Sitemaps
+# Explicit permissions for Googlebot
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+
+User-agent: Googlebot-Image
+Allow: /assets/
+Allow: /
+
+# XML Sitemap
 Sitemap: https://pizarraycriterio.com/sitemap.xml

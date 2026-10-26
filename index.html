@@ -12,8 +12,18 @@
     <meta name="description" content="Blog personal y cuaderno táctico de la entrenadora Leyanis Horta, licenciada en deporte con 20 temporadas en los banquillos desde Cuba hasta Barcelona. Análisis táctico, toma de decisiones y criterio de juego." />
     <meta name="author" content="Coach Leyanis Horta" />
     <meta name="keywords" content="baloncesto, táctica baloncesto, entrenadora de baloncesto, Leyanis Horta, CoachMind Basketball, pick and roll, defensa de cambios, Barcelona, Cuba, banquillo baloncesto" />
-    <meta name="robots" content="index, follow" />
+    <!-- Robots & Crawler Directives -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#C2410C" />
+
+    <!-- Canonical URL (avoids duplicate content in Google index) -->
+    <link rel="canonical" href="https://pizarraycriterio.com/" id="canonical-url" />
+
+    <!-- Language & Geographical Signals for Googlebot -->
+    <meta http-equiv="content-language" content="es" />
+    <meta name="geo.region" content="ES-CT" />
+    <meta name="geo.placename" content="Barcelona, España" />
 
     <!-- Google Search Console Site Verification -->
     <meta name="google-site-verification" content="google74203b3749354c66" />
@@ -30,6 +40,7 @@
     <meta property="og:site_name" content="Pizarra & Criterio — Coach Leyanis Horta" />
     <meta property="og:title" content="Pizarra & Criterio — Blog de Baloncesto | Coach Leyanis Horta" />
     <meta property="og:description" content="Cuaderno táctico de baloncesto: análisis de jugadas, lecturas defensivas, sistemas y reflexiones de 20 temporadas en los banquillos desde Cuba hasta Barcelona." />
+    <meta property="og:url" content="https://pizarraycriterio.com/" />
     <meta property="og:image" content="/og-image.jpg" />
     <meta property="og:image:secure_url" content="/og-image.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
@@ -55,6 +66,17 @@
     {
       "@context": "https://schema.org",
       "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://pizarraycriterio.com/#website",
+          "url": "https://pizarraycriterio.com/",
+          "name": "Pizarra & Criterio",
+          "description": "Blog de Baloncesto y Cuaderno Táctico de Coach Leyanis Horta",
+          "inLanguage": "es-ES",
+          "publisher": {
+            "@id": "https://pizarraycriterio.com/#coach"
+          }
+        },
         {
           "@type": "Blog",
           "@id": "https://pizarraycriterio.com/#blog",
@@ -85,7 +107,81 @@
     </script>
   </head>
   <body class="bg-[#FAF8F5] dark:bg-[#121110] text-stone-900 dark:text-stone-100 antialiased selection:bg-amber-200 selection:text-amber-950">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Pre-rendered Semantic HTML: Googlebot can index all text, headings, and internal links immediately without JS rendering delay -->
+      <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; color: #1c1917; background-color: #faf8f5;">
+        <header style="border-bottom: 2px solid #78350f; padding-bottom: 1.5rem; margin-bottom: 2rem;">
+          <h1 style="font-size: 2.2rem; color: #78350f; margin-bottom: 0.5rem; font-family: serif;">Pizarra & Criterio — Blog de Baloncesto</h1>
+          <p style="font-size: 1.1rem; color: #44403c; margin-bottom: 1rem;">Cuaderno de análisis táctico, toma de decisiones y 20 temporadas en los banquillos desde Cuba hasta Barcelona por <strong>Coach Leyanis Horta</strong>.</p>
+          <nav aria-label="Navegación principal">
+            <ul style="display: flex; flex-wrap: wrap; gap: 1.25rem; list-style: none; padding: 0; font-weight: 600;">
+              <li><a href="/" style="color: #9a3412; text-decoration: underline;">Cuaderno de Artículos</a></li>
+              <li><a href="/pizarra" style="color: #9a3412; text-decoration: underline;">Pizarra Táctica Interactiva</a></li>
+              <li><a href="/sobre-mi" style="color: #9a3412; text-decoration: underline;">Sobre Leyanis Horta</a></li>
+              <li><a href="/categorias" style="color: #9a3412; text-decoration: underline;">Categorías Tácticas</a></li>
+              <li><a href="/archivo" style="color: #9a3412; text-decoration: underline;">Archivo del Blog</a></li>
+            </ul>
+          </nav>
+        </header>
+
+        <main>
+          <section>
+            <h2 style="font-size: 1.6rem; color: #292524; border-bottom: 1px solid #d6d3d1; padding-bottom: 0.5rem; font-family: serif;">Artículos Tácticos Destacados</h2>
+            
+            <article style="margin: 2rem 0; padding-bottom: 2rem; border-bottom: 1px solid #e7e5e4;">
+              <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem; font-family: serif;">
+                <a href="/articulo/balance-defensivo-mayor-fallo-concentracion" style="color: #78350f; text-decoration: none;">El arte del balance defensivo: Por qué recibir canastas tras tiro anotado es el mayor fallo de concentración</a>
+              </h3>
+              <p style="color: #78350f; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem;">Categoría: Táctica Defensiva | Autora: Coach Leyanis Horta</p>
+              <p style="color: #292524; line-height: 1.65; font-size: 1rem;">Celebrar una canasta propia o lamentarse de un fallo mientras el rival saca de fondo en dos segundos es el pecado capital de cualquier equipo. Normas innegociables para neutralizar la transición rápida y proteger la pintura.</p>
+            </article>
+
+            <article style="margin: 2rem 0; padding-bottom: 2rem; border-bottom: 1px solid #e7e5e4;">
+              <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem; font-family: serif;">
+                <a href="/articulo/espaciamiento-pick-and-roll-moderno-espacios" style="color: #78350f; text-decoration: none;">Espaciamiento y lectura en el Pick & Roll moderno: Claves para no saturar la pintura</a>
+              </h3>
+              <p style="color: #78350f; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem;">Categoría: Ataque por Conceptos | Autora: Coach Leyanis Horta</p>
+              <p style="color: #292524; line-height: 1.65; font-size: 1rem;">El bloqueo directo no es una jugada mágica; es una herramienta para forzar una decisión defensiva. Geometría en cancha, ocupación de esquinas y la regla innegociable de los cuatro metros.</p>
+            </article>
+
+            <article style="margin: 2rem 0; padding-bottom: 2rem; border-bottom: 1px solid #e7e5e4;">
+              <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem; font-family: serif;">
+                <a href="/articulo/gestion-vestuario-soledad-banquillo-liderazgo" style="color: #78350f; text-decoration: none;">La soledad del banquillo y la gestión de egos: Lo que los manuales técnicos callan</a>
+              </h3>
+              <p style="color: #78350f; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem;">Categoría: Gestión de Vestuario | Autora: Coach Leyanis Horta</p>
+              <p style="color: #292524; line-height: 1.65; font-size: 1rem;">Puedes conocer al detalle todas las variantes de la defensa en zona o de la salida de presión, pero si no eres capaz de mirar a los ojos a un jugador descontento por sus minutos, tu pizarra no servirá de nada.</p>
+            </article>
+
+            <article style="margin: 2rem 0; padding-bottom: 2rem; border-bottom: 1px solid #e7e5e4;">
+              <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem; font-family: serif;">
+                <a href="/articulo/valor-formativo-pase-extra-menos-botes" style="color: #78350f; text-decoration: none;">El valor formativo del pase extra: Menos botes indiscriminados y más juego colectivo</a>
+              </h3>
+              <p style="color: #78350f; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem;">Categoría: Formación y Técnica | Autora: Coach Leyanis Horta</p>
+              <p style="color: #292524; line-height: 1.65; font-size: 1rem;">Por qué tantos jóvenes botan el balón de manera automática en cuanto lo reciben. La importancia de enseñar la triple amenaza y el hábito solidario de buscar al compañero en tiro abierto.</p>
+            </article>
+          </section>
+
+          <section style="margin-top: 3rem; background: #ffffff; padding: 2rem; border-radius: 1rem; border: 1px solid #e7e5e4;">
+            <h2 style="font-size: 1.4rem; color: #78350f; font-family: serif; margin-bottom: 0.5rem;">Sobre la Entrenadora — Leyanis Horta</h2>
+            <p style="color: #44403c; line-height: 1.6; margin-bottom: 0.75rem;">
+              Licenciada en Cultura Física y Deporte con más de 20 temporadas sentada en los banquillos desde Cuba hasta Barcelona (España). Especialista en baloncesto de formación, toma de decisiones tácticas y creadora de <strong>CoachMind Basketball</strong>.
+            </p>
+            <p style="color: #78350f; font-weight: bold;">
+              Contacto oficial: <a href="mailto:coachmindbasketball@gmail.com" style="color: #78350f; text-decoration: underline;">coachmindbasketball@gmail.com</a>
+            </p>
+          </section>
+        </main>
+
+        <footer style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #d6d3d1; font-size: 0.85rem; color: #78716c; text-align: center;">
+          <p>© 2026 Pizarra & Criterio — Coach Leyanis Horta. Todos los derechos reservados. Barcelona, España.</p>
+        </footer>
+      </div>
+    </div>
+    <noscript>
+      <div style="padding: 1rem; text-align: center; background: #fef2f2; color: #991b1b; font-weight: bold;">
+        Para utilizar la pizarra táctica interactiva completa y las funciones dinámicas, activa JavaScript en tu navegador.
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
