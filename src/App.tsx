@@ -211,6 +211,25 @@ export default function App() {
     setCurrentView(initialRoute.view);
     setSelectedArticle(initialRoute.article);
     syncSeoForView(initialRoute.view, initialRoute.article, loadedSettings);
+
+    // Bidirectional sync with cloud server:
+    // Pushes all articles authored in this browser window to the server master list,
+    // and updates this device so all devices and mobiles see the exact same articles.
+    storageService.syncWithServer().then((synced) => {
+      if (synced.articles && synced.articles.length > 0) {
+        setArticles(synced.articles);
+        // If current article route, verify it exists in synced list
+        const updatedRoute = parseRouteFromLocation(synced.articles);
+        if (updatedRoute.article) {
+          setSelectedArticle(updatedRoute.article);
+        }
+      }
+      if (synced.comments) setComments(synced.comments);
+      if (synced.subscribers) setSubscribers(synced.subscribers);
+      if (synced.settings) setSettings(synced.settings);
+    }).catch(err => {
+      console.warn('Background server sync:', err);
+    });
   }, [parseRouteFromLocation, syncSeoForView]);
 
   // Listen to browser Back / Forward events (popstate)

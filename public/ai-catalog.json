@@ -1,8 +1,7 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "Pizarra & Criterio — Coach Leyanis Horta",
   "description": "Blog de baloncesto, cuaderno técnico y pizarra táctica interactiva por la entrenadora Leyanis Horta.",
-  "url": "https://pizarraycriterio.com",
+  "url": "https://www.baloncestonaranja.es",
   "version": "1.0.0",
   "author": {
     "name": "Coach Leyanis Horta",

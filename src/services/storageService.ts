@@ -16,6 +16,74 @@ const STORAGE_KEYS = {
 };
 
 export const storageService = {
+  // Cloud Server Synchronization (shares articles across all devices, windows, and mobiles)
+  async syncWithServer(): Promise<{
+    articles: Article[];
+    comments: Comment[];
+    subscribers: Subscriber[];
+    settings: BlogSettings;
+  }> {
+    try {
+      const localArticles = this.getArticles();
+
+      // Send local articles to be merged into the server's master list
+      const res = await fetch('/api/articles/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ articles: localArticles })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.articles)) {
+          // Update local cache with master list from server
+          localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(data.articles));
+
+          // Also sync comments, subscribers, settings
+          const [comRes, subRes, setRes] = await Promise.allSettled([
+            fetch('/api/comments').then(r => r.json()),
+            fetch('/api/subscribers').then(r => r.json()),
+            fetch('/api/settings').then(r => r.json())
+          ]);
+
+          let finalComments = this.getComments();
+          if (comRes.status === 'fulfilled' && comRes.value?.success && Array.isArray(comRes.value.comments)) {
+            finalComments = comRes.value.comments;
+            localStorage.setItem(STORAGE_KEYS.COMMENTS, JSON.stringify(finalComments));
+          }
+
+          let finalSubscribers = this.getSubscribers();
+          if (subRes.status === 'fulfilled' && subRes.value?.success && Array.isArray(subRes.value.subscribers)) {
+            finalSubscribers = subRes.value.subscribers;
+            localStorage.setItem(STORAGE_KEYS.SUBSCRIBERS, JSON.stringify(finalSubscribers));
+          }
+
+          let finalSettings = this.getSettings();
+          if (setRes.status === 'fulfilled' && setRes.value?.success && setRes.value.settings) {
+            finalSettings = setRes.value.settings;
+            localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(finalSettings));
+          }
+
+          return {
+            articles: data.articles,
+            comments: finalComments,
+            subscribers: finalSubscribers,
+            settings: finalSettings
+          };
+        }
+      }
+    } catch (err) {
+      console.warn('Server sync offline or unavailable, continuing with local storage:', err);
+    }
+
+    return {
+      articles: this.getArticles(),
+      comments: this.getComments(),
+      subscribers: this.getSubscribers(),
+      settings: this.getSettings()
+    };
+  },
+
   // Articles
   getArticles(): Article[] {
     try {
@@ -119,12 +187,23 @@ export const storageService = {
     }
 
     localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(articles));
+
+    // Also persist to cloud server in background
+    fetch('/api/articles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(savedArticle)
+    }).catch(err => console.warn('Error saving article to server:', err));
+
     return savedArticle;
   },
 
   deleteArticle(id: string): void {
     const articles = this.getArticles().filter(a => a.id !== id);
     localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(articles));
+
+    // Also delete on server
+    fetch(`/api/articles/${id}`, { method: 'DELETE' }).catch(err => console.warn('Error deleting article on server:', err));
 
     // Also delete associated comments
     const comments = this.getComments().filter(c => c.articleId !== id);
@@ -137,6 +216,7 @@ export const storageService = {
     if (item) {
       item.viewsCount = (item.viewsCount || 0) + 1;
       localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(articles));
+      fetch(`/api/articles/${id}/view`, { method: 'POST' }).catch(() => {});
     }
   },
 
@@ -146,6 +226,7 @@ export const storageService = {
     if (item) {
       item.likesCount = (item.likesCount || 0) + 1;
       localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(articles));
+      fetch(`/api/articles/${id}/like`, { method: 'POST' }).catch(() => {});
       return item.likesCount;
     }
     return 0;

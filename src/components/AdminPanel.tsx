@@ -32,7 +32,8 @@ import {
   Send,
   Loader2,
   UploadCloud,
-  ImagePlus
+  ImagePlus,
+  RefreshCw
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -179,6 +180,21 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       showNotification('Error al conectar con la URL. Revisa que esté bien escrita.', 'error');
     } finally {
       setIsTestingWebhook(false);
+    }
+  };
+
+  // Cloud Server Sync State
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleManualSync = async () => {
+    setIsSyncing(true);
+    try {
+      const res = await storageService.syncWithServer();
+      showNotification(`¡Sincronización completada! ${res.articles.length} artículos guardados en el servidor y sincronizados con tu móvil.`);
+    } catch {
+      showNotification('Error al sincronizar con el servidor.', 'error');
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -337,6 +353,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
         <div className="flex items-center gap-2.5">
           <button
+            type="button"
+            onClick={handleManualSync}
+            disabled={isSyncing}
+            title="Sincronizar tus artículos con el servidor para que se vean en tu móvil y cualquier otro navegador"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-800/60 text-white shadow-xs transition-colors cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+            <span>{isSyncing ? 'Sincronizando...' : 'Sincronizar con Móvil'}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={onExitAdmin}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-800 hover:bg-amber-900 text-white shadow-xs transition-colors cursor-pointer"
           >

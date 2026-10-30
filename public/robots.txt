@@ -13,4 +13,4 @@ Allow: /assets/
 Allow: /
 
 # XML Sitemap
-Sitemap: https://pizarraycriterio.com/sitemap.xml
+Sitemap: https://www.baloncestonaranja.es/sitemap.xml

@@ -3,7 +3,14 @@ import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI, Type } from '@google/genai';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
+import {
+  INITIAL_ARTICLES,
+  INITIAL_COMMENTS,
+  INITIAL_SUBSCRIBERS,
+  INITIAL_SETTINGS
+} from './src/data/initialData';
 
 dotenv.config();
 
@@ -14,7 +21,47 @@ const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 const isProd = process.env.NODE_ENV === 'production';
 
-app.use(express.json());
+// Support large payloads (for base64 compressed images up to 50MB)
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// --- PERSISTENT SERVER-SIDE STORAGE (server-data/) ---
+const DATA_DIR = path.resolve(__dirname, 'server-data');
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+const ARTICLES_FILE = path.join(DATA_DIR, 'articles.json');
+const COMMENTS_FILE = path.join(DATA_DIR, 'comments.json');
+const SUBSCRIBERS_FILE = path.join(DATA_DIR, 'subscribers.json');
+const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
+
+function readJsonFile<T>(filePath: string, fallback: T): T {
+  try {
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath, 'utf-8');
+      return JSON.parse(data) as T;
+    }
+  } catch (err) {
+    console.error(`Error reading ${filePath}:`, err);
+  }
+  writeJsonFile(filePath, fallback);
+  return fallback;
+}
+
+function writeJsonFile<T>(filePath: string, data: T): void {
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (err) {
+    console.error(`Error writing ${filePath}:`, err);
+  }
+}
+
+// Initialize files if not existing
+readJsonFile(ARTICLES_FILE, INITIAL_ARTICLES);
+readJsonFile(COMMENTS_FILE, INITIAL_COMMENTS);
+readJsonFile(SUBSCRIBERS_FILE, INITIAL_SUBSCRIBERS);
+readJsonFile(SETTINGS_FILE, INITIAL_SETTINGS);
 
 // Initialize Google Gen AI client on the server side
 const apiKey = process.env.GEMINI_API_KEY || process.env.GEMENI_API_KEY || process.env.VITE_GEMINI_API_KEY;
@@ -31,12 +78,188 @@ if (apiKey) {
   });
 }
 
-// POST endpoint: /api/subscribers/sync - Forwards new subscriber to Google Sheet
+// --- REST API ENDPOINTS FOR MULTI-DEVICE CLOUD PERSISTENCE ---
+
+// 1. Articles Sync: Merges client articles with server articles
+app.post('/api/articles/sync', (req, res) => {
+  const clientArticles = Array.isArray(req.body.articles) ? req.body.articles : [];
+  let serverArticles = readJsonFile<any[]>(ARTICLES_FILE, INITIAL_ARTICLES);
+
+  let hasChanges = false;
+  clientArticles.forEach((clientArt) => {
+    if (!clientArt || !clientArt.id) return;
+    const existingIndex = serverArticles.findIndex(
+      (s) => s.id === clientArt.id || (clientArt.slug && s.slug === clientArt.slug)
+    );
+    if (existingIndex === -1) {
+      // New article created by author on their local machine/browser!
+      serverArticles.unshift(clientArt);
+      hasChanges = true;
+    } else {
+      // Keep whichever has higher viewsCount or likesCount
+      const existing = serverArticles[existingIndex];
+      const merged = {
+        ...existing,
+        ...clientArt,
+        viewsCount: Math.max(existing.viewsCount || 0, clientArt.viewsCount || 0),
+        likesCount: Math.max(existing.likesCount || 0, clientArt.likesCount || 0)
+      };
+      serverArticles[existingIndex] = merged;
+      hasChanges = true;
+    }
+  });
+
+  if (hasChanges || !fs.existsSync(ARTICLES_FILE)) {
+    writeJsonFile(ARTICLES_FILE, serverArticles);
+  }
+
+  return res.json({ success: true, articles: serverArticles });
+});
+
+// 2. Get all articles
+app.get('/api/articles', (_req, res) => {
+  const articles = readJsonFile<any[]>(ARTICLES_FILE, INITIAL_ARTICLES);
+  return res.json({ success: true, articles });
+});
+
+// 3. Create or update article
+app.post('/api/articles', (req, res) => {
+  const article = req.body;
+  if (!article || !article.title || !article.content) {
+    return res.status(400).json({ success: false, error: 'Datos de artículo inválidos.' });
+  }
+
+  let serverArticles = readJsonFile<any[]>(ARTICLES_FILE, INITIAL_ARTICLES);
+  const index = serverArticles.findIndex((a) => a.id === article.id);
+  if (index >= 0) {
+    serverArticles[index] = { ...serverArticles[index], ...article };
+  } else {
+    serverArticles.unshift(article);
+  }
+  writeJsonFile(ARTICLES_FILE, serverArticles);
+  return res.json({ success: true, article });
+});
+
+// 4. Delete article
+app.delete('/api/articles/:id', (req, res) => {
+  const { id } = req.params;
+  let serverArticles = readJsonFile<any[]>(ARTICLES_FILE, INITIAL_ARTICLES);
+  serverArticles = serverArticles.filter((a) => a.id !== id);
+  writeJsonFile(ARTICLES_FILE, serverArticles);
+
+  // Also remove associated comments
+  let comments = readJsonFile<any[]>(COMMENTS_FILE, INITIAL_COMMENTS);
+  comments = comments.filter((c) => c.articleId !== id);
+  writeJsonFile(COMMENTS_FILE, comments);
+
+  return res.json({ success: true });
+});
+
+// 5. Like article
+app.post('/api/articles/:id/like', (req, res) => {
+  const { id } = req.params;
+  let serverArticles = readJsonFile<any[]>(ARTICLES_FILE, INITIAL_ARTICLES);
+  const item = serverArticles.find((a) => a.id === id);
+  let likesCount = 0;
+  if (item) {
+    item.likesCount = (item.likesCount || 0) + 1;
+    likesCount = item.likesCount;
+    writeJsonFile(ARTICLES_FILE, serverArticles);
+  }
+  return res.json({ success: true, likesCount });
+});
+
+// 6. View article
+app.post('/api/articles/:id/view', (req, res) => {
+  const { id } = req.params;
+  let serverArticles = readJsonFile<any[]>(ARTICLES_FILE, INITIAL_ARTICLES);
+  const item = serverArticles.find((a) => a.id === id);
+  let viewsCount = 0;
+  if (item) {
+    item.viewsCount = (item.viewsCount || 0) + 1;
+    viewsCount = item.viewsCount;
+    writeJsonFile(ARTICLES_FILE, serverArticles);
+  }
+  return res.json({ success: true, viewsCount });
+});
+
+// 7. Comments endpoints
+app.get('/api/comments', (_req, res) => {
+  const comments = readJsonFile<any[]>(COMMENTS_FILE, INITIAL_COMMENTS);
+  return res.json({ success: true, comments });
+});
+
+app.post('/api/comments', (req, res) => {
+  const comment = req.body;
+  let comments = readJsonFile<any[]>(COMMENTS_FILE, INITIAL_COMMENTS);
+  comments.unshift(comment);
+  writeJsonFile(COMMENTS_FILE, comments);
+  return res.json({ success: true, comment });
+});
+
+app.delete('/api/comments/:id', (req, res) => {
+  const { id } = req.params;
+  let comments = readJsonFile<any[]>(COMMENTS_FILE, INITIAL_COMMENTS);
+  comments = comments.filter((c) => c.id !== id);
+  writeJsonFile(COMMENTS_FILE, comments);
+  return res.json({ success: true });
+});
+
+// 8. Subscribers endpoints
+app.get('/api/subscribers', (_req, res) => {
+  const subscribers = readJsonFile<any[]>(SUBSCRIBERS_FILE, INITIAL_SUBSCRIBERS);
+  return res.json({ success: true, subscribers });
+});
+
+app.post('/api/subscribers', (req, res) => {
+  const subscriber = req.body;
+  let subscribers = readJsonFile<any[]>(SUBSCRIBERS_FILE, INITIAL_SUBSCRIBERS);
+  if (!subscribers.some((s) => s.email.toLowerCase() === subscriber.email?.toLowerCase())) {
+    subscribers.unshift(subscriber);
+    writeJsonFile(SUBSCRIBERS_FILE, subscribers);
+  }
+  return res.json({ success: true, subscriber });
+});
+
+app.delete('/api/subscribers/:id', (req, res) => {
+  const { id } = req.params;
+  let subscribers = readJsonFile<any[]>(SUBSCRIBERS_FILE, INITIAL_SUBSCRIBERS);
+  subscribers = subscribers.filter((s) => s.id !== id);
+  writeJsonFile(SUBSCRIBERS_FILE, subscribers);
+  return res.json({ success: true });
+});
+
+// 9. Settings endpoints
+app.get('/api/settings', (_req, res) => {
+  const settings = readJsonFile<any>(SETTINGS_FILE, INITIAL_SETTINGS);
+  return res.json({ success: true, settings });
+});
+
+app.post('/api/settings', (req, res) => {
+  const newSettings = req.body;
+  writeJsonFile(SETTINGS_FILE, newSettings);
+  return res.json({ success: true, settings: newSettings });
+});
+
+// 10. POST endpoint: /api/subscribers/sync - Forwards new subscriber to Google Sheet
 app.post('/api/subscribers/sync', async (req, res) => {
   const { email, frequency, subscribedAt, source, webhookUrl } = req.body;
 
   if (!email || typeof email !== 'string' || !email.includes('@')) {
     return res.status(400).json({ success: false, error: 'Por favor ingresa un correo electrónico válido.' });
+  }
+
+  // Also save to server subscribers file
+  let subscribers = readJsonFile<any[]>(SUBSCRIBERS_FILE, INITIAL_SUBSCRIBERS);
+  const cleaned = email.trim().toLowerCase();
+  if (!subscribers.some((s) => s.email.toLowerCase() === cleaned)) {
+    subscribers.unshift({
+      id: 'sub-' + Date.now(),
+      email: cleaned,
+      frequency: frequency || 'semanal',
+      subscribedAt: subscribedAt || new Date().toISOString().split('T')[0]
+    });
+    writeJsonFile(SUBSCRIBERS_FILE, subscribers);
   }
 
   const defaultWebhook = 'https://script.google.com/macros/s/AKfycbyAp_IwzOCSC2ANFgRDIegbQlsqa_t-VUGP6URVGzbZZ5wK6BjPwJpwRl8IRZrfTMF9/exec';
@@ -46,7 +269,7 @@ app.post('/api/subscribers/sync', async (req, res) => {
 
   try {
     const params = new URLSearchParams();
-    params.append('email', email.trim().toLowerCase());
+    params.append('email', cleaned);
     params.append('frequency', frequency || 'semanal');
     params.append('subscribedAt', subscribedAt || new Date().toISOString().split('T')[0]);
     params.append('source', source || 'Sidebar - Blog Pizarra & Criterio');
@@ -78,7 +301,7 @@ app.post('/api/subscribers/sync', async (req, res) => {
   }
 });
 
-// POST endpoint: /api/ai/generate-article
+// 11. POST endpoint: /api/ai/generate-article
 app.post('/api/ai/generate-article', async (req, res) => {
   const { topic, category, focus, notes } = req.body;
 
@@ -159,7 +382,7 @@ El artículo debe tener:
 });
 
 // Helper function for intelligent fallback generation
-function generateFallbackBasketballArticle(topic: string, cat?: string, focus?: string) {
+function generateFallbackBasketballArticle(topic: string, cat?: string, _focus?: string) {
   const cleanCat = cat || 'Táctica de Baloncesto';
   const slugTopic = topic.trim();
 
@@ -215,7 +438,7 @@ async function startServer() {
   } else {
     // In production, serve static files from dist
     app.use(express.static(path.resolve(__dirname, 'dist')));
-    app.get('*', (req, res) => {
+    app.get('*', (_req, res) => {
       res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
     });
   }

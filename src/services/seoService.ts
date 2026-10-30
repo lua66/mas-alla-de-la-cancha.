@@ -41,7 +41,7 @@ export const updatePageSeo = (config: PageSeoConfig) => {
   setMeta('property', 'og:description', config.description);
   setMeta('property', 'og:type', config.ogType || 'website');
   
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://pizarraycriterio.com';
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.baloncestonaranja.es';
   const fullCanonicalUrl = `${origin}${config.canonicalPath.startsWith('/') ? config.canonicalPath : `/${config.canonicalPath}`}`;
   setMeta('property', 'og:url', fullCanonicalUrl);
 

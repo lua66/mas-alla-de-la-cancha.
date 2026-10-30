@@ -4,15 +4,15 @@
 
 ## Contenido Principal
 
-- [Cuaderno de Artículos](https://pizarraycriterio.com/): Artículos de táctica defensiva, ataque por conceptos, dirección de vestuario y formación de jugadores.
-- [Pizarra Táctica Interactiva](https://pizarraycriterio.com/pizarra): Simulador y diseñador táctico en cancha de baloncesto para trazar cortes, pases, bloqueos, botes y tiros.
-- [Sobre la Entrenadora](https://pizarraycriterio.com/sobre-mi): Perfil profesional de Coach Leyanis Horta, Licenciada en Cultura Física y Deporte.
-- [Categorías](https://pizarraycriterio.com/categorias): Clasificación temática de análisis táctico de baloncesto.
-- [Archivo del Blog](https://pizarraycriterio.com/archivo): Búsqueda y listado cronológico de todos los artículos.
+- [Cuaderno de Artículos](https://www.baloncestonaranja.es/): Artículos de táctica defensiva, ataque por conceptos, dirección de vestuario y formación de jugadores.
+- [Pizarra Táctica Interactiva](https://www.baloncestonaranja.es/pizarra): Simulador y diseñador táctico en cancha de baloncesto para trazar cortes, pases, bloqueos, botes y tiros.
+- [Sobre la Entrenadora](https://www.baloncestonaranja.es/sobre-mi): Perfil profesional de Coach Leyanis Horta, Licenciada en Cultura Física y Deporte.
+- [Categorías](https://www.baloncestonaranja.es/categorias): Clasificación temática de análisis táctico de baloncesto.
+- [Archivo del Blog](https://www.baloncestonaranja.es/archivo): Búsqueda y listado cronológico de todos los artículos.
 
 ## Artículos Destacados
 
-- [El arte del balance defensivo](https://pizarraycriterio.com/articulo/balance-defensivo-mayor-fallo-concentracion): Análisis táctico sobre por qué recibir canastas tras tiro anotado es el mayor fallo de concentración en baloncesto.
-- [Espaciamiento y lectura en el Pick & Roll moderno](https://pizarraycriterio.com/articulo/espaciamiento-pick-and-roll-moderno-espacios): Claves geométricas para no saturar la pintura en situaciones de bloqueo directo.
-- [La soledad del banquillo y la gestión de egos](https://pizarraycriterio.com/articulo/gestion-vestuario-soledad-banquillo-liderazgo): Guía de liderazgo para gestionar vestuarios en momentos de crisis.
-- [El valor formativo del pase extra](https://pizarraycriterio.com/articulo/valor-formativo-pase-extra-menos-botes): Cómo desterrar el bote indiscriminado y fomentar el juego colectivo.
+- [El arte del balance defensivo](https://www.baloncestonaranja.es/articulo/balance-defensivo-mayor-fallo-concentracion): Análisis táctico sobre por qué recibir canastas tras tiro anotado es el mayor fallo de concentración en baloncesto.
+- [Espaciamiento y lectura en el Pick & Roll moderno](https://www.baloncestonaranja.es/articulo/espaciamiento-pick-and-roll-moderno-espacios): Claves geométricas para no saturar la pintura en situaciones de bloqueo directo.
+- [La soledad del banquillo y la gestión de egos](https://www.baloncestonaranja.es/articulo/gestion-vestuario-soledad-banquillo-liderazgo): Guía de liderazgo para gestionar vestuarios en momentos de crisis.
+- [El valor formativo del pase extra](https://www.baloncestonaranja.es/articulo/valor-formativo-pase-extra-menos-botes): Cómo desterrar el bote indiscriminado y fomentar el juego colectivo.
