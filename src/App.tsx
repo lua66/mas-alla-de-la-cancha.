@@ -13,12 +13,11 @@ import { TacticsView } from './components/TacticsView';
 import { ArchiveView } from './components/ArchiveView';
 import { AboutView } from './components/AboutView';
 import { AuthModal } from './components/AuthModal';
-import { X, Search } from 'lucide-react';
+import { X, Search, RefreshCw, CheckCircle2 } from 'lucide-react';
 
 type ViewType = 'home' | 'categories' | 'tactics' | 'about' | 'archive' | 'admin' | 'article';
 
 export default function App() {
-  // Theme state
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem('basket_blog_theme');
@@ -407,6 +406,29 @@ export default function App() {
     return success;
   };
 
+  // Quick Global Cloud Sync for Author
+  const [isSyncingGlobal, setIsSyncingGlobal] = useState(false);
+  const [globalSyncToast, setGlobalSyncToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
+
+  const handleGlobalSync = async () => {
+    setIsSyncingGlobal(true);
+    setGlobalSyncToast({ message: 'Sincronizando tus artículos con el servidor central...', type: 'info' });
+    try {
+      const res = await storageService.syncWithServer();
+      setArticles(res.articles);
+      setGlobalSyncToast({
+        message: `¡Éxito! ${res.articles.length} artículos guardados en el servidor. Ahora recarga tu móvil o la otra ventana para verlos.`,
+        type: 'success'
+      });
+      setTimeout(() => setGlobalSyncToast(null), 9000);
+    } catch {
+      setGlobalSyncToast({ message: 'Error de conexión al sincronizar.', type: 'error' });
+      setTimeout(() => setGlobalSyncToast(null), 5000);
+    } finally {
+      setIsSyncingGlobal(false);
+    }
+  };
+
   // Calculate comments count map for performance
   const commentsCountMap = comments.reduce<Record<string, number>>((acc, comm) => {
     if (comm.status === 'approved') {
@@ -787,6 +809,32 @@ export default function App() {
         correctPin="1234"
         authorName={settings.authorName}
       />
+
+      {/* Floating Sync Widget for Cross-Device (Mobile & Window Sync) */}
+      <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2 pointer-events-none">
+        {globalSyncToast && (
+          <div className={`pointer-events-auto p-3.5 rounded-2xl shadow-xl text-xs font-medium max-w-sm border backdrop-blur-md transition-all animate-in fade-in slide-in-from-bottom-2 ${
+            globalSyncToast.type === 'success'
+              ? 'bg-emerald-900/95 text-emerald-100 border-emerald-500/50 flex items-start gap-2'
+              : globalSyncToast.type === 'error'
+              ? 'bg-rose-900/95 text-rose-100 border-rose-500/50'
+              : 'bg-stone-900/95 text-stone-100 border-stone-700/50'
+          }`}>
+            {globalSyncToast.type === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0 mt-0.5" />}
+            <div>{globalSyncToast.message}</div>
+          </div>
+        )}
+
+        <button
+          onClick={handleGlobalSync}
+          disabled={isSyncingGlobal}
+          title="Sincronizar tus artículos con el servidor para que se vean en tu móvil y cualquier otro navegador"
+          className="pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-full bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-800/70 text-white text-xs font-semibold shadow-lg hover:shadow-xl transition-all cursor-pointer border border-emerald-500/40"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${isSyncingGlobal ? 'animate-spin' : ''}`} />
+          <span>{isSyncingGlobal ? 'Sincronizando...' : `Sincronizar con Móvil (${articles.length} arts)`}</span>
+        </button>
+      </div>
     </div>
   );
 }

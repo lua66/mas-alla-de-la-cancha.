@@ -33,7 +33,9 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
       >
         {!imageError && article.coverImage ? (
           <picture>
-            <source srcSet={article.coverImage.replace(/\.jpg$/, '.webp')} type="image/webp" />
+            {article.coverImage.endsWith('.jpg') && (
+              <source srcSet={article.coverImage.replace(/\.jpg$/, '.webp')} type="image/webp" />
+            )}
             <img
               src={article.coverImage}
               alt={article.title}

@@ -1,0 +1,47 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Pizarra & Criterio — Coach Leyanis Horta",
+    "documentationUrl": "https://www.baloncestonaranja.es/sobre-mi",
+    "logoUrl": "https://www.baloncestonaranja.es/assets/coach_horta_avatar.jpg"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:baloncestonaranja.es:blog",
+      "displayName": "Cuaderno Táctico de Baloncesto",
+      "type": "text/html",
+      "url": "https://www.baloncestonaranja.es/",
+      "description": "Artículos de análisis táctico, sistemas y dirección de banquillo por la entrenadora Leyanis Horta.",
+      "representativeQueries": [
+        "análisis táctico de baloncesto",
+        "cómo mejorar el balance defensivo",
+        "espaciamiento en pick and roll",
+        "ejercicios de baloncesto para entrenadores"
+      ]
+    },
+    {
+      "identifier": "urn:air:baloncestonaranja.es:pizarra",
+      "displayName": "Pizarra Táctica Interactiva",
+      "type": "text/html",
+      "url": "https://www.baloncestonaranja.es/pizarra",
+      "description": "Herramienta interactiva para diseñar y trazar sistemas de baloncesto en media cancha y cancha entera.",
+      "representativeQueries": [
+        "diseñar jugadas de baloncesto",
+        "pizarra táctica interactiva online",
+        "crear sistemas de baloncesto gratis"
+      ]
+    },
+    {
+      "identifier": "urn:air:baloncestonaranja.es:bio",
+      "displayName": "Sobre la Entrenadora",
+      "type": "text/html",
+      "url": "https://www.baloncestonaranja.es/sobre-mi",
+      "description": "Trayectoria deportiva y 20 temporadas en banquillos de Cuba y Barcelona de Leyanis Horta.",
+      "representativeQueries": [
+        "quién es Leyanis Horta",
+        "entrenadora de baloncesto Coach Yanis",
+        "experiencia baloncesto Barcelona y Cuba"
+      ]
+    }
+  ]
+}

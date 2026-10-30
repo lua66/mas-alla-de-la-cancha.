@@ -1,8 +1,8 @@
 # Pizarra & Criterio — Blog de Baloncesto
 
-> Cuaderno de análisis táctico, vivencias de banquillo y pizarra interactiva de la entrenadora Leyanis Horta (20 temporadas de experiencia entre Cuba y Barcelona, España).
+> Cuaderno de análisis táctico, vivencias de banquillo y pizarra interactiva de la entrenadora Leyanis Horta con más de 20 temporadas de experiencia entre Cuba y Barcelona, España.
 
-## Contenido Principal
+## Enlaces Principales
 
 - [Cuaderno de Artículos](https://www.baloncestonaranja.es/): Artículos de táctica defensiva, ataque por conceptos, dirección de vestuario y formación de jugadores.
 - [Pizarra Táctica Interactiva](https://www.baloncestonaranja.es/pizarra): Simulador y diseñador táctico en cancha de baloncesto para trazar cortes, pases, bloqueos, botes y tiros.
@@ -14,5 +14,5 @@
 
 - [El arte del balance defensivo](https://www.baloncestonaranja.es/articulo/balance-defensivo-mayor-fallo-concentracion): Análisis táctico sobre por qué recibir canastas tras tiro anotado es el mayor fallo de concentración en baloncesto.
 - [Espaciamiento y lectura en el Pick & Roll moderno](https://www.baloncestonaranja.es/articulo/espaciamiento-pick-and-roll-moderno-espacios): Claves geométricas para no saturar la pintura en situaciones de bloqueo directo.
-- [La soledad del banquillo y la gestión de egos](https://www.baloncestonaranja.es/articulo/gestion-vestuario-soledad-banquillo-liderazgo): Guía de liderazgo para gestionar vestuarios en momentos de crisis.
+- [La soledad del banquillo y la gestión de egos](https://www.baloncestonaranja.es/articulo/la-soledad-del-banquillo-y-la-gestion-de-egos-lo-que-los-manuales-tecnicos-callan): Guía de liderazgo para gestionar vestuarios en momentos de crisis.
 - [El valor formativo del pase extra](https://www.baloncestonaranja.es/articulo/valor-formativo-pase-extra-menos-botes): Cómo desterrar el bote indiscriminado y fomentar el juego colectivo.

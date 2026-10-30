@@ -427,6 +427,27 @@ No te obsesiones con llenar la libreta de esquemas imposibles. Pregúntate si tu
   };
 }
 
+// SEO & Agentic discovery explicit routes
+app.get('/sitemap.xml', (_req, res) => {
+  res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+  res.sendFile(path.resolve(__dirname, 'public', 'sitemap.xml'));
+});
+
+app.get('/robots.txt', (_req, res) => {
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.sendFile(path.resolve(__dirname, 'public', 'robots.txt'));
+});
+
+app.get('/llms.txt', (_req, res) => {
+  res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+  res.sendFile(path.resolve(__dirname, 'public', 'llms.txt'));
+});
+
+app.get(['/ai-catalog.json', '/.well-known/ai-catalog.json'], (_req, res) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.sendFile(path.resolve(__dirname, 'public', 'ai-catalog.json'));
+});
+
 // Vite middleware setup
 async function startServer() {
   if (!isProd) {
