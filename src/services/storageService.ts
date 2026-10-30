@@ -11,7 +11,8 @@ const STORAGE_KEYS = {
   BOOKMARKS: 'basket_blog_bookmarks_v2',
   THEME: 'basket_blog_theme_v2',
   TEXT_SIZE: 'basket_blog_text_size_v2',
-  PLAYS: 'basket_coach_plays_v1'
+  PLAYS: 'basket_coach_plays_v1',
+  CUSTOM_IMAGES: 'basket_blog_custom_images_v1'
 };
 
 export const storageService = {
@@ -460,6 +461,46 @@ export const storageService = {
   resetTacticalPlays(): TacticalPlay[] {
     localStorage.setItem(STORAGE_KEYS.PLAYS, JSON.stringify(INITIAL_PRESET_PLAYS));
     return INITIAL_PRESET_PLAYS;
+  },
+
+  // Custom Uploaded Images Gallery
+  getCustomImages(): string[] {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.CUSTOM_IMAGES);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {
+      console.error('Error reading custom images', e);
+    }
+    return [];
+  },
+
+  addCustomImage(imgUrl: string): string[] {
+    const list = this.getCustomImages();
+    // Prepend and keep max 20 recent custom images to avoid quota overflow
+    const updated = [imgUrl, ...list.filter(item => item !== imgUrl)].slice(0, 20);
+    try {
+      localStorage.setItem(STORAGE_KEYS.CUSTOM_IMAGES, JSON.stringify(updated));
+    } catch (e) {
+      console.warn('LocalStorage quota warning, trimming custom images', e);
+      // Trim to last 10 if quota exceeded
+      const trimmed = updated.slice(0, 10);
+      try {
+        localStorage.setItem(STORAGE_KEYS.CUSTOM_IMAGES, JSON.stringify(trimmed));
+        return trimmed;
+      } catch (err) {
+        console.error('Failed to store custom image', err);
+      }
+    }
+    return updated;
+  },
+
+  removeCustomImage(imgUrl: string): string[] {
+    const list = this.getCustomImages().filter(item => item !== imgUrl);
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_IMAGES, JSON.stringify(list));
+    return list;
   },
 
   // Export full backup

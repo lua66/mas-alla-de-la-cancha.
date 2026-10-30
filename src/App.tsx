@@ -473,6 +473,10 @@ export default function App() {
           }
         }}
         blogTitle={settings.blogTitle}
+        articles={articles}
+        onSelectArticle={(art) => {
+          navigateTo('article', art, true);
+        }}
       />
 
       {/* Main Public Content Area */}
@@ -735,6 +739,7 @@ export default function App() {
                   onSelectArchiveMonth={() => {
                     navigateTo('archive', null, true);
                   }}
+                  subscriberCount={subscribers.length}
                 />
               </div>
 
@@ -744,13 +749,15 @@ export default function App() {
 
       </main>
 
-      {/* Discrete, Clean Footer */}
+      {/* Footer with Weekly Tactical Digest Subscription */}
       <Footer
         onOpenAdmin={handleOpenAdminRequest}
         onNavigate={(view) => {
           navigateTo(view, null, true);
         }}
         authorName={settings.authorName}
+        onSubscribe={handleSubscribe}
+        subscriberCount={subscribers.length}
       />
 
       {/* Blogger Author Authentication Modal */}

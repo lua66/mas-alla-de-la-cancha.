@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Article, Comment, Subscriber, BlogSettings } from '../types/blog';
 import { storageService } from '../services/storageService';
 import { AiArticleModal } from './AiArticleModal';
 import { TACTICAL_IMAGE_GALLERY } from '../data/tacticalImages';
+import { compressImageFile, formatFileSize } from '../utils/imageUtils';
 import {
   FileText,
   PlusCircle,
@@ -29,7 +30,9 @@ import {
   ExternalLink,
   HelpCircle,
   Send,
-  Loader2
+  Loader2,
+  UploadCloud,
+  ImagePlus
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -84,6 +87,62 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [tagsStr, setTagsStr] = useState('');
   const [coverImage, setCoverImage] = useState('');
   const [status, setStatus] = useState<'published' | 'draft'>('published');
+
+  // Custom User Uploaded Images State & Refs
+  const [customImages, setCustomImages] = useState<string[]>(() => storageService.getCustomImages());
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [isUploadingInline, setIsUploadingInline] = useState(false);
+  const coverFileInputRef = useRef<HTMLInputElement>(null);
+  const inlineFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCoverFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingCover(true);
+    try {
+      const result = await compressImageFile(file, 1200, 0.82);
+      setCoverImage(result.dataUrl);
+      const updatedList = storageService.addCustomImage(result.dataUrl);
+      setCustomImages(updatedList);
+      showNotification(`¡Imagen "${file.name}" optimizada y asignada como portada! (${formatFileSize(result.compressedSize)})`);
+    } catch (err: any) {
+      console.error('Error al subir imagen', err);
+      showNotification(err.message || 'Error al procesar la imagen.', 'error');
+    } finally {
+      setIsUploadingCover(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
+  const handleRemoveCustomImage = (imgUrl: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = storageService.removeCustomImage(imgUrl);
+    setCustomImages(updated);
+    if (coverImage === imgUrl) {
+      setCoverImage(updated[0] || TACTICAL_IMAGE_GALLERY[0].path);
+    }
+    showNotification('Imagen eliminada de tus fotos subidas.');
+  };
+
+  const handleInlineContentImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingInline(true);
+    try {
+      const result = await compressImageFile(file, 1000, 0.80);
+      const updated = storageService.addCustomImage(result.dataUrl);
+      setCustomImages(updated);
+      const cleanName = file.name.replace(/\.[^/.]+$/, '');
+      const markdownImage = `\n\n![${cleanName}](${result.dataUrl})\n\n`;
+      setContent(prev => prev + markdownImage);
+      showNotification(`¡Foto "${file.name}" insertada dentro del artículo! (${formatFileSize(result.compressedSize)})`);
+    } catch (err: any) {
+      showNotification(err.message || 'Error al procesar la imagen.', 'error');
+    } finally {
+      setIsUploadingInline(false);
+      if (e.target) e.target.value = '';
+    }
+  };
 
   // Settings State
   const [tempSettings, setTempSettings] = useState<BlogSettings>(settings);
@@ -647,19 +706,146 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
               </div>
 
-              {/* Cover Image selector */}
-              <div>
-                <label className="block text-xs font-medium text-stone-700 dark:text-stone-300 mb-1">
-                  Imagen de cabecera (Galería oficial del blog)
-                </label>
-                <div className="flex flex-col gap-2.5">
-                  <input
-                    type="text"
-                    placeholder="Ruta o URL de la imagen"
-                    value={coverImage}
-                    onChange={e => setCoverImage(e.target.value)}
-                    className="w-full px-3 py-2 text-xs rounded-lg bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 focus:outline-hidden focus:ring-1 focus:ring-amber-700 font-mono"
-                  />
+              {/* Cover Image Selector & Local Upload from Computer */}
+              <div className="bg-stone-50/80 dark:bg-stone-900/40 p-4 sm:p-5 rounded-xl border border-stone-200 dark:border-stone-800 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wider flex items-center gap-1.5">
+                      <ImageIcon className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+                      <span>Imagen de Portada del Artículo</span>
+                    </label>
+                    <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
+                      Sube fotos desde tu computadora o teléfono para que cada artículo tenga su propia imagen original.
+                    </p>
+                  </div>
+
+                  {/* Upload button from computer */}
+                  <div>
+                    <input
+                      ref={coverFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCoverFileUpload}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      disabled={isUploadingCover}
+                      onClick={() => coverFileInputRef.current?.click()}
+                      className="w-full sm:w-auto px-4 py-2.5 bg-amber-700 hover:bg-amber-800 active:scale-98 text-white rounded-xl text-xs font-semibold shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                      title="Selecciona una imagen desde tu equipo (JPG, PNG, WebP)"
+                    >
+                      {isUploadingCover ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-amber-200" />
+                          <span>Procesando imagen...</span>
+                        </>
+                      ) : (
+                        <>
+                          <UploadCloud className="w-4 h-4" />
+                          <span>Subir imagen desde mi computadora</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Active Cover Image Preview Card */}
+                {coverImage && (
+                  <div className="relative aspect-21/9 sm:aspect-16/7 max-h-56 w-full rounded-xl overflow-hidden border-2 border-amber-600/70 dark:border-amber-500/70 shadow-sm bg-stone-200 dark:bg-stone-800 group">
+                    <img
+                      src={coverImage}
+                      alt="Portada seleccionada"
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent flex items-end justify-between p-3.5 sm:p-4">
+                      <div className="text-white text-xs font-medium drop-shadow-md">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-600 uppercase tracking-wider shadow-xs">
+                          {coverImage.startsWith('data:') ? '✓ Tu Foto Personalizada' : '✓ Imagen de Portada Activa'}
+                        </span>
+                        <p className="text-[11px] text-stone-200 mt-1 line-clamp-1">
+                          Esta imagen se mostrará en la cabecera del artículo y en la tarjeta de inicio.
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => coverFileInputRef.current?.click()}
+                          className="px-2.5 py-1.5 rounded-lg bg-black/60 hover:bg-black/80 backdrop-blur-xs text-white text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                          title="Cambiar por otra foto de tu equipo"
+                        >
+                          <Upload className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline">Cambiar</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCoverImage('')}
+                          className="p-1.5 rounded-lg bg-rose-600/80 hover:bg-rose-700 text-white text-xs transition-colors cursor-pointer shadow-xs"
+                          title="Quitar imagen de portada"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Mis Fotos Subidas (Saved personal library) */}
+                {customImages.length > 0 && (
+                  <div className="pt-2 border-t border-stone-200 dark:border-stone-800">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-semibold text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
+                        <Folder className="w-3.5 h-3.5 text-amber-600" />
+                        <span>Mis Fotos Subidas ({customImages.length}):</span>
+                      </span>
+                      <span className="text-[11px] text-stone-400">
+                        Haz clic en una para usarla
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                      {customImages.map((imgUrl, i) => {
+                        const isSelected = coverImage === imgUrl;
+                        return (
+                          <div
+                            key={i}
+                            onClick={() => setCoverImage(imgUrl)}
+                            className={`group relative aspect-16/10 rounded-lg overflow-hidden border-2 cursor-pointer transition-all ${
+                              isSelected
+                                ? 'border-amber-600 ring-2 ring-amber-500/40 scale-102 shadow-sm'
+                                : 'border-stone-200 dark:border-stone-700 hover:border-amber-400 opacity-80 hover:opacity-100'
+                            }`}
+                          >
+                            <img
+                              src={imgUrl}
+                              alt={`Foto subida ${i + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                            {isSelected && (
+                              <div className="absolute top-1 left-1 bg-amber-600 text-white rounded-full p-0.5 shadow-xs">
+                                <CheckCircle className="w-3.5 h-3.5" />
+                              </div>
+                            )}
+                            <button
+                              type="button"
+                              onClick={(e) => handleRemoveCustomImage(imgUrl, e)}
+                              title="Eliminar de mi lista de fotos"
+                              className="absolute top-1 right-1 p-1 rounded bg-black/60 hover:bg-rose-600 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Galería Oficial Predeterminada del Blog */}
+                <div className="pt-2 border-t border-stone-200 dark:border-stone-800">
+                  <span className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-2">
+                    O selecciona una de la Galería Oficial Predeterminada:
+                  </span>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {TACTICAL_IMAGE_GALLERY.map(img => {
                       const isSelected = coverImage === img.path;
@@ -692,6 +878,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       );
                     })}
                   </div>
+                </div>
+
+                {/* Optional Custom URL */}
+                <div className="pt-1">
+                  <input
+                    type="text"
+                    placeholder="O escribe una URL / enlace web externo de imagen..."
+                    value={coverImage.startsWith('data:') ? '' : coverImage}
+                    onChange={e => setCoverImage(e.target.value)}
+                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 focus:outline-hidden focus:ring-1 focus:ring-amber-700 font-mono"
+                  />
                 </div>
               </div>
 
@@ -759,6 +956,24 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   title="Lista de puntos"
                 >
                   • Lista
+                </button>
+                <div className="h-4 w-px bg-stone-300 dark:bg-stone-600 mx-1" />
+                <input
+                  type="file"
+                  ref={inlineFileInputRef}
+                  onChange={handleInlineContentImageUpload}
+                  accept="image/png,image/jpeg,image/webp,image/jpg"
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => inlineFileInputRef.current?.click()}
+                  disabled={isUploadingInline}
+                  className="px-2.5 py-1 rounded bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700/80 flex items-center gap-1 font-semibold cursor-pointer shadow-xs transition-colors"
+                  title="Subir una foto desde tu computadora e insertarla directamente en el texto del artículo"
+                >
+                  <ImagePlus className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300" />
+                  <span>{isUploadingInline ? 'Procesando foto...' : 'Insertar foto en el texto'}</span>
                 </button>
               </div>
 

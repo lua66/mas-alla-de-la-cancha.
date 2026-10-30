@@ -162,6 +162,29 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({
           </blockquote>
         );
       }
+      if (trimmed.startsWith('![') && trimmed.includes('](') && trimmed.endsWith(')')) {
+        const match = trimmed.match(/^!\[(.*?)\]\((.*?)\)$/);
+        if (match) {
+          const altText = match[1];
+          const imgSrc = match[2];
+          return (
+            <figure key={idx} className="my-6 rounded-xl overflow-hidden border border-stone-200 dark:border-stone-800 shadow-sm bg-white dark:bg-stone-900">
+              <img
+                src={imgSrc}
+                alt={altText || 'Imagen técnica del artículo'}
+                className="w-full max-h-[500px] object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+              {altText && (
+                <figcaption className="p-2 text-center text-xs text-stone-500 dark:text-stone-400 font-serif italic border-t border-stone-100 dark:border-stone-800">
+                  {altText}
+                </figcaption>
+              )}
+            </figure>
+          );
+        }
+      }
       if (trimmed.startsWith('* ') || trimmed.startsWith('- ')) {
         const itemContent = trimmed.substring(2);
         return (

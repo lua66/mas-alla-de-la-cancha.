@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Article, BlogSettings } from '../types/blog';
-import { Mail, Calendar, Folder, Tag, ChevronDown, ChevronRight, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { Mail, Calendar, Folder, Tag, ChevronDown, ChevronRight, CheckCircle2, Loader2, AlertCircle, Sparkles, ShieldCheck, Send } from 'lucide-react';
 import { SocialIconsRow } from './SocialLinks';
 
 interface SidebarProps {
@@ -12,6 +12,7 @@ interface SidebarProps {
   onSelectTag: (tag: string | null) => void;
   onSubscribe: (email: string, frequency: 'semanal' | 'mensual') => Promise<{ success: boolean; message: string; syncedToSheet?: boolean }> | { success: boolean; message: string; syncedToSheet?: boolean };
   onSelectArchiveMonth?: (monthYear: string) => void;
+  subscriberCount?: number;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -22,7 +23,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectCategory,
   onSelectTag,
   onSubscribe,
-  onSelectArchiveMonth
+  onSelectArchiveMonth,
+  subscriberCount = 0
 }) => {
   // Newsletter state
   const [subEmail, setSubEmail] = useState('');
@@ -171,18 +173,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* 3. Newsletter Subscription Widget */}
-      <div className="bg-gradient-to-br from-amber-50/80 to-stone-100/90 dark:from-[#1E1C1A] dark:to-[#171513] p-6 rounded-xl border border-amber-200/80 dark:border-amber-900/40 shadow-xs">
-        <div className="flex items-center gap-2 mb-2 text-amber-800 dark:text-amber-400">
-          <Mail className="w-4 h-4" />
-          <h3 className="font-serif font-bold text-sm text-stone-900 dark:text-white">
-            Boletín por Correo
-          </h3>
+      {/* 3. Weekly Tactical Digest Subscription Widget */}
+      <div className="bg-gradient-to-br from-amber-50/90 to-stone-100/90 dark:from-[#1E1C1A] dark:to-[#171513] p-6 rounded-xl border border-amber-200/90 dark:border-amber-900/50 shadow-xs">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2 text-amber-800 dark:text-amber-400">
+            <Mail className="w-4 h-4" />
+            <h3 className="font-serif font-bold text-sm text-stone-900 dark:text-white">
+              Resumen Semanal Táctico
+            </h3>
+          </div>
+          <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-200/70 dark:bg-amber-950 text-amber-900 dark:text-amber-300">
+            Lunes
+          </span>
         </div>
 
-        <p className="text-xs text-stone-700 dark:text-stone-200 leading-relaxed mb-4">
-          Recibe en tu correo cada nuevo artículo de táctica y análisis técnico en cuanto se publique.
+        <p className="text-xs text-stone-700 dark:text-stone-200 leading-relaxed mb-3">
+          Recibe cada semana los mejores desgloses de jugadas, táctica defensiva, ejercicios para entrenamientos y notas de banquillo.
         </p>
+
+        {/* Feature bullet list */}
+        <div className="space-y-1 mb-4 text-[11px] text-stone-600 dark:text-stone-300">
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="w-3 h-3 text-amber-700 dark:text-amber-400 shrink-0" />
+            <span>Análisis tácticos y esquemas de pizarra</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <ShieldCheck className="w-3 h-3 text-amber-700 dark:text-amber-400 shrink-0" />
+            <span>Almacenado seguro en base de datos local</span>
+          </div>
+          {subscriberCount > 0 && (
+            <div className="pt-1 text-[10px] text-stone-500 dark:text-stone-400 font-mono">
+              Comunidad: {subscriberCount} {subscriberCount === 1 ? 'entrenador registrado' : 'entrenadores registrados'}
+            </div>
+          )}
+        </div>
 
         {subFeedback ? (
           <div className={`p-3.5 rounded-lg border text-xs flex flex-col gap-2 ${
@@ -196,7 +220,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
               ) : (
                 <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
               )}
-              <span className="leading-snug font-medium">{subFeedback.message}</span>
+              <div>
+                <span className="leading-snug font-medium block">{subFeedback.message}</span>
+                {subFeedback.success && (
+                  <span className="text-[10px] text-stone-500 dark:text-stone-400 block mt-0.5">
+                    Guardado en la base de datos local de suscriptores.
+                  </span>
+                )}
+              </div>
             </div>
 
             <button
@@ -230,7 +261,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onChange={() => setSubFreq('semanal')}
                   className="text-amber-700 focus:ring-amber-700"
                 />
-                Semanal
+                <span className="font-medium">Semanal (Lunes)</span>
               </label>
               <label className="flex items-center gap-1.5 cursor-pointer">
                 <input
@@ -242,22 +273,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onChange={() => setSubFreq('mensual')}
                   className="text-amber-700 focus:ring-amber-700"
                 />
-                Resumen mensual
+                <span>Mensual</span>
               </label>
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-2 bg-amber-800 hover:bg-amber-900 disabled:bg-amber-800/60 text-white rounded-lg text-xs font-medium transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-2 bg-amber-800 hover:bg-amber-900 disabled:bg-amber-800/60 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Procesando suscripción...</span>
+                  <span>Guardando en base local...</span>
                 </>
               ) : (
-                <span>Suscribirme al Boletín</span>
+                <>
+                  <Send className="w-3 h-3" />
+                  <span>Recibir Resumen Semanal</span>
+                </>
               )}
             </button>
           </form>
