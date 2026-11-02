@@ -127,19 +127,58 @@ app.get('/api/articles', (_req, res) => {
 app.post('/api/articles', (req, res) => {
   const article = req.body;
   if (!article || !article.title || !article.content) {
-    return res.status(400).json({ success: false, error: 'Datos de artículo inválidos.' });
+    return res.status(400).json({ success: false, error: 'Datos de artículo inválidos. Se requiere título y contenido.' });
   }
 
   let serverArticles = readJsonFile<any[]>(ARTICLES_FILE, INITIAL_ARTICLES);
-  const index = serverArticles.findIndex((a) => a.id === article.id);
-  if (index >= 0) {
-    serverArticles[index] = { ...serverArticles[index], ...article };
+
+  const slug = (article.slug || article.title)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
+
+  const readTimeMinutes = article.readTimeMinutes || Math.max(1, Math.ceil(article.content.split(/\s+/).length / 180));
+
+  let finalArticle: any;
+  const existingIndex = serverArticles.findIndex(
+    (a) => (article.id && a.id === article.id) || (article.id && a.slug === article.id) || (slug && a.slug === slug)
+  );
+
+  if (existingIndex >= 0) {
+    finalArticle = {
+      ...serverArticles[existingIndex],
+      ...article,
+      slug: slug || serverArticles[existingIndex].slug,
+      readTimeMinutes
+    };
+    serverArticles[existingIndex] = finalArticle;
   } else {
-    serverArticles.unshift(article);
+    finalArticle = {
+      id: article.id || 'art-' + Date.now(),
+      slug: slug || 'articulo-' + Date.now(),
+      title: article.title.trim(),
+      excerpt: article.excerpt?.trim() || article.content.substring(0, 160) + '...',
+      content: article.content,
+      category: article.category?.trim() || 'Táctica de Baloncesto',
+      tags: Array.isArray(article.tags) && article.tags.length > 0 ? article.tags : ['Baloncesto'],
+      author: article.author || 'Coach Leyanis Horta',
+      authorRole: article.authorRole || 'Licenciada en Deporte & Entrenadora',
+      publishedAt: article.publishedAt || new Date().toISOString().split('T')[0],
+      readTimeMinutes,
+      coverImage: article.coverImage || '/assets/coach_horta_avatar.jpg',
+      status: article.status || 'published',
+      viewsCount: article.viewsCount || 1,
+      likesCount: article.likesCount || 0,
+      featured: article.featured || false
+    };
+    serverArticles.unshift(finalArticle);
   }
+
   writeJsonFile(ARTICLES_FILE, serverArticles);
-  notifySearchEngines(article.slug);
-  return res.json({ success: true, article });
+  notifySearchEngines(finalArticle.slug);
+  return res.json({ success: true, article: finalArticle });
 });
 
 // 4. Delete article

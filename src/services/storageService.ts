@@ -137,11 +137,53 @@ export const storageService = {
     return list.find(a => a.id === id || a.slug === id);
   },
 
-  saveArticle(article: Partial<Article> & { title: string; content: string; category: string }): Article {
-    const articles = this.getArticles();
-    const isNew = !article.id;
+  // Load all articles directly from server (Standard Web Architecture)
+  async loadArticlesFromServer(): Promise<Article[]> {
+    try {
+      const res = await fetch('/api/articles');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.articles)) {
+          const serverArticles: Article[] = data.articles;
+          // Check if this browser has any articles that haven't been saved to server yet
+          const local = this.getArticles();
+          const missingOnServer = local.filter(
+            (l) => !serverArticles.some((s) => s.id === l.id || (l.slug && s.slug === l.slug))
+          );
 
-    const slug = article.title
+          if (missingOnServer.length > 0) {
+            console.log(`[Auto-Sync] Transfiriendo ${missingOnServer.length} artículos locales al servidor central...`);
+            for (const art of missingOnServer) {
+              await fetch('/api/articles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(art)
+              }).catch(() => {});
+            }
+            // Fetch refreshed master list
+            const refreshRes = await fetch('/api/articles');
+            if (refreshRes.ok) {
+              const refreshData = await refreshRes.json();
+              if (refreshData.success && Array.isArray(refreshData.articles)) {
+                localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(refreshData.articles));
+                return refreshData.articles;
+              }
+            }
+          }
+
+          localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(serverArticles));
+          return serverArticles;
+        }
+      }
+    } catch (err) {
+      console.warn('No se pudo conectar al servidor, usando caché local:', err);
+    }
+    return this.getArticles();
+  },
+
+  // Save article directly to server (Standard Web Architecture)
+  async saveArticle(article: Partial<Article> & { title: string; content: string; category: string }): Promise<Article> {
+    const slug = (article.slug || article.title)
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
@@ -150,63 +192,63 @@ export const storageService = {
 
     const readTimeMinutes = Math.max(1, Math.ceil(article.content.split(/\s+/).length / 180));
 
-    let savedArticle: Article;
+    const payload = {
+      ...article,
+      id: article.id || 'art-' + Date.now(),
+      slug: slug || 'articulo-' + Date.now(),
+      readTimeMinutes,
+      title: article.title.trim(),
+      content: article.content,
+      category: article.category?.trim() || 'Táctica de Baloncesto',
+      tags: article.tags || ['Baloncesto'],
+      coverImage: article.coverImage || '/assets/coach_horta_avatar.jpg',
+      status: article.status || 'published',
+      publishedAt: article.publishedAt || new Date().toISOString().split('T')[0]
+    };
 
-    if (isNew) {
-      savedArticle = {
-        id: 'art-' + Date.now(),
-        slug: slug || 'entrada-' + Date.now(),
-        title: article.title.trim(),
-        excerpt: article.excerpt?.trim() || article.content.substring(0, 160) + '...',
-        content: article.content,
-        category: article.category.trim() || 'Criterio General',
-        tags: article.tags || ['Baloncesto', 'Táctica'],
-        author: article.author || 'Coach Leyanis Horta',
-        authorRole: article.authorRole || 'Licenciada en Deporte & Entrenadora',
-        publishedAt: article.publishedAt || new Date().toISOString().split('T')[0],
-        readTimeMinutes,
-        coverImage: article.coverImage || '/assets/hero_basketball_tactics_1792680998647.jpg',
-        status: article.status || 'published',
-        viewsCount: 1,
-        likesCount: 0,
-        featured: article.featured || false
-      };
-      articles.unshift(savedArticle);
-    } else {
-      const index = articles.findIndex(a => a.id === article.id);
-      if (index === -1) {
-        throw new Error('Artículo no encontrado para actualizar');
+    let savedArticle: Article = payload as Article;
+
+    // Direct HTTP POST to server database
+    try {
+      const res = await fetch('/api/articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.article) {
+          savedArticle = data.article;
+        }
       }
-      savedArticle = {
-        ...articles[index],
-        ...article,
-        readTimeMinutes,
-        slug: slug || articles[index].slug
-      } as Article;
-      articles[index] = savedArticle;
+    } catch (err) {
+      console.warn('Error al guardar en el servidor:', err);
     }
 
+    // Update local cache
+    const articles = this.getArticles();
+    const existingIndex = articles.findIndex((a) => a.id === savedArticle.id);
+    if (existingIndex >= 0) {
+      articles[existingIndex] = savedArticle;
+    } else {
+      articles.unshift(savedArticle);
+    }
     localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(articles));
-
-    // Also persist to cloud server in background
-    fetch('/api/articles', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(savedArticle)
-    }).catch(err => console.warn('Error saving article to server:', err));
 
     return savedArticle;
   },
 
-  deleteArticle(id: string): void {
-    const articles = this.getArticles().filter(a => a.id !== id);
+  async deleteArticle(id: string): Promise<void> {
+    try {
+      await fetch(`/api/articles/${id}`, { method: 'DELETE' });
+    } catch (err) {
+      console.warn('Error al eliminar en servidor:', err);
+    }
+
+    const articles = this.getArticles().filter((a) => a.id !== id);
     localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(articles));
 
-    // Also delete on server
-    fetch(`/api/articles/${id}`, { method: 'DELETE' }).catch(err => console.warn('Error deleting article on server:', err));
-
-    // Also delete associated comments
-    const comments = this.getComments().filter(c => c.articleId !== id);
+    const comments = this.getComments().filter((c) => c.articleId !== id);
     localStorage.setItem(STORAGE_KEYS.COMMENTS, JSON.stringify(comments));
   },
 

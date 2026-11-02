@@ -211,24 +211,23 @@ export default function App() {
     setSelectedArticle(initialRoute.article);
     syncSeoForView(initialRoute.view, initialRoute.article, loadedSettings);
 
-    // Bidirectional sync with cloud server:
-    // Pushes all articles authored in this browser window to the server master list,
-    // and updates this device so all devices and mobiles see the exact same articles.
-    storageService.syncWithServer().then((synced) => {
-      if (synced.articles && synced.articles.length > 0) {
-        setArticles(synced.articles);
-        // If current article route, verify it exists in synced list
-        const updatedRoute = parseRouteFromLocation(synced.articles);
+    // Standard Web Architecture: Load articles directly from server database
+    storageService.loadArticlesFromServer().then((loaded) => {
+      if (loaded && loaded.length > 0) {
+        setArticles(loaded);
+        const updatedRoute = parseRouteFromLocation(loaded);
         if (updatedRoute.article) {
           setSelectedArticle(updatedRoute.article);
         }
       }
+    });
+
+    // Sync comments, subscribers, settings
+    storageService.syncWithServer().then((synced) => {
       if (synced.comments) setComments(synced.comments);
       if (synced.subscribers) setSubscribers(synced.subscribers);
       if (synced.settings) setSettings(synced.settings);
-    }).catch(err => {
-      console.warn('Background server sync:', err);
-    });
+    }).catch(() => {});
   }, [parseRouteFromLocation, syncSeoForView]);
 
   // Listen to browser Back / Forward events (popstate)
@@ -328,15 +327,15 @@ export default function App() {
     setComments(storageService.getComments());
   };
 
-  // Articles CRUD
-  const handleSaveArticle = (articleData: Partial<Article> & { title: string; content: string; category: string }) => {
-    const saved = storageService.saveArticle(articleData);
+  // Articles CRUD (Standard Web Architecture - direct server persistence)
+  const handleSaveArticle = async (articleData: Partial<Article> & { title: string; content: string; category: string }) => {
+    const saved = await storageService.saveArticle(articleData);
     setArticles(storageService.getArticles());
     return saved;
   };
 
-  const handleDeleteArticle = (id: string) => {
-    storageService.deleteArticle(id);
+  const handleDeleteArticle = async (id: string) => {
+    await storageService.deleteArticle(id);
     setArticles(storageService.getArticles());
     if (selectedArticle?.id === id) {
       setSelectedArticle(null);
@@ -409,29 +408,6 @@ export default function App() {
       });
     }
     return success;
-  };
-
-  // Quick Global Cloud Sync for Author
-  const [isSyncingGlobal, setIsSyncingGlobal] = useState(false);
-  const [globalSyncToast, setGlobalSyncToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
-
-  const handleGlobalSync = async () => {
-    setIsSyncingGlobal(true);
-    setGlobalSyncToast({ message: 'Sincronizando tus artículos con el servidor central...', type: 'info' });
-    try {
-      const res = await storageService.syncWithServer();
-      setArticles(res.articles);
-      setGlobalSyncToast({
-        message: `¡Éxito! ${res.articles.length} artículos guardados en el servidor. Ahora recarga tu móvil o la otra ventana para verlos.`,
-        type: 'success'
-      });
-      setTimeout(() => setGlobalSyncToast(null), 9000);
-    } catch {
-      setGlobalSyncToast({ message: 'Error de conexión al sincronizar.', type: 'error' });
-      setTimeout(() => setGlobalSyncToast(null), 5000);
-    } finally {
-      setIsSyncingGlobal(false);
-    }
   };
 
   // Calculate comments count map for performance
@@ -806,7 +782,7 @@ export default function App() {
         subscriberCount={subscribers.length}
       />
 
-      {/* Blogger Author Authentication Modal */}
+      {/* Author Authentication Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
@@ -814,32 +790,6 @@ export default function App() {
         correctPin="1234"
         authorName={settings.authorName}
       />
-
-      {/* Floating Sync Widget for Cross-Device (Mobile & Window Sync) */}
-      <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2 pointer-events-none">
-        {globalSyncToast && (
-          <div className={`pointer-events-auto p-3.5 rounded-2xl shadow-xl text-xs font-medium max-w-sm border backdrop-blur-md transition-all animate-in fade-in slide-in-from-bottom-2 ${
-            globalSyncToast.type === 'success'
-              ? 'bg-emerald-900/95 text-emerald-100 border-emerald-500/50 flex items-start gap-2'
-              : globalSyncToast.type === 'error'
-              ? 'bg-rose-900/95 text-rose-100 border-rose-500/50'
-              : 'bg-stone-900/95 text-stone-100 border-stone-700/50'
-          }`}>
-            {globalSyncToast.type === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0 mt-0.5" />}
-            <div>{globalSyncToast.message}</div>
-          </div>
-        )}
-
-        <button
-          onClick={handleGlobalSync}
-          disabled={isSyncingGlobal}
-          title="Sincronizar tus artículos con el servidor para que se vean en tu móvil y cualquier otro navegador"
-          className="pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-full bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-800/70 text-white text-xs font-semibold shadow-lg hover:shadow-xl transition-all cursor-pointer border border-emerald-500/40"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${isSyncingGlobal ? 'animate-spin' : ''}`} />
-          <span>{isSyncingGlobal ? 'Sincronizando...' : `Sincronizar con Móvil (${articles.length} arts)`}</span>
-        </button>
-      </div>
     </div>
   );
 }

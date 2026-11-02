@@ -490,11 +490,11 @@ export const Header: React.FC<HeaderProps> = ({
             {isAdmin && (
               <button
                 onClick={onOpenAdmin}
-                title="Ir a mi Escritorio Blogger"
+                title="Panel de Administración / Redactar Artículos"
                 className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium text-amber-900 dark:text-amber-200 bg-amber-100/80 dark:bg-amber-950/60 hover:bg-amber-200/80 dark:hover:bg-amber-900/60 border border-amber-300 dark:border-amber-800 transition-colors whitespace-nowrap focus:outline-hidden cursor-pointer"
               >
                 <PenTool className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
-                <span className="hidden xl:inline">Escritorio</span>
+                <span className="hidden xl:inline">Administración</span>
               </button>
             )}
 

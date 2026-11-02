@@ -41,8 +41,8 @@ interface AdminPanelProps {
   comments: Comment[];
   subscribers: Subscriber[];
   settings: BlogSettings;
-  onSaveArticle: (article: Partial<Article> & { title: string; content: string; category: string }) => Article;
-  onDeleteArticle: (id: string) => void;
+  onSaveArticle: (article: Partial<Article> & { title: string; content: string; category: string }) => Promise<Article> | Article;
+  onDeleteArticle: (id: string) => Promise<void> | void;
   onUpdateCommentStatus: (id: string, status: 'approved' | 'pending' | 'spam') => void;
   onDeleteComment: (id: string) => void;
   onDeleteSubscriber: (id: string) => void;
@@ -78,6 +78,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [currentTab, setCurrentTab] = useState<AdminTab>('posts');
   const [filterStatus, setFilterStatus] = useState<'all' | 'published' | 'draft'>('all');
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Editor State
   const [editingArticleId, setEditingArticleId] = useState<string | null>(null);
@@ -222,7 +223,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     showNotification('¡Artículo generado con IA cargado en el editor! Puedes retocarlo y guardarlo.');
   };
 
-  const handlePublishAiArticleDirectly = (articleData: {
+  const handlePublishAiArticleDirectly = async (articleData: {
     title: string;
     excerpt: string;
     content: string;
@@ -231,19 +232,26 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     coverImage: string;
     status: 'published';
   }) => {
-    const saved = onSaveArticle({
-      title: articleData.title,
-      excerpt: articleData.excerpt,
-      content: articleData.content,
-      category: articleData.category,
-      tags: articleData.tags,
-      coverImage: articleData.coverImage,
-      status: 'published',
-      author: settings.authorName,
-      authorRole: settings.authorRole
-    });
-    setCurrentTab('posts');
-    showNotification(`¡Artículo "${saved.title}" publicado con éxito en el cuaderno!`);
+    setIsSaving(true);
+    try {
+      const saved = await onSaveArticle({
+        title: articleData.title,
+        excerpt: articleData.excerpt,
+        content: articleData.content,
+        category: articleData.category,
+        tags: articleData.tags,
+        coverImage: articleData.coverImage,
+        status: 'published',
+        author: settings.authorName,
+        authorRole: settings.authorRole
+      });
+      setCurrentTab('posts');
+      showNotification(`¡Artículo "${saved.title}" publicado con éxito en la web!`);
+    } catch {
+      showNotification('Error al publicar el artículo.', 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
@@ -287,7 +295,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setCurrentTab('editor');
   };
 
-  const handleSaveArticle = (saveAsStatus: 'published' | 'draft') => {
+  const handleSaveArticle = async (saveAsStatus: 'published' | 'draft') => {
     if (!title.trim()) {
       showNotification('Por favor, indica un título para la entrada.', 'error');
       return;
@@ -302,25 +310,32 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       .map(t => t.trim().replace(/^#/, ''))
       .filter(Boolean);
 
-    const saved = onSaveArticle({
-      id: editingArticleId || undefined,
-      title,
-      excerpt,
-      content,
-      category: category || 'General',
-      tags: tags.length > 0 ? tags : [category || 'General'],
-      coverImage: coverImage || '/assets/coach_horta_avatar.jpg',
-      status: saveAsStatus
-    });
+    setIsSaving(true);
+    try {
+      await onSaveArticle({
+        id: editingArticleId || undefined,
+        title,
+        excerpt,
+        content,
+        category: category || 'General',
+        tags: tags.length > 0 ? tags : [category || 'General'],
+        coverImage: coverImage || '/assets/coach_horta_avatar.jpg',
+        status: saveAsStatus
+      });
 
-    showNotification(
-      saveAsStatus === 'published'
-        ? '¡Entrada publicada con éxito! Ya está visible en el blog público.'
-        : 'Borrador guardado en la base interna.'
-    );
+      showNotification(
+        saveAsStatus === 'published'
+          ? '¡Artículo publicado y guardado en la web! Ya está disponible en cualquier ordenador y móvil.'
+          : 'Borrador guardado en el servidor.'
+      );
 
-    setEditingArticleId(null);
-    setCurrentTab('posts');
+      setEditingArticleId(null);
+      setCurrentTab('posts');
+    } catch {
+      showNotification('Error al conectar con el servidor para guardar.', 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const insertSnippet = (prefix: string, suffix: string = '') => {
@@ -335,18 +350,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   return (
     <div className="min-h-screen bg-[#F4F2EE] dark:bg-[#0F0E0D] text-stone-900 dark:text-stone-100 flex flex-col font-sans">
       
-      {/* Top Bar Blogger Style */}
+      {/* Top Bar Admin Panel */}
       <header className="bg-white dark:bg-[#1A1816] border-b border-stone-200 dark:border-stone-800 px-6 py-3.5 flex items-center justify-between sticky top-0 z-40 shadow-xs">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-amber-700 text-white flex items-center justify-center font-serif font-black text-sm shadow-xs">
-            B
+            P
           </div>
           <div>
             <h1 className="font-serif font-bold text-base text-stone-900 dark:text-stone-100 leading-none">
               {settings.blogTitle}
             </h1>
             <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
-              Escritorio de Autor Blogger · {settings.authorName}
+              Panel de Administración · {settings.authorName}
             </p>
           </div>
         </div>
@@ -354,22 +369,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         <div className="flex items-center gap-2.5">
           <button
             type="button"
-            onClick={handleManualSync}
-            disabled={isSyncing}
-            title="Sincronizar tus artículos con el servidor para que se vean en tu móvil y cualquier otro navegador"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-800/60 text-white shadow-xs transition-colors cursor-pointer"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-            <span>{isSyncing ? 'Sincronizando...' : 'Sincronizar con Móvil'}</span>
-          </button>
-
-          <button
-            type="button"
             onClick={onExitAdmin}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-800 hover:bg-amber-900 text-white shadow-xs transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-800 hover:bg-amber-900 text-white shadow-xs transition-colors cursor-pointer"
           >
             <Eye className="w-4 h-4" />
-            <span>Ver Blog Público</span>
+            <span>Ver Web Pública</span>
           </button>
 
           {onLogout && (
@@ -669,18 +673,29 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </button>
                   <button
                     type="button"
+                    disabled={isSaving}
                     onClick={() => handleSaveArticle('draft')}
-                    className="px-3.5 py-1.5 rounded-lg border border-stone-300 dark:border-stone-700 text-xs font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-lg border border-stone-300 dark:border-stone-700 text-xs font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-50 transition-colors cursor-pointer"
                   >
                     Guardar Borrador
                   </button>
                   <button
                     type="button"
+                    disabled={isSaving}
                     onClick={() => handleSaveArticle('published')}
-                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-amber-800 hover:bg-amber-900 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-800/60 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
                   >
-                    <Save className="w-3.5 h-3.5" />
-                    <span>Publicar Entrada</span>
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Guardando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-3.5 h-3.5" />
+                        <span>Publicar Artículo en la Web</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
@@ -1037,17 +1052,29 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
+                    disabled={isSaving}
                     onClick={() => handleSaveArticle('draft')}
-                    className="px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-700 text-xs font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 transition-colors"
+                    className="px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-700 text-xs font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 disabled:opacity-50 transition-colors cursor-pointer"
                   >
                     Guardar Borrador
                   </button>
                   <button
                     type="button"
+                    disabled={isSaving}
                     onClick={() => handleSaveArticle('published')}
-                    className="px-5 py-2 rounded-lg bg-amber-800 hover:bg-amber-900 text-white text-xs font-semibold shadow-xs transition-colors"
+                    className="flex items-center gap-2 px-5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-800/60 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
                   >
-                    Publicar Entrada
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Guardando en la web...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-3.5 h-3.5" />
+                        <span>Publicar Artículo en la Web</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
