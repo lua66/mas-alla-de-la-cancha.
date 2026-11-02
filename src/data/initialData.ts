@@ -1,204 +1,248 @@
-import { Article, Comment, Subscriber, BlogSettings } from '../types/blog';
+import { Article, Comment, Subscriber, BlogSettings } from "../types/blog";
 
 export const INITIAL_SETTINGS: BlogSettings = {
-  blogTitle: "Pizarra & Criterio",
-  blogSubtitle: "Cuaderno de análisis, metodología y vivencias desde el banquillo de baloncesto",
-  authorName: "Coach Leyanis Horta",
-  authorRole: "Licenciada en Deporte · Entrenadora de Baloncesto",
-  authorBio: "Licenciada en Cultura Física y Deporte con 20 temporadas sentada en los banquillos desde Cuba hasta Barcelona, España. Defensora incondicional de la intensidad defensiva, el pase extra solidario y el juego por conceptos frente a las pizarras rígidas.",
-  authorAvatar: "/assets/coach_horta_avatar.jpg",
-  yearsOfExperience: 20,
-  adminPin: "1234",
-  googleSheetWebhookUrl: "https://script.google.com/macros/s/AKfycbyAp_IwzOCSC2ANFgRDIegbQlsqa_t-VUGP6URVGzbZZ5wK6BjPwJpwRl8IRZrfTMF9/exec"
+  "blogTitle": "Pizarra & Criterio",
+  "blogSubtitle": "Cuaderno de análisis, metodología y vivencias desde el banquillo de baloncesto",
+  "authorName": "Coach Leyanis Horta",
+  "authorRole": "Licenciada en Deporte · Entrenadora de Baloncesto",
+  "authorBio": "Licenciada en Cultura Física y Deporte con 20 temporadas sentada en los banquillos desde Cuba hasta Barcelona, España. Defensora incondicional de la intensidad defensiva, el pase extra solidario y el juego por conceptos frente a las pizarras rígidas.",
+  "authorAvatar": "/assets/coach_horta_avatar.webp",
+  "yearsOfExperience": 20,
+  "adminPin": "1234",
+  "googleSheetWebhookUrl": "https://script.google.com/macros/s/AKfycbyAp_IwzOCSC2ANFgRDIegbQlsqa_t-VUGP6URVGzbZZ5wK6BjPwJpwRl8IRZrfTMF9/exec"
 };
 
 export const INITIAL_ARTICLES: Article[] = [
   {
-    id: "art-1",
-    slug: "balance-defensivo-mayor-fallo-concentracion",
-    title: "El arte del balance defensivo: Por qué recibir canastas tras tiro anotado es el mayor fallo de concentración",
-    excerpt: "Celebrar una canasta propia o lamentarse de un fallo mientras el rival saca de fondo en dos segundos es el pecado capital de cualquier equipo. Desglosamos las normas innegociables para neutralizar la transición rápida.",
-    content: `## La premisa que muchos olvidan
-
-Durante mis 20 temporadas como entrenadora en los banquillos, desde mis inicios formativos en Cuba hasta las ligas en Barcelona y el baloncesto catalán, he visto perder más partidos en los primeros cuatro segundos tras anotar una canasta que en las posesiones finales de infarto. Existe una falsa sensación de alivio cuando el balón entra en el aro rival: el anotador sonríe, el banquillo aplaude y, en ese milisegundo de desconexión mental, el base contrario ya ha recibido el saque y un alero corre libre por la banda opuesta.
-
-> "El ataque no termina cuando sueltas el balón hacia el aro; termina cuando los cinco jugadores han cruzado la línea de medio campo en posición defensiva."
-
-### 1. Las tres responsabilidades innegociables tras el lanzamiento
-
-Para que el balance defensivo funcione con la precisión de un reloj de cuerda, los roles deben estar interiorizados antes incluso de que el balón golpee el aro:
-
-* **El balanceador primario (Safety):** Por norma, el jugador situado más arriba de la línea de tres puntos jamás acude al rebote de ataque. Su primer movimiento no es mirar el rebote, sino esprintar de espaldas a la canasta contraria para proteger la pintura de canastas fáciles.
-* **El hostigador del primer pase:** El jugador más próximo al reboteador o al sacador tiene la obligación de incomodar la salida inmediata sin cometer faltas tontas, retrasando el contraataque directo al menos dos segundos valiosos.
-* **La recuperación por carriles centrales:** Los otros tres jugadores deben regresar por el embudo central de la pista, jamás por las esquinas o bandas, cubriendo la espalda del compañero y cortando líneas de pase largas.
-
-### 2. Hablar en la pista: la herramienta defensiva más infrautilizada
-
-Muchos entrenadores jóvenes invierten horas en diseñar jugadas complejas en su pizarra y descuidan lo elemental: **el silencio defensivo es una invitación a la canasta fácil**. 
-
-Un veterano no necesita saltar más que el rival si canta a viva voz: *"¡Tengo balón!", "¡Corto por el medio!", "¡Tiro fuera!"*. La comunicación genera confianza y alerta al compañero rezagado. Si en tu entrenamiento los chicos no gritan las asignaciones en el balance, tu defensa de fin de semana no resistirá ante un equipo con ritmo.
-
-### Conclusión para el banquillo
-No permitas que tus jugadores celebren antes de defender. La próxima vez que veas un vídeo de tu partido, cuenta cuántos puntos fáciles regaló tu equipo tras haber metido vosotros una canasta previa. Te sorprenderá comprobar que ahí suele estar la diferencia entre ganar o perder.`,
-    category: "Táctica Defensiva",
-    tags: ["Balance Defensivo"],
-    author: "Coach Leyanis Horta",
-    authorRole: "Licenciada en Deporte & Entrenadora",
-    publishedAt: "2026-10-18",
-    readTimeMinutes: 5,
-    coverImage: "/assets/hero_basketball_tactics_1792680998647.jpg",
-    status: "published",
-    viewsCount: 342,
-    likesCount: 29,
-    featured: true
+    "id": "art-1793630647754",
+    "slug": "blindar-la-espalda-en-el-clutch-como-defender-el-bloqueo-ciego-en-formacion",
+    "title": "Blindar la espalda en el clutch: Cómo defender el bloqueo ciego en formación",
+    "excerpt": "Claves tácticas y de comunicación para neutralizar el bloqueo ciego en los últimos segundos sin caer en el pánico ni regalar una bandeja.",
+    "content": "Quedan ocho segundos en el marcador. Tiempo muerto. Estás un punto arriba en una pista caliente de Mataró o en un tabloncillo de La Habana; la atmósfera vibra. El entrenador rival dibuja en su pizarra lo de siempre cuando se busca petróleo sin margen de error: una distracción en el lado fuerte y un corte ciego (*back screen*) hacia el aro desde el lado débil. Si trabajas en cantera, sabes exactamente lo que suele ocurrir: el defensor del cortador se queda hipnotizado mirando el balón, el defensor del bloqueador guarda silencio sepulcral, suena el silbato y el rival anota una bandeja solo bajo el aro.\n\nEn mis más de 20 temporadas en los banquillos he visto perder campeonatos por este detalle. Y no por falta de piernas ni de talento atlético, sino por falta de hábito perceptivo y generosidad acústica.\n\n## La anatomía del desastre en categorías formativas\n\nEntre los 13 y los 18 años, el jugador tiene una tendencia natural a la visión túnel. En situaciones de máxima tensión competitiva (*clutch*), esa tendencia se multiplica. Defender un bloqueo ciego exige una madurez táctica que choca de frente con los tres vicios clásicos del baloncesto base:\n\n*   **La hipnosis del balón (*ball-watching*):** El defensor del cortador olvida a su par porque la pelota ejerce una atracción magnética. Al no ver venir el cuerpo del bloqueador, el impacto es inevitable y desestabilizador.\n*   **El silencio del defensor del bloqueador:** En formación existe la falsa creencia de que defender es una tarea individual de uno contra uno. Quien defiende al bloqueador suele creer que «su trabajo está hecho» si su hombre no tira, olvidando que él es los ojos del compañero ciego.\n*   **El colapso de la distancia de seguridad:** El defensor del cortador se pega en exceso al cuerpo del atacante en vez de mantener un brazo de distancia que le permita anticipar trayectorias y esquivar el contacto.\n\n> «En mis 20 años de banquillo he visto más partidos perderse por no gritar un aviso a tiempo que por una mala decisión táctica. El silencio en defensa no es distracción: es complicidad con la canasta rival.»\n\n## Principios innegociables para neutralizar la trampa\n\nPara que un equipo U16 o U18 no se desmorone en la última posesión frente a un bloqueo ciego, no necesitas esquemas complejos; necesitas normas meridianas grabadas a fuego en el subconsciente.\n\n### 1. El 'Early Call': la voz manda\nEl defensor del bloqueador tiene la obligación de anticipar la acción con voz rotunda dos segundos antes de que ocurra: *«¡Ciego derecha!»* o *«¡Espalda!»*. No basta con susurrarlo; hay que proyectar la voz para romper el ruido del pabellón. La comunicación en defensa reduce la ansiedad del compañero y activa su respuesta motriz.\n\n### 2. Romper la línea o cambiar con impacto\nDependiendo del perfil de tus jugadores en pista, debes darles herramientas claras sin ambigüedades:\n*   **Si decides pasar por detrás:** El defensor del cortador debe sentir el aviso, dar un paso hacia atrás (hacia la canasta) para esquivar la pantalla y recuperar la línea del corte.\n*   **Si decides cambiar (Switch automático):** El defensor del bloqueador debe dar un paso agresivo al frente, metiendo el pecho en la trayectoria del cortador para cortar la línea de pase bombeado, mientras el defensor original se queda con el bloqueador abriéndose al triple.\n\n## Tarea metodológica: 3c3 'Ojos en la nuca' (Finales de infarto)\n\nPara entrenar este hábito bajo pulsaciones altas, utilizo este ejercicio específico tres veces por semana en bloques de 6 minutos:\n\n*   **Disposición:** 3 atacantes y 3 defensores en media pista. El entrenador tiene el balón en cabecera o en 45º. Tiempo de posesión en reloj: 6 segundos. El ataque está obligado a iniciar con un bloqueo ciego desde esquina contraria o poste alto.\n*   **Regla de oro:** Si el atacante que corta recibe en la pintura y mete canasta, el ataque suma 3 puntos. Si la defensa neutraliza el pase, el corte o recupera el balón, la defensa suma 2 puntos.\n*   **Castigo pedagógico:** Si el defensor del bloqueador no canta el bloqueo antes de que se produzca el contacto, la canasta rival vale doble independientemente del resultado.\n\n## Educar el criterio bajo fuego\n\nGanar finales apretados en categorías formativas no consiste en tener una pizarra mágica que dibuje genialidades. Consiste en formar jugadores con temple, ojos abiertos y gargantas vivas. El bloqueo ciego es la prueba del algodón del trabajo en equipo: premia a los que se comunican y castiga despiadadamente a los egoístas visuales.\n\nSi logras que tus cadetes o juniors entiendan que su voz salva la espalda de su hermano de equipo, habrás ganado mucho más que un partido apretado: habrás forjado competidores de primer nivel.",
+    "category": "Táctica Defensiva",
+    "tags": [
+      "bloqueo ciego"
+    ],
+    "author": "Coach Leyanis Horta",
+    "authorRole": "Licenciada en Deporte & Entrenadora",
+    "publishedAt": "2026-11-02",
+    "readTimeMinutes": 5,
+    "coverImage": "/assets/hero_basketball_tactics_1792680998647.jpg",
+    "status": "published",
+    "viewsCount": 1,
+    "likesCount": 0,
+    "featured": false
   },
   {
-    id: "art-2",
-    slug: "espaciamiento-pick-and-roll-moderno-espacios",
-    title: "Espaciamiento y lectura en el Pick & Roll moderno: Claves para no saturar la pintura",
-    excerpt: "El bloqueo directo se ha convertido en el recurso predominante a todos los niveles, pero a menudo se ejecuta sin comprender la geometría de la cancha. ¿Cómo generar ventajas reales sin asfixiar a los compañeros?",
-    content: `## Cuando la moda supera a la comprensión del juego
-
-Hoy en día, incluso en categorías infantiles y cadetes, se ven infinidad de bloqueos directos por posesión. Sin embargo, en ocho de cada diez ocasiones, el resultado es un atasco tremendo: tres defensores colapsando la zona porque los tiradores están a apenas dos metros del balón.
-
-El bloqueo directo no es una jugada mágica; **es simplemente una herramienta para forzar una decisión en dos defensores**. Si el resto de los tres atacantes no mantienen la distancia reglamentaria y la amenaza constante, la defensa gana siempre.
-
-### 1. El ángulo del bloqueo define el destino de la posesión
-
-Uno de los errores más comunes en la enseñanza del Pick & Roll es permitir que el bloqueador coloque la pantalla perpendicular a la línea lateral. Un bloqueo plano o invertido abre caminos completamente distintos:
-
-* **Bloqueo lateral (Side Pick):** Debe buscar encarrilar al manejador hacia el codo de la zona, obligando al defensor del bloqueador a elegir entre salir al 'drop', saltar al 'show' o cambiar.
-* **Espacio en esquina contraria:** La esquina del lado débil debe estar siempre ocupada por una amenaza real de tiro. Si ese jugador corta antes de tiempo hacia el aro, trae a su defensor justo donde el base intenta penetrar o doblar.
-
-### 2. Paciencia en la lectura del bote
-
-Los bases experimentados saben que tras superar el bloqueo no hay que correr desesperadamente hacia el tablero. Hay que poner al defensor en la cadera (*'snake dribble'* o frenada) y leer si el pívot rival sube o si la ayuda viene del alero de lado débil.
-
-### La regla de los cuatro metros
-Para mí, como regla de oro en mis equipos: **nunca dos jugadores a menos de cuatro metros de distancia en el lado del balón**, salvo en el momento exacto del contacto del bloqueo. La geometría castiga a quien no respeta los espacios.`,
-    category: "Ataque por Conceptos",
-    tags: ["Pick & Roll"],
-    author: "Coach Leyanis Horta",
-    authorRole: "Licenciada en Deporte & Entrenadora",
-    publishedAt: "2026-10-12",
-    readTimeMinutes: 6,
-    coverImage: "/assets/article_pick_and_roll_1792680999088.jpg",
-    status: "published",
-    viewsCount: 518,
-    likesCount: 44,
-    featured: false
+    "id": "art-1793630487490",
+    "slug": "el-pick-and-roll-en-cantera-del-bloqueo-mecanico-a-la-lectura-real-en-u14-u18",
+    "title": "El Pick and Roll en Cantera: Del Bloqueo Mecánico a la Lectura Real en U14-U18",
+    "excerpt": "Desmontamos los vicios del bloqueo directo en formación: cómo pasar de la ejecución ciega a la lectura táctica del espacio y las ventajas.",
+    "content": "## El bloqueo directo no es una jugada, es una conversación\n\nEn mis más de 20 temporadas en los banquillos, desde las canchas descubiertas en Cuba hasta el exigente baloncesto formativo catalán, he visto cómo el pick and roll se convertía paulatinamente en el refugio de los entrenadores perezosos. Llega la categoría cadete o júnior, el ataque se atasca y la solución automática desde la banda es gritar: *«¡Sube a jugar un pick!»*. \n\nEl resultado suele ser dantesco: un base que bota sin mirar al defensor, un pívot que pone una pantalla al aire y tres compañeros congelados en las esquinas esperando un milagro. Hemos transformado una herramienta de generación de ventajas en una coreografía estéril.\n\n> «El pick and roll mal enseñado produce jugadores dependientes de la jugada; bien enseñado, crea jugadores que dominan el espacio, el tiempo y la vulnerabilidad defensiva.»\n\nEn etapas formativas (U14 a U18), el bloqueo directo jamás debe enseñarse como una rutina fija. Debe abordarse como un conflicto geométrico de dos contra dos que repercute en el cinco contra cinco.\n\n## Los 3 errores endémicos en categorías de formación\n\nPara corregir, primero hay que diagnosticar con honestidad quirúrgica lo que ocurre en pista cada fin de semana:\n\n### 1. Bloquear sin generar ventaja previa\nEl bloqueador llega al trote y coloca el impacto sin que el manejador haya preparado al defensor. Si el portador del balón no fija a su par con un cambio de ritmo, una finta de recepción o un bote de aproximación, la defensa ni siquiera tiene que comunicarse. El atacante choca contra una pared inexistente y regala una falta en ataque o un balance defensivo roto.\n\n### 2. El síndrome del manejador ciego\nEl base júnior suele mirar únicamente dos cosas: el aro o los pies de su propio bloqueador. Pierde la visión periférica del tercer defensor (la ayuda del lado débil, el *tag*). Si el manejador baja la cabeza al doblar la esquina del bloqueo, cualquier defensa ordenada en *drop* o *flash* recuperará la posición antes de que el balón salga de sus manos.\n\n### 3. La muerte por estatismo en el lado débil\nMientras el balón se juega en 45 grados, los tres jugadores exteriores restantes actúan como espectadores de pago. En U16 y U18 es imperdonable no sincronizar un corte, un reemplazo o un *flare* ciego en el lado de ayuda para castigar la rotación del rival.\n\n## Metodología en pista: Ejercicio «Lectura 3c3 + 1 Decisor»\n\nPara erradicar la robotización en mis sesiones de entrenamiento, prohíbo terminantemente cantar continuaciones fijadas (*roll* o *pop* predeterminado). La defensa dicta la respuesta del ataque.\n\n* **Estructura:** 3 atacantes contra 3 defensores en media pista, con un entrenador o pasador extra en cabecera.\n* **Disposición inicial:** Balón en 45º, bloqueador en poste bajo que sube a bloquear en ángulo ciego, y un tirador en la esquina contraria.\n* **Reglas pedagógicas:**\n  1. **El defensor del bloqueo varía su táctica sin avisar:** el entrenador marca previamente si defenderán en *flash*, *paso de primera (under)* o *cambio automático (switch)*.\n  2. Si la defensa pasa por detrás (*under*), el manejador está obligado a castigar con tiro en suspensión o parada en un tiempo.\n  3. Si la defensa salta agresiva (*trap* o *show* largo), el manejador debe retroceder con dos botes de escape hacia banda y encontrar la continuación corta (*short roll*) en menos de dos segundos.\n  4. El jugador de la esquina débil sólo puede moverse si el defensor de su zona pisa la pintura para tapar la caída del pívot; si pisa, reemplaza a 45º para recibir el pase extra.\n\n## Criterio de banquillo\n\nNo ganamos partidos enseñando sistemas de Euroliga a chicos de 15 años. Ganamos partidos cuando ese mismo chico de 15 años entiende cuándo debe congelar el bote, cuándo debe castigar la cadera del defensor y cuándo el pase más valioso es aquel que no suma asistencia pero desencadena el tiro liberado de su compañero. La pizarra no mete canastas; el criterio del jugador, sí.\n\nParece sencillo, pero la diferencia entre un buen y un mal pick and roll está casi siempre en la lectura, no en el bloqueo.\n\nLa idea clave\n\nEl pick and roll es un juego de dos en el que el jugador con balón (base) y el que bloquea (poste o ala) obligan a la defensa a decidir. La clave es que el manejador lea cómo defienden el bloqueo y reaccione en consecuencia:\n\n- Si el defensor pasa por encima del bloqueo (over), el manejador puede atacar el espacio hacia el lado del bloqueador o buscar el pase al jugador que continúa.\n- Si el defensor pasa por debajo (under), hay que castigar con tiro exterior, porque se le concede espacio.\n- Si hay cambio (switch), se busca el desajuste: el poste contra un exterior, o el base contra un jugador más lento.\n- Si el defensor del bloqueador se queda alto (hedge o show), el pase rápido al jugador que continúa (roll) o al que se abre (pop) suele ser la respuesta.\n\nVariantes a trabajar: el roll hacia el aro, el pop (abrirse para tirar) y el slip (continuar sin llegar a bloquear cuando la defensa ya anticipa el cambio).\n\nEjemplo práctico: ejercicio 2c2 + 1\n\nColoca a un base con balón y a un bloqueador en el lateral, con dos defensores. Añade un tercer atacante en el lado débil como pasador de apoyo. El defensor decide en cada repetición cómo defender el bloqueo (over, under o cambio) sin avisar. El ataque debe leer y responder en menos de dos segundos. Juega series de cinco posesiones y anota cuántas lecturas fueron correctas, no solo cuántas canastas se metieron.\n\nConsejo final\n\nEnseña a tus jugadores a mirar al defensor del bloqueador antes de mirar el aro. Esa mirada anticipa casi toda la jugada. Y recuerda que el bloqueo debe ser firme y con buen ángulo: un bloqueo flojo anula cualquier lectura posterior.\n\nEsta semana, dedica diez minutos de cada entrenamiento a este ejercicio y verás cómo mejora la toma de decisiones del equipo.",
+    "category": "Ataque por Conceptos",
+    "tags": [
+      "Ataque por Conceptos"
+    ],
+    "author": "Coach Leyanis Horta",
+    "authorRole": "Licenciada en Deporte & Entrenadora",
+    "publishedAt": "2026-11-02",
+    "readTimeMinutes": 6,
+    "coverImage": "/assets/coach_horta_avatar.jpg",
+    "status": "published",
+    "viewsCount": 1,
+    "likesCount": 0,
+    "featured": false
   },
   {
-    id: "art-3",
-    slug: "gestion-vestuario-soledad-banquillo-liderazgo",
-    title: "La soledad del banquillo y la gestión de egos: Lo que los manuales técnicos callan",
-    excerpt: "Puedes conocer al detalle todas las variantes de la defensa en zona o de la salida de presión, pero si no eres capaz de mirar a los ojos a un jugador descontento por sus minutos, tu pizarra no servirá de nada.",
-    content: `## El verdadero examen no está en la pizarra
-
-Cuando obtienes la licenciatura en deporte y las máximas titulaciones de entrenadora, te enseñan biomecánica, periodización del entrenamiento, fisiología del esfuerzo y sistemas tácticos complejos. Pero nadie te entrega un manual sobre cómo gestionar al jugador estrella que pone mala cara al ser sustituido, ni sobre cómo sostener el ánimo del chico número doce que entrena con el alma cada martes y apenas disputa dos minutos el sábado.
-
-En mis 20 años en los banquillos, viviendo la pasión del baloncesto caribeño en Cuba y la exigencia competitiva en Barcelona, he aprendido que el liderazgo real se forja en el trato humano.
-
-### 1. La honestidad como único principio innegociable
-
-En mis años de experiencia he aprendido que los jugadores perdonan que te equivoques en un cambio táctico o en un tiempo muerto; lo que jamás perdonan es la falta de coherencia y el engaño piadoso.
-
-* No prometas minutos a nadie antes de empezar la temporada.
-* Explica a cada jugador cuál es su rol específico hoy, y qué debe hacer para ampliarlo mañana.
-* Trata a todos con el mismo respeto humano, aunque no les des los mismos minutos en pista. La igualdad no significa regalar tiempo de juego, sino ofrecer las mismas oportunidades de aprender.
-
-### 2. Saber escuchar antes del grito
-
-Muchos entrenadores antiguos caían en el error del autoritarismo de choque. Yo misma, en mis primeros años de juventud, creía que elevar la voz en los descansos demostraba pasión. Con los años comprendí que **el grito continuo aturde al jugador y anula su capacidad de pensar por sí mismo**. En momentos de máxima tensión, el tono sereno y las tres instrucciones claras son mil veces más eficaces que un discurso furibundo.`,
-    category: "Gestión de Vestuario",
-    tags: ["Gestión de Vestuario"],
-    author: "Coach Leyanis Horta",
-    authorRole: "Licenciada en Deporte & Entrenadora",
-    publishedAt: "2026-10-05",
-    readTimeMinutes: 7,
-    coverImage: "/assets/coach_horta_avatar.jpg",
-    status: "published",
-    viewsCount: 620,
-    likesCount: 61,
-    featured: false
+    "id": "art-1793630352248",
+    "slug": "fundamentos-del-tiro-mecanica-y-consistencia",
+    "title": "Fundamentos del tiro: mecánica y consistencia",
+    "excerpt": "Mecánica de Tiro",
+    "content": "Hola, entrenador:\n\nEsta semana hablamos en entreno con mis jugadoras sobre el tiro ya que es algo que todos los jugadores quieren mejorar y pocos entrenan con método: Un buen lanzador no nace con un don misterioso; sino que construye un gesto repetible y lo protege bajo fatiga y presión.\n\nLa idea clave: *la consistencia nace de la mecánica, y la mecánica se apoya en una base sencilla. \n\nPiensa en estos tres bloques.\n\nPrimero: la base. Pies a la anchura de los hombros, ligeramente adelantado el pie del lado de la mano de tiro, rodillas flexionadas y peso repartido. *La potencia del tiro viene de las piernas*, no de los brazos. Si el jugador tira solo con los brazos, se cansará y perderá precisión a final de partido.\n\nSegundo: el gesto. El codo alineado bajo el balón y apuntando al aro, el balón apoyado en las yemas de los dedos, la muñeca relajada. Al soltar, el brazo se extiende completo y la muñeca \"cae\" con los dedos señalando al aro. Esa continuación del movimiento es lo que da rotación y suavidad al balón.\n\nTercero: la repetición. El mismo ritmo en cada lanzamiento: flexión, extensión, suelta. Un tiro que cambia de velocidad o de altura en cada intento es un tiro difícil de corregir.\n\nEjercicio práctico: \"Tiro de cerca a lejos\". Empieza a un metro del aro, con una sola mano, concentrándote solo en codo, muñeca y seguimiento. Anota diez aciertos seguidos antes de alejarte un paso. Cuando llegues a la línea de tiro libre, repite el proceso con ambas manos en el balón. Este ejercicio fija el gesto con éxito alto y construye confianza. Dedícale diez minutos al inicio de cada entrenamiento.\n\nDespués, añade realismo: recibe un pase, sube la cabeza, prepara los pies antes de que llegue el balón y tira sin dudar. Un buen tiro empieza antes de tocar la pelota.\n\nConsejo final accionable: graba a tus jugadores desde el lateral y de frente durante un minuto de tiro. Revisad juntos el vídeo y elegid un solo punto a corregir por jugador. Corregir una cosa cada vez, y repetirla con constancia, rinde mucho más que cambiar cinco detalles de golpe.\n\nRecuerda: cantidad con calidad. Cien tiros bien hechos valen más que quinientos descuidados.\n\nLos Espero en loc comentarios\n",
+    "category": "Desarrollo de Fundamentos",
+    "tags": [
+      "Tiro",
+      "Mecánica de Tiro"
+    ],
+    "author": "Coach Leyanis Horta",
+    "authorRole": "Licenciada en Deporte & Entrenadora",
+    "publishedAt": "2026-11-02",
+    "readTimeMinutes": 3,
+    "coverImage": "/assets/coach_horta_avatar.jpg",
+    "status": "published",
+    "viewsCount": 1,
+    "likesCount": 0,
+    "featured": false
   },
   {
-    id: "art-4",
-    slug: "valor-formativo-pase-extra-menos-botes",
-    title: "El valor formativo del pase extra: Menos botes indiscriminados y más juego colectivo",
-    excerpt: "¿Por qué tantos jóvenes botan el balón de manera automática en cuanto lo reciben? Reflexión sobre la importancia de enseñar la triple amenaza y el hábito solidario de buscar el tiro abierto.",
-    content: `## El vicio del bote en la recepción
-
-Observen cualquier partido de categorías alevín, infantil o incluso junior: el jugador recibe un pase perfecto y, de manera casi refleja y sin levantar la cabeza, da un bote en el sitio. En ese único segundo perdido, la ventaja táctica generada por su compañero se evapora por completo.
-
-El balón viaja por el aire diez veces más rápido de lo que cualquier jugador puede correr o botar. Cuando insistimos en el pase extra, no solo estamos buscando una mejor estadística de tiro; estamos construyendo un equipo con alma solidaria.
-
-### Principios para desterrar el bote innecesario en los entrenamientos:
-
-1. **Jugar situaciones de 3c3 y 4c4 con límite de 2 botes por jugador:** Al principio habrá protestas y pérdidas de balón, pero pronto empezarán a moverse sin balón, a cortar puertas atrás y a buscar la espalda de la defensa.
-2. **Recompensar el pase del que nace la asistencia (el 'hockey pass'):** La estadística no suele registrar al jugador que dio el pase inicial que descolocó a la defensa, pero en el vídeo de vestuario debe ser elogiado con el mismo énfasis.
-3. **La regla del tiro bueno frente al tiro excelente:** Un tiro libre de marca desde 5 metros es un buen tiro; si das un pase adicional a la esquina para un compañero completamente solo, es un tiro excelente.`,
-    category: "Desarrollo de Fundamentos",
-    tags: ["Fundamentos"],
-    author: "Coach Leyanis Horta",
-    authorRole: "Licenciada en Deporte & Entrenadora",
-    publishedAt: "2026-09-24",
-    readTimeMinutes: 4,
-    coverImage: "/assets/article_fundamentals_coaching_1792680999886.jpg",
-    status: "published",
-    viewsCount: 412,
-    likesCount: 38,
-    featured: false
+    "id": "art-1793630231086",
+    "slug": "la-regla-del-pase-extra-frente-a-los-tiros-precipitados-cuando-pasar-es-mejor-que-lanzar",
+    "title": "La regla del pase extra frente a los tiros precipitados: cuándo pasar es mejor que lanzar",
+    "excerpt": "Transformar un tiro aceptable en un tiro demoledor no es azar: es cultura de pase extra. Claves tácticas para erradicar la precipitación en ataque.",
+    "content": "# La regla del pase extra frente a los tiros precipitados: cuándo pasar es mejor que lanzar (antes ya hemos hablado de este tema y hoy profundizo un poco más para equipos mas avanzados)\n\nEn baloncesto, no todos los tiros abiertos son buenos tiros, ni todos los pases adicionales representan una mejor decisión. La diferencia está en la capacidad de interpretar lo que sucede en la pista y reconocer cuándo una ventaja puede mejorarse antes de finalizar la posesión.\n\nLa regla del pase extra suele resumirse en una idea sencilla: **si un compañero está en una posición de lanzamiento claramente mejor, pasa el balón antes de tirar**. Sin embargo, llevar este principio a la competición exige mucho más que generosidad o voluntad de compartir el balón. Requiere lectura táctica, confianza, conocimiento de los compañeros y capacidad para decidir bajo presión.\n\nPorque el objetivo no es dar un pase más. El objetivo es encontrar el mejor tiro posible.\n\n## 1. El tiro precipitado: cuando la primera ventaja se convierte en una mala decisión\n\nUn tiro precipitado no es necesariamente un lanzamiento ejecutado con rapidez. En determinadas situaciones, tirar rápido es precisamente la decisión correcta: una transición ofensiva, una ventaja numérica o un defensor que todavía no ha podido recuperar su posición pueden justificar una finalización inmediata.\n\n*El problema aparece cuando el jugador lanza sin haber interpretado suficientemente la situación.\n\nPuede ocurrir después de una penetración en la que dos defensores cierran el camino al aro, tras recibir un pase con un defensor llegando al lanzamiento o cuando un jugador decide tirar porque siente que debe aprovechar su oportunidad antes de que alguien se la quite.\n\nTambién sucede cuando el equipo confunde velocidad con precipitación y considera que mover el balón rápidamente significa terminar la jugada cuanto antes.\n\nDesde el banquillo, la pregunta no debería ser únicamente por qué el jugador ha fallado. Conviene analizar qué información tenía disponible cuando tomó la decisión.\n\n¿Había un compañero solo en una posición más favorable? ¿El defensor estaba realmente superado? ¿El lanzador tenía equilibrio y espacio suficientes? ¿Existía una línea de pase segura?\n\nSi había una opción claramente superior y el jugador no la identificó, el problema no está necesariamente en la mecánica de tiro. Puede estar en la lectura del juego.\n\n## 2. El pase extra: una herramienta para mejorar la ventaja\n\nEl pase extra consiste en realizar un pase adicional cuando permite transformar una situación ofensiva favorable en otra todavía mejor.\n\nImaginemos una penetración desde el lado derecho. La defensa colapsa sobre el balón y el atacante descarga hacia un compañero situado en la esquina. El receptor tiene un lanzamiento disponible, pero su defensor está llegando con rapidez desde la zona interior. En el lado contrario, otro compañero permanece liberado.\n\nEn esa situación, el pase extra puede obligar a la defensa a realizar una segunda rotación. El balón llega al jugador del lado débil con más espacio y tiempo para ejecutar.\n\nLa ventaja no procede del número de pases, sino del desplazamiento defensivo que esos pases provocan.\n\nEste principio tiene especial importancia contra defensas que protegen la pintura, cierran las penetraciones y conceden inicialmente lanzamientos exteriores. Un equipo que mueve el balón con criterio puede obligar a la defensa a desplazarse, asumir ayudas sucesivas y dejar espacios que no existían al comienzo de la acción.\n\nPero hay una condición fundamental: el pase extra debe llegar antes de que desaparezca la ventaja.\n\nSi el jugador recibe con tiempo y espacio para lanzar un buen tiro y decide pasar sin necesidad, puede permitir que la defensa se recupere. En ese caso, el pase adicional no mejora la posesión; la debilita.\n\n**El pase extra es una decisión táctica, no una obligación colectiva.**\n\n## 3. ¿Cuándo conviene pasar y cuándo hay que tirar?\n\nEl jugador debe aprender a distinguir entre tres situaciones.\n\n**Primera: existe una ventaja clara para finalizar.**\n\nEl atacante recibe equilibrado, dispone de espacio y el defensor no puede contestar eficazmente el lanzamiento. Si se trata de un tiro adecuado para ese jugador y para el contexto del partido, la decisión correcta puede ser tirar inmediatamente.\n\nBuscar un pase adicional por sistema puede significar renunciar a una oportunidad de calidad.\n\n**Segunda: existe una ventaja, pero puede mejorarse.**\n\nEl jugador tiene una opción de lanzamiento, aunque otro compañero dispone de más espacio, mejor ángulo o una situación de finalización más favorable. Si el pase es seguro y permite conservar la ventaja, el pase extra puede elevar la calidad de la oportunidad.\n\n**Tercera: no existe una ventaja real.**\n\nEl receptor está presionado, el espacio es reducido o el equipo ha perdido la continuidad de la acción. Aquí puede ser preferible circular el balón, invertirlo, atacar de nuevo o reorganizar la ofensiva, en lugar de forzar un lanzamiento.\n\nLa clave consiste en enseñar a los jugadores a reconocer la calidad de la situación, no a obedecer una consigna sin interpretar el contexto.\n\n## 4. El papel de la confianza: compartir el balón sin renunciar a la responsabilidad\n\nUno de los obstáculos más frecuentes para aplicar el pase extra es la relación que cada jugador establece con su propio rol ofensivo.\n\nAlgunos jugadores necesitan demostrar que pueden anotar. Otros sienten que, si pasan cuando tienen una oportunidad de lanzamiento, están renunciando a su responsabilidad. También existen jugadores que evitan tirar incluso cuando están liberados porque temen equivocarse.\n\nAmbos extremos perjudican al equipo.\n\nEl jugador que lanza siempre que recibe puede convertir el ataque en una sucesión de decisiones individuales. El jugador que busca pasar siempre puede renunciar a una responsabilidad que le corresponde y permitir que la defensa ajuste sus posiciones sin asumir riesgos.\n\nEl objetivo del entrenador es construir una cultura en la que compartir el balón no signifique esconderse y tirar no signifique ser egoísta.\n\nUn jugador debe saber que puede recibir un pase para lanzar, que sus compañeros confían en él y que su responsabilidad es tomar la mejor decisión disponible.\n\nLa confianza colectiva se demuestra cuando un jugador pasa porque ha visto una opción mejor, pero también cuando tiene un buen lanzamiento y se atreve a ejecutarlo sin miedo a fallar.\n\n## 5. La lectura desde el banquillo: no evaluar únicamente el resultado\n\nUn error habitual en el análisis del juego consiste en juzgar las decisiones por el resultado final.\n\nUn jugador realiza un tiro precipitado, el balón entra y la acción parece correcta. Otro realiza un pase extra bien seleccionado, el compañero falla el lanzamiento y la jugada se considera una oportunidad desperdiciada.\n\nSin embargo, el resultado de una acción no siempre refleja la calidad de la decisión que la precede.\n\nDesde el banquillo conviene diferenciar entre la decisión tomada y la ejecución posterior.\n\nUn buen lanzamiento puede no entrar. Un pase adecuado puede terminar en pérdida por una mala recepción. Y un tiro de baja calidad puede acabar en canasta sin convertirse por ello en una buena referencia para repetir la conducta.\n\nEsto no significa ignorar la eficacia. Significa analizarla junto con el contexto que la produce.\n\nPara evaluar el uso del pase extra, el entrenador puede observar:\n\n- **Calidad de la primera ventaja:** ¿el jugador reconoció que había creado un desequilibrio defensivo?\n- **Selección del pase:** ¿el compañero estaba realmente en mejor disposición para finalizar?\n- **Tiempo de decisión:** ¿el pase se realizó antes de que la defensa pudiera recuperar?\n- **Continuidad ofensiva:** ¿el resto del equipo mantuvo la ocupación de espacios y ofreció nuevas líneas de pase?\n- **Resultado de la posesión:** ¿se generó un lanzamiento de calidad, se conservó el balón o se perdió una oportunidad clara?\n\nEstas referencias permiten identificar si el problema está en la percepción, en la decisión, en la ejecución técnica o en la coordinación colectiva.\n\n## 6. Cómo entrenar el pase extra sin convertirlo en una consigna automática\n\nEl pase extra debe entrenarse en situaciones donde el jugador tenga que interpretar estímulos reales. Si todas las tareas terminan obligatoriamente con un pase adicional, el jugador aprenderá a cumplir una secuencia, pero no necesariamente a decidir mejor.\n\nUna progresión útil puede incluir tres situaciones.\n\n### Ejercicio 1. Recibir, leer y decidir\n\nSe organizan jugadores en el perímetro. El atacante recibe el balón mientras un defensor modifica su posición: puede llegar tarde, cerrar el lanzamiento o dejar una línea de pase hacia otro compañero.\n\nEl atacante debe decidir entre tirar, pasar o atacar el espacio disponible.\n\nEl entrenador no anticipa la respuesta. Después de cada acción, pregunta qué información utilizó el jugador para elegir.\n\n**Objetivo:** mejorar la percepción de la distancia defensiva, el tiempo disponible y las alternativas de pase.\n\n### Ejercicio 2. Penetración, descarga y pase extra\n\nSe inicia con una penetración hacia la pintura. La defensa debe reaccionar y ayudar sobre el balón. El atacante puede finalizar, descargar hacia el exterior o encontrar al compañero liberado después de una segunda rotación defensiva.\n\nLa defensa también puede recuperar con rapidez, de manera que el pase extra no sea siempre la mejor opción.\n\n**Objetivo:** reconocer cuándo el movimiento defensivo genera una nueva ventaja y cuándo conviene aprovechar la primera oportunidad.\n\n### Ejercicio 3. Juego reducido con toma de decisiones libre\n\nSe juega un tres contra tres o cuatro contra cuatro en media pista. Se permiten todas las soluciones ofensivas: tiro, penetración, pase extra, inversión del balón y reorganización.\n\nEl entrenador registra las decisiones de calidad, no solamente las canastas anotadas.\n\nDespués de una secuencia, puede detener brevemente el ejercicio y preguntar: «¿Qué hizo la defensa?», «¿Dónde estaba la mejor ventaja?» o «¿Qué habrías conseguido con un pase más?».\n\n**Objetivo:** trasladar la lectura táctica a un entorno de oposición y presión temporal.\n\nEn todas estas tareas, es importante que los jugadores reciban información concreta. Decir «hay que mover más el balón» no siempre ayuda a corregir el problema. Explicar que el defensor del lado débil ha cerrado la penetración y ha dejado libre la esquina ofrece una referencia mucho más útil.\n\n## 7. La estadística ayuda, pero no decide por el entrenador\n\nEl análisis de los tiros puede aportar información relevante sobre la aplicación de este principio.\n\nPor ejemplo, conviene comparar los lanzamientos realizados inmediatamente después de recibir con aquellos que se producen tras una circulación adicional. También puede analizarse cuántas veces una penetración genera una ayuda defensiva, cuántos pases llegan a un compañero liberado y qué calidad de lanzamiento se obtiene después.\n\nNo obstante, hay que evitar una conclusión simplista: un tiro después de un pase extra no es automáticamente mejor que un tiro sin ese pase.\n\nLa calidad depende de la posición del lanzador, la distancia al aro, la presión defensiva, el tiempo de ejecución y las características del jugador. En determinados contextos, un lanzamiento rápido tras una recepción puede ser superior a un pase adicional que permita recuperar a la defensa.\n\nEl vídeo resulta especialmente útil para estudiar estas situaciones. Permite detener la acción en el momento de la decisión, observar la posición de los defensores y comprobar si el jugador tenía información suficiente para reconocer una alternativa.\n\nAsí, el análisis deja de centrarse exclusivamente en si el balón entró y pasa a estudiar cómo se construyó la oportunidad.\n\n## El mejor pase es el que mejora la decisión colectiva\n\nEl pase extra representa una de las expresiones más interesantes del baloncesto colectivo: la capacidad de reconocer que una buena oportunidad puede convertirse en otra todavía mejor.\n\nPero esa idea pierde su sentido cuando se transforma en una norma rígida. Pasar por pasar puede hacer que el equipo desaproveche tiros liberados, pierda tiempo y permita que la defensa recupere su posición.\n\nLa verdadera exigencia consiste en encontrar el equilibrio entre iniciativa individual y responsabilidad colectiva. El jugador debe saber cuándo finalizar, cuándo compartir la ventaja y cuándo continuar construyendo el ataque.\n\nDesde el banquillo, el trabajo no consiste en pedir más pases de forma indiscriminada. Consiste en enseñar a los jugadores a observar, interpretar y decidir con criterio.\n\n**Porque el baloncesto colectivo no se mide por cuántas veces se pasa el balón, sino por la calidad de las decisiones que esos pases permiten construir.**\n\n## Del tiro «bueno» al tiro demoledor\n\nHe presenciado la misma escena cientos de veces: un atacante recibe en 45 grados tras un cambio defensivo, tiene dos metros de distancia con respecto a su par y no lo duda. Lanza. El balón roza el aro o entra, pero el banquillo rival respira aliviado. ¿Por qué respira la defensa? Porque un tiro precipitado, aunque esté liberado, les ahorra rotar. Les evita el colapso.\n\n> «El balón no tiene ego; se mueve al rincón donde la ventaja duele más. Si tiras antes de castigar la última ayuda, le estás regalando oxígeno al rival.»\n\nEl problema no es lanzar solos, sino lanzar antes de tiempo. Un tiro aceptable en el segundo ocho de posesión sin haber forzado una segunda rotación es, en el 80% de los casos, una victoria de la defensa. La regla del **pase extra** (*the one more*) no es un dogma romántico de baloncesto lírico; es pura geometría aplicada y desgaste psicológico para el adversario.\n\n### El colapso defensivo no termina en el primer closeout\n\nCuando generamos una ventaja con un bloqueo directo o una división profunda, la defensa se ve forzada a colapsar la pintura. Ese primer pase de salida genera un closeout agresivo del defensor de la esquina o del ala. Aquí es donde se separan los jugadores robóticos de los jugadores de criterio:\n\n* **El jugador robotizado:** Recibe, mira el aro y lanza apresurado sintiendo la respiración del defensor en recuperación, sacrificando equilibrio biomecánico.\n* **El jugador de criterio:** Identifica el vector de llegada del defensor, lee la ayuda que se movió detrás de este y realiza el pase extra al jugador completamente solo en la esquina débil.\n\nEse segundo pase congela las piernas del rival. No hay rotación humana capaz de cubrir tres esquinas consecutivas si el balón viaja en el aire con velocidad y precisión.\n\n## Metodología en pista: La Norma del Semáforo y el 4c4 Dinámico\n\nNo podemos exigir en los últimos dos minutos de partido lo que no hemos castigado o premiado durante la semana. Para erradicar el tiro precipitado en mis equipos, implemento una regla innegociable en los entrenamientos de 4 contra 4 y 5 contra 5.\n\n### La regla de entrenamiento: «Tiro verde, tiro rojo»\n\nEstablecemos una escala de valor en cada lanzamiento:\n1. **Tiro Rojo (-2 puntos en tanteo interno):** Tiro precipitado con defensor flotando a menos de un metro y medio, o tiro exterior en los primeros 7 segundos sin haber pisado pintura ni generado una inversión de balón.\n2. **Tiro Amarillo (+1 punto si entra):** Tiro liberado tras primera ventaja, pero existiendo un compañero a un pase de distancia con mayor ángulo y tiempo de ejecución.\n3. **Tiro Verde (+3 puntos si entra, +1 si falla):** Tiro ejecutado tras pase extra, cuando la defensa está a contrapié por una rotación vencida. Premiar el fallo de un tiro bien generado construye confianza y elimina el miedo.\n\n### Ejercicio Práctico: 4c4 con ventaja forzada + penalización de closeout\n\n* **Disposición:** 4 atacantes abiertos perimetralmente (formación 4-out) frente a 4 defensores que parten con los dos pies dentro de la zona.\n* **Dinámica:** El entrenador entrega el balón a un atacante exterior. Al pase, los defensores deben correr a recuperar sus marcas (closeout extremo).\n* **Regla obligatoria:** El primer receptor tiene prohibido lanzar al aro; debe atacar la recuperación en penetración o transferir inmediatamente el balón mediante un *skip pass* o un pase diagonal. Se exige un mínimo de un pase extra antes del tiro.\n* **Objetivo:** Automatizar la visión periférica del tirador para detectar si su ventaja es momentánea o si el compañero de la esquina contigua tiene el tiro definitivo con tiempo para plantar pies y armar el tiro (*catch and shoot*).\n\n## Conclusión de banquillo\n\nHe visto perder finales por un triple tomado a la ligera a falta de 40 segundos, creyendo que estar «abierto» equivalía a estar en la «mejor posición». No dejes que la estadística individual de tus exteriores secuestre la madurez ofensiva de tu grupo. Enseñar a renunciar a un tiro bueno para regalarle a un compañero un tiro excelente no es sólo táctica de alto nivel: es el principio fundacional del compromiso colectivo.",
+    "category": "Desarrollo de Fundamentos",
+    "tags": [
+      "La regla del pase extra"
+    ],
+    "author": "Coach Leyanis Horta",
+    "authorRole": "Licenciada en Deporte & Entrenadora",
+    "publishedAt": "2026-11-02",
+    "readTimeMinutes": 15,
+    "coverImage": "/assets/basketball_drill_training_1792831347584.jpg",
+    "status": "published",
+    "viewsCount": 1,
+    "likesCount": 0,
+    "featured": false
+  },
+  {
+    "id": "art-1793630064170",
+    "slug": "el-rebote-defensivo-como-primer-pase-de-contraataque-criterio-tactico-y-lectura-desde-el-banquillo",
+    "title": "El Rebote Defensivo como Primer Pase de Contraataque: Criterio táctico y lectura desde el banquillo",
+    "excerpt": "Análisis detallado sobre el rebote defensivo como primer pase de contraataque. Cómo trasladar este concepto a la pista, evitar errores comunes y enriquecer la toma de decisiones.",
+    "content": "# El rebote defensivo como primer pase de contraataque: criterio táctico y lectura desde el banquillo\n\nEn baloncesto, hay acciones que parecen terminar una fase del juego, pero que, en realidad, pueden ser el comienzo de la siguiente. El rebote defensivo es una de ellas.\n\nCuando un equipo captura el balón después de un lanzamiento fallado por el rival, no solo recupera la posesión: obtiene una oportunidad para atacar antes de que la defensa contraria consiga organizarse. Sin embargo, esa ventaja no aparece automáticamente. Depende de la capacidad de los jugadores para leer la situación, tomar decisiones y coordinarse desde el primer instante.\n\n**El contraataque no comienza necesariamente cuando el balón llega al base. Comienza cuando el equipo entiende qué hacer con el rebote.**\n\n## 1. Capturar el balón no es suficiente\n\nUn buen rebote defensivo exige mucho más que altura, salto o capacidad física. Requiere anticipación, contacto con el rival, ocupación del espacio y determinación para asegurar la posesión.\n\nPero, una vez controlado el balón, aparece una segunda exigencia: decidir qué hacer con él.\n\nEl jugador que rebotea debe identificar rápidamente tres posibilidades:\n\n- **Primer pase inmediato:** existe un compañero adelantado, con ventaja y una línea de pase segura.\n- **Salida mediante bote:** no hay un pase claro, pero el reboteador dispone de espacio para avanzar y generar una ventaja.\n- **Conservación y organización:** la presión rival, el equilibrio defensivo o la ausencia de opciones aconsejan asegurar el balón y comenzar el ataque posicional.\n\nLa calidad de la transición ofensiva no se mide únicamente por la velocidad. Se mide por la capacidad de reconocer cuándo acelerar y cuándo conservar la ventaja.\n\n## 2. El primer pase: una decisión, no una obligación\n\nExiste una idea que conviene revisar: después de cada rebote defensivo, el balón debe salir inmediatamente hacia el base.\n\nEl base puede ser el organizador habitual, pero no siempre es la mejor opción para iniciar la transición. Si otro compañero está mejor colocado, tiene una línea de pase más limpia o puede avanzar con ventaja, obligar al reboteador a buscar al base puede hacer perder un tiempo decisivo.\n\nEl entrenador debe trabajar para que el equipo identifique al receptor más útil, no simplemente al receptor previsto.\n\nLa lectura del reboteador debe considerar:\n\n- La posición de los compañeros y de los defensores.\n- La distancia y el ángulo del pase.\n- La presión que ejerce el rival sobre el balón.\n- La posibilidad de que el pase sea interceptado.\n- La ventaja que se puede obtener en los primeros segundos de la posesión.\n\nUn pase largo puede generar una canasta fácil, pero también una pérdida que deje al equipo mal equilibrado. Un pase corto y seguro puede ser la mejor decisión si permite avanzar sin conceder una oportunidad de contraataque al contrario.\n\n**La velocidad de ejecución es útil cuando está respaldada por una lectura correcta del juego.**\n\n## 3. El rebote defensivo y la ocupación de los tres carriles\n\nPara que el primer pase tenga continuidad, el resto del equipo debe saber cómo correr.\n\nUna transición bien estructurada necesita amplitud, profundidad y coordinación. Los jugadores deben ocupar los carriles sin amontonarse alrededor del balón ni correr todos hacia la misma zona.\n\nUna distribución habitual contempla tres referencias:\n\n- **Carril central:** facilita la progresión del balón, la organización de la transición y la lectura de las ayudas defensivas.\n- **Carriles laterales:** proporcionan amplitud, estiran la defensa y abren líneas de pase hacia el aro o hacia el exterior.\n- **Jugador de apoyo o tráiler:** acompaña la acción desde una posición más retrasada, preparado para ofrecer una segunda opción, atacar un espacio libre o asegurar el equilibrio ofensivo.\n\nLa distribución exacta dependerá del sistema, de las características de los jugadores y de la ubicación del rebote. Lo importante es que cada jugador reconozca su función sin esperar a que el balón llegue a sus manos.\n\nSi todos corren hacia delante, pero nadie ocupa correctamente los espacios, el equipo puede desplazarse rápido sin crear una verdadera ventaja.\n\n## 4. ¿Qué debe observar el entrenador desde el banquillo?\n\nDesde el banquillo, el análisis no debería limitarse a contar los rebotes defensivos ni a comprobar cuántos contraataques terminan en canasta.\n\nHay que observar la secuencia completa.\n\n**Primera lectura: ¿cómo se asegura el rebote?**\n\n¿El jugador bloquea al rival? ¿Busca el balón con decisión? ¿Controla la caída y protege la posesión? Un rebote mal asegurado impide que la transición comience con garantías.\n\n**Segunda lectura: ¿qué sucede inmediatamente después de la captura?**\n\n¿El reboteador levanta la cabeza? ¿Localiza a los compañeros? ¿Reconoce la presión defensiva? ¿Decide con rapidez o se queda detenido buscando una opción que ya no existe?\n\n**Tercera lectura: ¿cómo responde el equipo sin balón?**\n\n¿Los jugadores arrancan al espacio adecuado? ¿Mantienen la amplitud? ¿Ofrecen líneas de pase visibles? ¿Alguien corre demasiado pronto y queda desconectado de la acción?\n\n**Cuarta lectura: ¿qué ventaja se genera?**\n\nNo toda transición tiene que terminar en una bandeja. También existe ventaja cuando el equipo consigue un dos contra uno, obliga a una ayuda defensiva, encuentra un lanzamiento liberado o llega al ataque posicional con la defensa rival todavía desorganizada.\n\nEsta última lectura es especialmente importante. Un equipo puede ejecutar correctamente el rebote y el primer pase sin conseguir una canasta inmediata. Si ha generado una ventaja que puede aprovechar, la acción puede haber sido tácticamente positiva.\n\n## 5. Cuando el problema no está en el rebote\n\nEn ocasiones, el equipo captura suficientes rebotes defensivos, pero apenas consigue puntos al contraataque. La reacción habitual puede ser pedir más velocidad, más pases largos o una salida más agresiva.\n\nSin embargo, antes de modificar el ritmo, conviene identificar dónde se rompe la secuencia.\n\n| Lo que observa el entrenador | Posible problema táctico |\n|---|---|\n| El reboteador tarda en soltar el balón | Falta de lectura previa o de opciones claras de pase |\n| El primer pase se intercepta con frecuencia | Mala selección del receptor, ángulo inadecuado o pase forzado |\n| El balón avanza, pero los jugadores llegan juntos | Mala ocupación de carriles y falta de amplitud |\n| El equipo llega en superioridad, pero no finaliza | Lectura deficiente de la ventaja o decisiones individuales precipitadas |\n| Se producen pérdidas y canastas fáciles del rival | Exceso de riesgo y escaso equilibrio ofensivo |\n\nEstas situaciones requieren soluciones diferentes. No se corrige una mala ocupación de carriles exigiendo al reboteador que pase más rápido. Tampoco se soluciona una mala selección del primer pase obligando a correr más.\n\n**El trabajo del entrenador consiste en identificar la causa antes de intervenir sobre la consecuencia.**\n\n## 6. Cómo entrenar la conexión entre rebote y contraataque\n\nPara desarrollar esta capacidad, el entrenamiento debe reproducir decisiones reales, no limitarse a repetir una secuencia predeterminada de rebote, pase y carrera.\n\nUna progresión útil puede organizarse en tres tareas.\n\n### Tarea 1. Rebote y primera decisión\n\nSe inicia con un lanzamiento del entrenador. El equipo defensor debe bloquear el rebote, capturarlo y decidir entre pase inmediato, bote de salida o conservación.\n\nEl objetivo no es ejecutar siempre la misma solución, sino reconocer qué opción ofrece mejores condiciones.\n\n### Tarea 2. Rebote y transición en superioridad\n\nTras el lanzamiento, los jugadores salen hacia el campo contrario y se plantea una situación de superioridad ofensiva, como un tres contra dos.\n\nEl reboteador debe identificar al compañero mejor situado y los atacantes deben ocupar los espacios adecuados. Se evalúa tanto la decisión inicial como la continuidad de la acción.\n\n### Tarea 3. Rebote y transición con oposición real\n\nSe juega una situación de cinco contra cinco. Cada lanzamiento fallado puede iniciar una transición si el equipo defensor asegura el rebote.\n\nLa defensa debe recuperar y proteger la canasta; el ataque debe decidir cuándo correr y cuándo organizarse. Así se entrena la relación entre rebote, primer pase, ocupación de espacios y equilibrio colectivo.\n\nEn las tres tareas, la corrección debe centrarse en la lectura de juego. Si el entrenador solo premia la canasta final, puede reforzar decisiones precipitadas que hayan terminado bien por casualidad.\n\n## 7. El criterio táctico: correr con ventaja, no por obligación\n\nEl baloncesto actual exige velocidad, pero la velocidad no debe confundirse con precipitación.\n\nHay rebotes que permiten lanzar un pase largo inmediatamente. Otros requieren un pase de seguridad. Algunos permiten al propio reboteador iniciar la progresión con bote. Y también hay situaciones en las que la mejor decisión consiste en frenar, proteger el balón y organizar el ataque.\n\nEl jugador debe aprender a distinguirlas.\n\nDesde el banquillo, el entrenador necesita construir referencias comunes para que todos interpreten las mismas señales: dónde está el balón, qué defensores han quedado por detrás, qué espacios están disponibles y qué riesgo implica cada decisión.\n\nCuando esas referencias se interiorizan, la transición deja de depender exclusivamente de la inspiración individual y se convierte en una respuesta colectiva.\n\n## Conclusión: la transición empieza antes de que el balón salga de las manos\n\nEl rebote defensivo es mucho más que una estadística. Es una oportunidad para transformar una acción defensiva en una ventaja ofensiva.\n\nLa captura asegura la posesión; la lectura determina la salida; el primer pase conecta al equipo; y la ocupación de los espacios permite aprovechar la ventaja.\n\nPor eso, cuando un equipo no contraataca con eficacia, la pregunta no debería ser únicamente cuántos rebotes captura o cuántos puntos consigue en transición. También conviene preguntarse qué decisiones toma durante los primeros segundos después de recuperar el balón.\n\n**Porque el primer pase de contraataque no es solo un gesto técnico: es la expresión de una lectura táctica compartida.**\n\nY esa lectura, como tantas otras cosas en baloncesto, se construye en los entrenamientos, se pone a prueba en la competición y se perfecciona desde el banquillo.\n\n> \"El verdadero criterio táctico no consiste en memorizar 20 jugadas rígidas, sino en saber leer qué ventaja concede la defensa en cada posesión.\"\n\n### 1. El error más común en la ejecución\n\nCuando analizamos **El Rebote Defensivo como Primer Pase de Contraataque**, el fallo recurrente suele ser la precipitación y la falta de comunicación en la pista:\n\n* **Pérdida de la distancia de seguridad (Spacing):** Si dos jugadores colapsan el mismo espacio, facilitan las ayudas defensivas del rival sin esfuerzo.\n* **Falta de agresividad en el primer paso:** Cualquier maniobra ofensiva o defensiva debe ejecutarse con la convicción de ganar la posición antes del contacto.\n* **El silencio en cancha:** Si el banquillo o los cinco de la pista no se comunican en voz alta, el rival siempre llevará la delantera en la toma de decisiones.\n\n### 2. Ejercicio de aplicación para tus entrenamientos (3c3 Continuo)\n\nPara interiorizar este concepto en las sesiones de lunes a viernes:\n\n1. **Estructura:** Dividir la plantilla en tríos. El equipo defensor trabaja la rotación sin permitir canasta fácil en la pintura.\n2. **Regla de oro:** Obligatorio dar un mínimo de 3 pases antes de cualquier lanzamiento exterior, salvo penetración directa clara.\n3. **Puntaje especial:** Toda acción que premie el pase extra o la parada y lectura suma doble valor en el marcador del entrenamiento.\n\n### Reflexión final para el entrenador\n\nNo te obsesiones con llenar la libreta de esquemas imposibles. Pregúntate si tus jugadores comprenden el *porqué* de cada movimiento. En la sencillez y la solidez de los fundamentos es donde se ganan los partidos en los minutos calientes del último cuarto.",
+    "category": "Táctica Defensiva",
+    "tags": [
+      "Rebote Defensivo"
+    ],
+    "author": "Coach Leyanis Horta",
+    "authorRole": "Licenciada en Deporte & Entrenadora",
+    "publishedAt": "2026-11-02",
+    "readTimeMinutes": 11,
+    "coverImage": "/assets/coach_tactics_board_1792831347508.jpg",
+    "status": "published",
+    "viewsCount": 2,
+    "likesCount": 0,
+    "featured": false
+  },
+  {
+    "id": "art-1",
+    "slug": "balance-defensivo-mayor-fallo-concentracion",
+    "title": "El arte del balance defensivo: Por qué recibir canastas tras tiro anotado es el mayor fallo de concentración",
+    "excerpt": "Celebrar una canasta propia o lamentarse de un fallo mientras el rival saca de fondo en dos segundos es el pecado capital de cualquier equipo. Desglosamos las normas innegociables para neutralizar la transición rápida.",
+    "content": "## La premisa que muchos olvidan\n\nDurante mis 20 temporadas como entrenadora en los banquillos, desde mis inicios formativos en Cuba hasta las ligas en Barcelona y el baloncesto catalán, he visto perder más partidos en los primeros cuatro segundos tras anotar una canasta que en las posesiones finales de infarto. Existe una falsa sensación de alivio cuando el balón entra en el aro rival: el anotador sonríe, el banquillo aplaude y, en ese milisegundo de desconexión mental, el base contrario ya ha recibido el saque y un alero corre libre por la banda opuesta.\n\n> \"El ataque no termina cuando sueltas el balón hacia el aro; termina cuando los cinco jugadores han cruzado la línea de medio campo en posición defensiva.\"\n\n### 1. Las tres responsabilidades innegociables tras el lanzamiento\n\nPara que el balance defensivo funcione con la precisión de un reloj de cuerda, los roles deben estar interiorizados antes incluso de que el balón golpee el aro:\n\n* **El balanceador primario (Safety):** Por norma, el jugador situado más arriba de la línea de tres puntos jamás acude al rebote de ataque. Su primer movimiento no es mirar el rebote, sino esprintar de espaldas a la canasta contraria para proteger la pintura de canastas fáciles.\n* **El hostigador del primer pase:** El jugador más próximo al reboteador o al sacador tiene la obligación de incomodar la salida inmediata sin cometer faltas tontas, retrasando el contraataque directo al menos dos segundos valiosos.\n* **La recuperación por carriles centrales:** Los otros tres jugadores deben regresar por el embudo central de la pista, jamás por las esquinas o bandas, cubriendo la espalda del compañero y cortando líneas de pase largas.\n\n### 2. Hablar en la pista: la herramienta defensiva más infrautilizada\n\nMuchos entrenadores jóvenes invierten horas en diseñar jugadas complejas en su pizarra y descuidan lo elemental: **el silencio defensivo es una invitación a la canasta fácil**. \n\nUn veterano no necesita saltar más que el rival si canta a viva voz: *\"¡Tengo balón!\", \"¡Corto por el medio!\", \"¡Tiro fuera!\"*. La comunicación genera confianza y alerta al compañero rezagado. Si en tu entrenamiento los chicos no gritan las asignaciones en el balance, tu defensa de fin de semana no resistirá ante un equipo con ritmo.\n\n### Conclusión para el banquillo\nNo permitas que tus jugadores celebren antes de defender. La próxima vez que veas un vídeo de tu partido, cuenta cuántos puntos fáciles regaló tu equipo tras haber metido vosotros una canasta previa. Te sorprenderá comprobar que ahí suele estar la diferencia entre ganar o perder.",
+    "category": "Táctica Defensiva",
+    "tags": [
+      "Balance Defensivo"
+    ],
+    "author": "Coach Leyanis Horta",
+    "authorRole": "Licenciada en Deporte & Entrenadora",
+    "publishedAt": "2026-10-18",
+    "readTimeMinutes": 5,
+    "coverImage": "/assets/hero_basketball_tactics_1792680998647.jpg",
+    "status": "published",
+    "viewsCount": 343,
+    "likesCount": 29,
+    "featured": true
+  },
+  {
+    "id": "art-2",
+    "slug": "espaciamiento-pick-and-roll-moderno-espacios",
+    "title": "Espaciamiento y lectura en el Pick & Roll moderno: Claves para no saturar la pintura",
+    "excerpt": "El bloqueo directo se ha convertido en el recurso predominante a todos los niveles, pero a menudo se ejecuta sin comprender la geometría de la cancha. ¿Cómo generar ventajas reales sin asfixiar a los compañeros?",
+    "content": "## Cuando la moda supera a la comprensión del juego\n\nHoy en día, incluso en categorías infantiles y cadetes, se ven infinidad de bloqueos directos por posesión. Sin embargo, en ocho de cada diez ocasiones, el resultado es un atasco tremendo: tres defensores colapsando la zona porque los tiradores están a apenas dos metros del balón.\n\nEl bloqueo directo no es una jugada mágica; **es simplemente una herramienta para forzar una decisión en dos defensores**. Si el resto de los tres atacantes no mantienen la distancia reglamentaria y la amenaza constante, la defensa gana siempre.\n\n### 1. El ángulo del bloqueo define el destino de la posesión\n\nUno de los errores más comunes en la enseñanza del Pick & Roll es permitir que el bloqueador coloque la pantalla perpendicular a la línea lateral. Un bloqueo plano o invertido abre caminos completamente distintos:\n\n* **Bloqueo lateral (Side Pick):** Debe buscar encarrilar al manejador hacia el codo de la zona, obligando al defensor del bloqueador a elegir entre salir al 'drop', saltar al 'show' o cambiar.\n* **Espacio en esquina contraria:** La esquina del lado débil debe estar siempre ocupada por una amenaza real de tiro. Si ese jugador corta antes de tiempo hacia el aro, trae a su defensor justo donde el base intenta penetrar o doblar.\n\n### 2. Paciencia en la lectura del bote\n\nLos bases experimentados saben que tras superar el bloqueo no hay que correr desesperadamente hacia el tablero. Hay que poner al defensor en la cadera (*'snake dribble'* o frenada) y leer si el pívot rival sube o si la ayuda viene del alero de lado débil.\n\n### La regla de los cuatro metros\nPara mí, como regla de oro en mis equipos: **nunca dos jugadores a menos de cuatro metros de distancia en el lado del balón**, salvo en el momento exacto del contacto del bloqueo. La geometría castiga a quien no respeta los espacios.",
+    "category": "Ataque por Conceptos",
+    "tags": [
+      "Pick & Roll"
+    ],
+    "author": "Coach Leyanis Horta",
+    "authorRole": "Licenciada en Deporte & Entrenadora",
+    "publishedAt": "2026-10-12",
+    "readTimeMinutes": 6,
+    "coverImage": "/assets/article_pick_and_roll_1792680999088.jpg",
+    "status": "published",
+    "viewsCount": 518,
+    "likesCount": 44,
+    "featured": false
+  },
+  {
+    "id": "art-3",
+    "slug": "la-soledad-del-banquillo-y-la-gestion-de-egos-lo-que-los-manuales-tecnicos-callan",
+    "title": "La soledad del banquillo y la gestión de egos: Lo que los manuales técnicos callan",
+    "excerpt": "Puedes conocer al detalle todas las variantes de la defensa en zona o de la salida de presión, pero si no eres capaz de mirar a los ojos a un jugador descontento por sus minutos, tu pizarra no servirá de nada.",
+    "content": "**El verdadero examen no está en la pizarra**\n\nCuando obtienes la licenciatura en Deporte y las titulaciones de entrenadora, estudias biomecánica, fisiología del esfuerzo, planificación del entrenamiento y sistemas tácticos. Aprendes a diseñar ejercicios, analizar partidos y preparar equipos para competir. Sin embargo, hay una parte del oficio que solo comprendes de verdad cuando te sientas en un banquillo: **entrenar un equipo significa, ante todo, gestionar personas**.\n\n¿Cómo gestionas al jugador que pone mala cara cuando lo sustituyes? ¿Cómo mantienes la motivación de quien entrena con el alma cada día, pero apenas disputa dos minutos el sábado? ¿Cómo consigues que una jugadora acepte un rol diferente al que desea? ¿Y cómo mantienes la cohesión del grupo cuando cada integrante tiene sus propias expectativas, emociones y necesidades?\n\nA lo largo de mis años en los banquillos, desde la pasión del baloncesto cubano hasta la exigencia competitiva de Barcelona, he aprendido que el conocimiento técnico es imprescindible, pero no basta. Puedes tener una excelente planificación y una pizarra llena de buenas ideas; si no sabes gestionar las relaciones, las expectativas y las reacciones de tus jugadores, llevar esas ideas a la pista será mucho más difícil.\n\n## Dirigir un equipo también significa tomar decisiones incómodas\n\nUna de las mayores dificultades del entrenador es comprender que las necesidades individuales no siempre coinciden con las del equipo.\n\n## Todos los jugadores quieren sentirse importantes, participar y demostrar lo que valen. Es natural. Pero el tiempo de juego es limitado y las decisiones deben responder a criterios deportivos, al rendimiento, al compromiso, a las necesidades tácticas y a los objetivos colectivos. \n\nDar a cada jugador los mismos minutos no siempre es lo más justo, del mismo modo que jugar menos no significa necesariamente tener menos valor dentro del grupo.\n\nNuestra responsabilidad consiste en establecer criterios coherentes, aplicarlos con honestidad y explicar qué esperamos de cada jugador. No se trata de prometer minutos ni de alimentar expectativas que quizá no podamos cumplir. Se trata de ofrecer orientación: qué papel desempeña hoy cada integrante, qué aspectos necesita mejorar y qué puede hacer para aumentar su contribución al equipo.\n\nEso no garantiza que todos estén satisfechos. Tampoco es nuestra función conseguir que cada decisión agrade a todo el mundo. Lo que sí debemos procurar es que las decisiones tengan un fundamento y que el jugador no tenga que adivinar qué esperamos de él.\n\n**La justicia en un equipo no consiste en dar a todos lo mismo, sino en actuar con criterios claros, respeto y responsabilidad.**\n\n## Gestionar personas sin renunciar a la exigencia\n\nCada jugador responde de manera diferente ante la presión, la corrección y la frustración. Hay quien necesita confianza para atreverse, quien requiere límites más firmes y quien interpreta una sustitución como un cuestionamiento personal. Conocer esas diferencias forma parte del trabajo del entrenador.\n\nPero comprender a un jugador no significa justificar todas sus reacciones, del mismo modo que exigirle no significa ignorar sus circunstancias.\n\nEn este punto, la comunicación resulta fundamental. Y cada entrenador tiene su carácter, su manera de expresarse y sus recursos para dirigir al grupo. Personalmente, no considero que levantar la voz sea, por sí mismo, un error. Hay momentos en los que necesito gritar, exigir una reacción o llamar la atención sobre algo que está perjudicando al equipo. La competición también requiere intensidad, firmeza y capacidad para intervenir en el momento oportuno.\n\nLa cuestión no es si gritamos o hablamos con serenidad, sino si sabemos por qué lo hacemos y qué pretendemos conseguir. Una llamada de atención puede ser necesaria, pero también debemos saber escuchar, explicar una decisión o reconocer que nos hemos equivocado.\n\nLa autoridad no desaparece cuando escuchamos a un jugador, ni se demuestra únicamente elevando la voz. Se construye a través de la coherencia entre lo que exigimos, lo que hacemos y la manera en que asumimos nuestras propias responsabilidades.\n\nEl objetivo no es evitar cualquier conflicto ni conseguir que los jugadores estén siempre de acuerdo con nosotros. Es aprender a gestionarlo sin perder de vista el propósito común: mejorar individualmente para competir mejor como equipo.\n\n## El equipo está por encima de las expectativas individuales\n\nUno de los grandes retos de este oficio es conseguir que jugadores con diferentes capacidades, personalidades y aspiraciones comprendan que forman parte de un mismo proyecto.\n\nEl talento individual es importante, pero no puede convertirse en una excusa para desentenderse de las responsabilidades colectivas. Del mismo modo, el esfuerzo y el compromiso merecen reconocimiento, aunque no siempre se traduzcan en los minutos de juego que cada jugador desea.\n\nEl entrenador debe encontrar ese equilibrio: valorar a la persona sin perder de vista al deportista, reconocer el esfuerzo sin renunciar a evaluar el rendimiento y mantener la exigencia sin convertir cada error en un conflicto personal.\n\nEsto requiere observar, escuchar, comunicar y tomar decisiones. También exige aceptar que no siempre acertaremos. Habrá jugadores a los que no consigamos motivar como esperábamos, decisiones que no produzcan el resultado previsto y situaciones que nos obliguen a revisar nuestra manera de trabajar.\n\nLa experiencia no consiste en dejar de cometer errores, sino en aprender a identificarlos y corregirlos sin renunciar a nuestros principios.\n\n## Entrenar es mucho más que preparar un partido\n\nDespués de años de formación y experiencia, sigo considerando imprescindible el conocimiento técnico y táctico. Sin él, difícilmente podremos preparar un equipo competitivo. Pero dirigir un grupo exige algo más: comprender que detrás de cada camiseta hay una persona con capacidades, limitaciones, expectativas y una manera particular de afrontar el deporte.\n\nNo siempre podremos dar a cada jugador lo que desea. No siempre estaremos de acuerdo. Y no todas nuestras decisiones serán bien recibidas. Sin embargo, podemos trabajar para que nuestros criterios sean comprensibles, nuestras exigencias tengan sentido y el respeto no dependa del rendimiento ni del tiempo que alguien pase en la pista.\n\nPorque el verdadero examen de un entrenador no se limita a la pizarra, a los sistemas que diseña o a los partidos que gana. También se encuentra en su capacidad para gestionar las diferencias, sostener sus decisiones y conseguir que personas distintas aprendan a trabajar por un objetivo común.\n\n**Al final, entrenar no es solamente enseñar a jugar al baloncesto. Es conseguir que un grupo de personas pueda competir, crecer y funcionar como un equipo sin perder de vista la responsabilidad que cada una tiene dentro de él.**\n\nEn mi próxima publicación abordaré una de las situaciones más delicadas que vivimos en los banquillos:\n\n**¿Qué hacer cuando una jugadora no acepta su rol en el equipo y considera que merece más minutos?**\n\nPorqué tomar la decisión es responsabilidad del entrenador. Conseguir que la jugadora la comprenda, sin perder su confianza ni perjudicar al grupo, es otro desafío.",
+    "category": "Gestión de Vestuario",
+    "tags": [
+      "Gestión de Vestuario"
+    ],
+    "author": "Coach Leyanis Horta",
+    "authorRole": "Licenciada en Deporte & Entrenadora",
+    "publishedAt": "2026-10-05",
+    "readTimeMinutes": 7,
+    "coverImage": "/assets/coach_horta_avatar.jpg",
+    "status": "published",
+    "viewsCount": 626,
+    "likesCount": 61,
+    "featured": false
+  },
+  {
+    "id": "art-4",
+    "slug": "valor-formativo-pase-extra-menos-botes",
+    "title": "El valor formativo del pase extra: Menos botes indiscriminados y más juego colectivo",
+    "excerpt": "¿Por qué tantos jóvenes botan el balón de manera automática en cuanto lo reciben? Reflexión sobre la importancia de enseñar la triple amenaza y el hábito solidario de buscar el tiro abierto.",
+    "content": "## El vicio del bote en la recepción\n\nObserven cualquier partido de categorías alevín, infantil o incluso junior: el jugador recibe un pase perfecto y, de manera casi refleja y sin levantar la cabeza, da un bote en el sitio. En ese único segundo perdido, la ventaja táctica generada por su compañero se evapora por completo.\n\nEl balón viaja por el aire diez veces más rápido de lo que cualquier jugador puede correr o botar. Cuando insistimos en el pase extra, no solo estamos buscando una mejor estadística de tiro; estamos construyendo un equipo con alma solidaria.\n\n### Principios para desterrar el bote innecesario en los entrenamientos:\n\n1. **Jugar situaciones de 3c3 y 4c4 con límite de 2 botes por jugador:** Al principio habrá protestas y pérdidas de balón, pero pronto empezarán a moverse sin balón, a cortar puertas atrás y a buscar la espalda de la defensa.\n2. **Recompensar el pase del que nace la asistencia (el 'hockey pass'):** La estadística no suele registrar al jugador que dio el pase inicial que descolocó a la defensa, pero en el vídeo de vestuario debe ser elogiado con el mismo énfasis.\n3. **La regla del tiro bueno frente al tiro excelente:** Un tiro libre de marca desde 5 metros es un buen tiro; si das un pase adicional a la esquina para un compañero completamente solo, es un tiro excelente.",
+    "category": "Desarrollo de Fundamentos",
+    "tags": [
+      "Fundamentos"
+    ],
+    "author": "Coach Leyanis Horta",
+    "authorRole": "Licenciada en Deporte & Entrenadora",
+    "publishedAt": "2026-09-24",
+    "readTimeMinutes": 4,
+    "coverImage": "/assets/article_fundamentals_coaching_1792680999886.jpg",
+    "status": "published",
+    "viewsCount": 412,
+    "likesCount": 38,
+    "featured": false
   }
 ];
 
 export const INITIAL_COMMENTS: Comment[] = [
   {
-    id: "c-1",
-    articleId: "art-1",
-    articleTitle: "El arte del balance defensivo",
-    authorName: "Carlos Alarcón",
-    authorRole: "Entrenador Cadete Autonómico",
-    email: "alarcon.basket@example.com",
-    text: "Totalmente de acuerdo, entrenadora Leyanis. En Cataluña sufríamos mucho por la manía de los chicos de quedarse mirando si el tiro entraba en lugar de correr al balance. Implementamos tu norma de que el base no pisa la zona ofensiva y redujimos 12 puntos en contra por partido.",
-    createdAt: "2026-10-19T10:30:00Z",
-    status: "approved"
+    "id": "c-1",
+    "articleId": "art-1",
+    "articleTitle": "El arte del balance defensivo",
+    "authorName": "Carlos Alarcón",
+    "authorRole": "Entrenador Cadete Autonómico",
+    "email": "alarcon.basket@example.com",
+    "text": "Totalmente de acuerdo, entrenadora Leyanis. En Cataluña sufríamos mucho por la manía de los chicos de quedarse mirando si el tiro entraba en lugar de correr al balance. Implementamos tu norma de que el base no pisa la zona ofensiva y redujimos 12 puntos en contra por partido.",
+    "createdAt": "2026-10-19T10:30:00Z",
+    "status": "approved"
   },
   {
-    id: "c-2",
-    articleId: "art-1",
-    articleTitle: "El arte del balance defensivo",
-    authorName: "Javier Montero",
-    authorRole: "Árbitro y formador",
-    email: "montero.arbitros@example.com",
-    text: "Desde la perspectiva arbitral se ve clarísimo. Las faltas antideportivas de frustración suelen ocurrir justo en esas transiciones rápidas mal balanceadas. Gran artículo, claro y pedagógico.",
-    createdAt: "2026-10-20T16:15:00Z",
-    status: "approved"
+    "id": "c-2",
+    "articleId": "art-1",
+    "articleTitle": "El arte del balance defensivo",
+    "authorName": "Javier Montero",
+    "authorRole": "Árbitro y formador",
+    "email": "montero.arbitros@example.com",
+    "text": "Desde la perspectiva arbitral se ve clarísimo. Las faltas antideportivas de frustración suelen ocurrir justo en esas transiciones rápidas mal balanceadas. Gran artículo, claro y pedagógico.",
+    "createdAt": "2026-10-20T16:15:00Z",
+    "status": "approved"
   },
   {
-    id: "c-3",
-    articleId: "art-3",
-    articleTitle: "La soledad del banquillo y la gestión de egos",
-    authorName: "Sonia Peñalver",
-    authorRole: "Directora Técnica de Cantera",
-    email: "sonia.penalver@example.com",
-    text: "Hacía falta leer un texto así, Leyanis. Muchos entrenadores se obsesionan con el playbook y olvidan que estamos tratando con personas. Se nota tu experiencia en tantos banquillos.",
-    createdAt: "2026-10-06T11:45:00Z",
-    status: "approved"
+    "id": "c-3",
+    "articleId": "art-3",
+    "articleTitle": "La soledad del banquillo y la gestión de egos",
+    "authorName": "Sonia Peñalver",
+    "authorRole": "Directora Técnica de Cantera",
+    "email": "sonia.penalver@example.com",
+    "text": "Hacía falta leer un texto así, Leyanis. Muchos entrenadores se obsesionan con el playbook y olvidan que estamos tratando con personas. Se nota tu experiencia en tantos banquillos.",
+    "createdAt": "2026-10-06T11:45:00Z",
+    "status": "approved"
   }
 ];
 
 export const INITIAL_SUBSCRIBERS: Subscriber[] = [
   {
-    id: "sub-1",
-    email: "entrenadores.bcn@example.com",
-    frequency: "semanal",
-    subscribedAt: "2026-10-01"
+    "id": "sub-1",
+    "email": "entrenadores.bcn@example.com",
+    "frequency": "semanal",
+    "subscribedAt": "2026-10-01"
   },
   {
-    id: "sub-2",
-    email: "basket.cuba.formacion@example.com",
-    frequency: "semanal",
-    subscribedAt: "2026-10-14"
+    "id": "sub-2",
+    "email": "basket.cuba.formacion@example.com",
+    "frequency": "semanal",
+    "subscribedAt": "2026-10-14"
   }
 ];

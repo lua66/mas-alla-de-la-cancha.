@@ -89,33 +89,24 @@ export const storageService = {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.ARTICLES);
       if (stored) {
-        const parsed: Article[] = JSON.parse(stored);
+        let parsed: Article[] = JSON.parse(stored);
         let updated = false;
+
+        // Ensure all built-in master articles exist in user cache
+        INITIAL_ARTICLES.forEach((initArt) => {
+          if (!parsed.some((p) => p.id === initArt.id || (p.slug && p.slug === initArt.slug))) {
+            parsed.unshift(initArt);
+            updated = true;
+          }
+        });
+
         parsed.forEach(art => {
           if (art.coverImage && art.coverImage.includes('/src/assets/images/')) {
             art.coverImage = art.coverImage.replace('/src/assets/images/', '/assets/');
             updated = true;
           }
           if (art.coverImage && (art.coverImage.includes('article_defense_transition') || art.coverImage.includes('coach_leyanis_tactics') || art.coverImage.includes('coach_blonde_tactics') || art.coverImage.includes('coach_horta_sese'))) {
-            art.coverImage = '/assets/coach_horta_avatar.jpg';
-            updated = true;
-          }
-          // Ensure initial 4 articles only have their 4 clean tags
-          if (art.id === 'art-1' && (art.tags.length !== 1 || art.tags[0] !== 'Balance Defensivo')) {
-            art.tags = ['Balance Defensivo'];
-            updated = true;
-          }
-          if (art.id === 'art-2' && (art.tags.length !== 1 || art.tags[0] !== 'Pick & Roll')) {
-            art.tags = ['Pick & Roll'];
-            updated = true;
-          }
-          if (art.id === 'art-3' && (art.tags.length !== 1 || art.tags[0] !== 'Gestión de Vestuario')) {
-            art.tags = ['Gestión de Vestuario'];
-            art.coverImage = '/assets/coach_horta_avatar.jpg';
-            updated = true;
-          }
-          if (art.id === 'art-4' && (art.tags.length !== 1 || art.tags[0] !== 'Fundamentos')) {
-            art.tags = ['Fundamentos'];
+            art.coverImage = '/assets/coach_horta_avatar.webp';
             updated = true;
           }
         });
@@ -127,7 +118,7 @@ export const storageService = {
     } catch (e) {
       console.error('Error reading articles from localStorage', e);
     }
-    // Initialize if empty
+    // Initialize if empty (e.g. Incognito mode or first visit)
     localStorage.setItem(STORAGE_KEYS.ARTICLES, JSON.stringify(INITIAL_ARTICLES));
     return INITIAL_ARTICLES;
   },

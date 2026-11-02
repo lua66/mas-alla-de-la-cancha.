@@ -1,68 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Página 1: Inicio / Cuaderno & Artículos -->
   <url>
     <loc>https://www.baloncestonaranja.es/</loc>
-    <lastmod>2026-10-30</lastmod>
+    <lastmod>2026-11-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-
-  <!-- Página 2: Pizarra Táctica Interactiva de Baloncesto -->
   <url>
     <loc>https://www.baloncestonaranja.es/pizarra</loc>
-    <lastmod>2026-10-30</lastmod>
+    <lastmod>2026-11-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
-
-  <!-- Página 3: Sobre la Entrenadora (Coach Leyanis Horta) -->
   <url>
     <loc>https://www.baloncestonaranja.es/sobre-mi</loc>
-    <lastmod>2026-10-30</lastmod>
+    <lastmod>2026-11-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-
-  <!-- Página 4: Categorías Temáticas -->
   <url>
     <loc>https://www.baloncestonaranja.es/categorias</loc>
-    <lastmod>2026-10-30</lastmod>
+    <lastmod>2026-11-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-
-  <!-- Página 5: Archivo Cronológico del Blog -->
   <url>
     <loc>https://www.baloncestonaranja.es/archivo</loc>
-    <lastmod>2026-10-30</lastmod>
+    <lastmod>2026-11-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-
-  <!-- Artículos Individuales Indexables -->
+  <url>
+    <loc>https://www.baloncestonaranja.es/articulo/blindar-la-espalda-en-el-clutch-como-defender-el-bloqueo-ciego-en-formacion</loc>
+    <lastmod>2026-11-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.baloncestonaranja.es/articulo/el-pick-and-roll-en-cantera-del-bloqueo-mecanico-a-la-lectura-real-en-u14-u18</loc>
+    <lastmod>2026-11-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.baloncestonaranja.es/articulo/fundamentos-del-tiro-mecanica-y-consistencia</loc>
+    <lastmod>2026-11-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.baloncestonaranja.es/articulo/la-regla-del-pase-extra-frente-a-los-tiros-precipitados-cuando-pasar-es-mejor-que-lanzar</loc>
+    <lastmod>2026-11-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.baloncestonaranja.es/articulo/el-rebote-defensivo-como-primer-pase-de-contraataque-criterio-tactico-y-lectura-desde-el-banquillo</loc>
+    <lastmod>2026-11-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
   <url>
     <loc>https://www.baloncestonaranja.es/articulo/balance-defensivo-mayor-fallo-concentracion</loc>
-    <lastmod>2026-10-30</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.baloncestonaranja.es/articulo/espaciamiento-pick-and-roll-moderno-espacios</loc>
-    <lastmod>2026-10-30</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.baloncestonaranja.es/articulo/gestion-vestuario-soledad-banquillo-liderazgo</loc>
-    <lastmod>2026-10-30</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.baloncestonaranja.es/articulo/la-soledad-del-banquillo-y-la-gestion-de-egos-lo-que-los-manuales-tecnicos-callan</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.baloncestonaranja.es/articulo/valor-formativo-pase-extra-menos-botes</loc>
-    <lastmod>2026-10-30</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 </urlset>
