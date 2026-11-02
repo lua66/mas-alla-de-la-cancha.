@@ -398,10 +398,15 @@ export default function App() {
   const handleImportBackup = (jsonStr: string) => {
     const success = storageService.importBackupJson(jsonStr);
     if (success) {
-      setArticles(storageService.getArticles());
+      const currentArts = storageService.getArticles();
+      setArticles(currentArts);
       setComments(storageService.getComments());
       setSubscribers(storageService.getSubscribers());
       setSettings(storageService.getSettings());
+      // Also push directly to cloud server so mobile sees them immediately
+      storageService.syncWithServer().then(res => {
+        if (res.articles) setArticles(res.articles);
+      });
     }
     return success;
   };

@@ -1480,11 +1480,36 @@ function doGet(e) {
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     onClick={onExportBackup}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-stone-800 dark:text-stone-200 text-xs font-medium"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-stone-800 dark:text-stone-200 text-xs font-medium cursor-pointer"
                   >
-                    <Download className="w-4 h-4" />
+                    <Download className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                     <span>Descargar Backup (JSON)</span>
                   </button>
+
+                  <label className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-stone-800 dark:text-stone-200 text-xs font-medium cursor-pointer">
+                    <Upload className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                    <span>Cargar / Restaurar Backup (JSON)</span>
+                    <input
+                      type="file"
+                      accept=".json"
+                      className="hidden"
+                      onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = ev => {
+                            const content = ev.target?.result as string;
+                            if (content && onImportBackup(content)) {
+                              showNotification('¡Copia de seguridad restaurada y sincronizada con el servidor!');
+                            } else {
+                              showNotification('El archivo no contiene un JSON de artículos válido.', 'error');
+                            }
+                          };
+                          reader.readAsText(file);
+                        }
+                      }}
+                    />
+                  </label>
 
                   <button
                     onClick={() => {
@@ -1493,7 +1518,7 @@ function doGet(e) {
                         showNotification('Datos restablecidos.');
                       }
                     }}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:text-stone-900 text-xs font-medium"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:text-stone-900 text-xs font-medium cursor-pointer"
                   >
                     <RotateCcw className="w-4 h-4" />
                     <span>Restablecer Datos Iniciales</span>

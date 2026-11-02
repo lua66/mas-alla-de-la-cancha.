@@ -111,6 +111,7 @@ app.post('/api/articles/sync', (req, res) => {
 
   if (hasChanges || !fs.existsSync(ARTICLES_FILE)) {
     writeJsonFile(ARTICLES_FILE, serverArticles);
+    notifySearchEngines();
   }
 
   return res.json({ success: true, articles: serverArticles });
@@ -137,6 +138,7 @@ app.post('/api/articles', (req, res) => {
     serverArticles.unshift(article);
   }
   writeJsonFile(ARTICLES_FILE, serverArticles);
+  notifySearchEngines(article.slug);
   return res.json({ success: true, article });
 });
 
@@ -427,10 +429,147 @@ No te obsesiones con llenar la libreta de esquemas imposibles. Pregúntate si tu
   };
 }
 
-// SEO & Agentic discovery explicit routes
+// --- BLOGGER-STYLE DYNAMIC SITEMAP, RSS & SEO AGENT DISCOVERY ---
+
+// 1. Dynamic Sitemap (instantly lists all published articles as soon as they are saved)
 app.get('/sitemap.xml', (_req, res) => {
+  const articles = readJsonFile<any[]>(ARTICLES_FILE, INITIAL_ARTICLES);
+  const siteUrl = 'https://www.baloncestonaranja.es';
+  const today = new Date().toISOString().split('T')[0];
+
+  const staticPages = [
+    { loc: `${siteUrl}/`, lastmod: today, changefreq: 'daily', priority: '1.0' },
+    { loc: `${siteUrl}/pizarra`, lastmod: today, changefreq: 'weekly', priority: '0.9' },
+    { loc: `${siteUrl}/sobre-mi`, lastmod: today, changefreq: 'monthly', priority: '0.8' },
+    { loc: `${siteUrl}/categorias`, lastmod: today, changefreq: 'weekly', priority: '0.8' },
+    { loc: `${siteUrl}/archivo`, lastmod: today, changefreq: 'weekly', priority: '0.7' }
+  ];
+
+  const articlePages = articles.map((art) => ({
+    loc: `${siteUrl}/articulo/${art.slug || art.id}`,
+    lastmod: art.publishedAt || today,
+    changefreq: 'monthly',
+    priority: '0.9'
+  }));
+
+  const allPages = [...staticPages, ...articlePages];
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${allPages
+  .map(
+    (p) => `  <url>
+    <loc>${p.loc}</loc>
+    <lastmod>${p.lastmod || today}</lastmod>
+    <changefreq>${p.changefreq}</changefreq>
+    <priority>${p.priority}</priority>
+  </url>`
+  )
+  .join('\n')}
+</urlset>`;
+
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-  res.sendFile(path.resolve(__dirname, 'public', 'sitemap.xml'));
+  res.setHeader('Cache-Control', 'public, max-age=60');
+  return res.send(xml);
+});
+
+// 2. Dynamic Blogger-Style RSS Feed (/rss.xml and /feeds/posts/default)
+app.get(['/rss.xml', '/feed.xml', '/feeds/posts/default'], (req, res) => {
+  const articles = readJsonFile<any[]>(ARTICLES_FILE, INITIAL_ARTICLES);
+  const siteUrl = 'https://www.baloncestonaranja.es';
+
+  const rssItems = articles
+    .map((art) => {
+      const artUrl = `${siteUrl}/articulo/${art.slug || art.id}`;
+      const pubDate = art.publishedAt ? new Date(art.publishedAt).toUTCString() : new Date().toUTCString();
+      const cleanExcerpt = (art.excerpt || '').replace(/[<>&'"]/g, (c: string) => {
+        switch (c) {
+          case '<': return '&lt;';
+          case '>': return '&gt;';
+          case '&': return '&amp;';
+          case '\'': return '&apos;';
+          case '"': return '&quot;';
+          default: return c;
+        }
+      });
+      const cleanTitle = (art.title || '').replace(/[<>&'"]/g, (c: string) => {
+        switch (c) {
+          case '<': return '&lt;';
+          case '>': return '&gt;';
+          case '&': return '&amp;';
+          case '\'': return '&apos;';
+          case '"': return '&quot;';
+          default: return c;
+        }
+      });
+
+      return `    <item>
+      <title>${cleanTitle}</title>
+      <link>${artUrl}</link>
+      <guid isPermaLink="true">${artUrl}</guid>
+      <description>${cleanExcerpt}</description>
+      <pubDate>${pubDate}</pubDate>
+      <category>${art.category || 'Táctica de Baloncesto'}</category>
+      <author>${art.author || 'Coach Leyanis Horta'}</author>
+    </item>`;
+    })
+    .join('\n');
+
+  const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pizarra &amp; Criterio — Blog de Baloncesto</title>
+    <link>${siteUrl}/</link>
+    <description>Cuaderno de análisis táctico y reflexiones de banquillo por Coach Leyanis Horta</description>
+    <language>es-es</language>
+    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+    <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />
+${rssItems}
+  </channel>
+</rss>`;
+
+  res.setHeader('Content-Type', 'application/rss+xml; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=60');
+  return res.send(rss);
+});
+
+// 3. Atom Feed (/atom.xml)
+app.get(['/atom.xml'], (_req, res) => {
+  const articles = readJsonFile<any[]>(ARTICLES_FILE, INITIAL_ARTICLES);
+  const siteUrl = 'https://www.baloncestonaranja.es';
+  const updated = new Date().toISOString();
+
+  const entries = articles
+    .map((art) => {
+      const artUrl = `${siteUrl}/articulo/${art.slug || art.id}`;
+      return `  <entry>
+    <title>${art.title}</title>
+    <link href="${artUrl}" />
+    <id>${artUrl}</id>
+    <updated>${art.publishedAt ? `${art.publishedAt}T00:00:00Z` : updated}</updated>
+    <summary>${art.excerpt || ''}</summary>
+    <author>
+      <name>${art.author || 'Coach Leyanis Horta'}</name>
+    </author>
+  </entry>`;
+    })
+    .join('\n');
+
+  const atom = `<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Pizarra &amp; Criterio — Blog de Baloncesto</title>
+  <link href="${siteUrl}/" />
+  <updated>${updated}</updated>
+  <id>${siteUrl}/</id>
+  <author>
+    <name>Coach Leyanis Horta</name>
+  </author>
+${entries}
+</feed>`;
+
+  res.setHeader('Content-Type', 'application/atom+xml; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=60');
+  return res.send(atom);
 });
 
 app.get('/robots.txt', (_req, res) => {
@@ -447,6 +586,17 @@ app.get(['/ai-catalog.json', '/.well-known/ai-catalog.json'], (_req, res) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.sendFile(path.resolve(__dirname, 'public', 'ai-catalog.json'));
 });
+
+// Function to notify Google & search engines when a post is published (WebSub / Google Ping)
+async function notifySearchEngines(articleSlug?: string) {
+  try {
+    const sitemapUrl = encodeURIComponent('https://www.baloncestonaranja.es/sitemap.xml');
+    fetch(`https://www.google.com/ping?sitemap=${sitemapUrl}`).catch(() => {});
+    console.log('[Blogger WebSub Ping] Notified Google Search Console of new content.');
+  } catch (err) {
+    console.warn('[Blogger Ping Error] Non-fatal ping error:', err);
+  }
+}
 
 // Vite middleware setup
 async function startServer() {
